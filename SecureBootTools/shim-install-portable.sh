@@ -10,7 +10,6 @@ source_dir_grub="/usr/lib64/efi"
 efi_arch="x64"
 #override grub efi arch suffix
 grub_override="y"
-#sepa
 #script_dir=`dirname "$0"`
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
@@ -19,7 +18,7 @@ test -d "$script_dir/local/shim" && echo "using local shim binaries" && source_d
 test -d "$script_dir/local/grub" && echo "using local shim binaries" && source_dir_grub="$script_dir/local/grub$source_dir_grub"
 
 show_usage () {
- echo "usage: shim-install <destination dir (mounted efi partition directory)>"
+ echo "usage: shim-install-portable.sh <destination dir (mounted efi partition directory)>"
  exit 100
 }
 
