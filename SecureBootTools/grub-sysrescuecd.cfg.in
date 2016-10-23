@@ -1,0 +1,7 @@
+
+menuentry "SystemRescueCd" {
+	set gfxpayload=keep
+	linuxefi /srcd/rescue64.signed isoloop=/srcd/srcd.iso lowmem libata.noacpi=1
+	initrdefi /srcd/initram.igz
+}
+
