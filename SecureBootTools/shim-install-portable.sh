@@ -6,6 +6,7 @@
 #set shim and grub source directory
 source_dir_shim="/usr/lib64/efi"
 source_dir_grub="/usr/lib64/efi"
+extra_dir_grub="/usr/share/grub2"
 #arch suffix
 efi_arch="x64"
 #override grub efi arch suffix
@@ -15,7 +16,7 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 #try to use locally extracted shim and grub rpm, from opensuse
 test -d "$script_dir/local/shim" && echo "using local shim binaries" && source_dir_shim="$script_dir/local/shim$source_dir_shim"
-test -d "$script_dir/local/grub" && echo "using local shim binaries" && source_dir_grub="$script_dir/local/grub$source_dir_grub"
+test -d "$script_dir/local/grub" && echo "using local grub binaries" && source_dir_grub="$script_dir/local/grub$source_dir_grub"
 
 show_usage () {
  echo "usage: shim-install-portable.sh <destination dir (mounted efi partition directory)>"
@@ -78,6 +79,9 @@ check_errors
 cp "${script_dir}/grub-secure.cfg" "${efidir}/grub.cfg"
 check_errors
 
+sed -i "s|__vendor__|BOOT|g" "${efidir}/grub.cfg"
+check_errors
+
 if [ "z$grub_override" = "zy" ]; then
  cp "${source_dir_grub}/grub.efi" "${efidir}"
  check_errors
@@ -85,4 +89,7 @@ else
  cp "${source_dir_grub}/grub.efi" "${efidir}/grub${efi_arch}.efi"
  check_errors
 fi
+
+cp "${extra_dir_grub}/unicode.pf2" "${efidir}"
+check_errors
 
