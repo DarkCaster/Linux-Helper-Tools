@@ -11,12 +11,13 @@ extra_dir_grub="/usr/share/grub2"
 efi_arch="x64"
 #override grub efi arch suffix
 grub_override_arch="y"
+
 #script_dir=`dirname "$0"`
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 #try to use locally extracted shim and grub rpm, from opensuse
-test -d "$script_dir/local/shim" && echo "using local shim binaries" && source_dir_shim="$script_dir/local/shim$source_dir_shim"
-test -d "$script_dir/local/grub" && echo "using local grub binaries" && source_dir_grub="$script_dir/local/grub$source_dir_grub"
+test -d "${script_dir}/local/shim" && echo "using local shim binaries" && source_dir_shim="${script_dir}/local/shim${source_dir_shim}"
+test -d "${script_dir}/local/grub" && echo "using local grub binaries" && source_dir_grub="${script_dir}/local/grub${source_dir_grub}"
 
 show_usage () {
  echo "usage: shim-install-portable.sh <destination dir (mounted efi partition directory)>"
@@ -43,13 +44,13 @@ check_errors () {
 
 #destination dir
 efibase="$@"
-test -z "$efibase" && show_usage
+test -z "${efibase}" && show_usage
 
-test -d "$efibase"
+test -d "${efibase}"
 check_errors "destination dir is not exist"
 
-test -d "$source_dir_shim"
-check_errors "source_dir_shim $source_dir_shim is not exist"
+test -d "${source_dir_shim}"
+check_errors "source_dir_shim ${source_dir_shim} is not exist"
 
 efidir="${efibase}/EFI/BOOT"
 
@@ -82,7 +83,7 @@ check_errors
 sed -i "s|__vendor__|BOOT|g" "${efidir}/grub.cfg"
 check_errors
 
-if [ "z$grub_override_arch" = "zy" ]; then
+if [ "z${grub_override_arch}" = "zy" ]; then
  cp "${source_dir_grub}/grub.efi" "${efidir}"
  check_errors
  cp "${source_dir_grub}/grub.der" "${efidir}"
@@ -96,4 +97,10 @@ fi
 
 cp "${extra_dir_grub}/unicode.pf2" "${efidir}"
 check_errors
+
+#copy local public keys
+if [ -d "${script_dir}/keys" ]; then
+ cp "${script_dir}/keys/"*.der "${efidir}"
+ check_errors
+fi
 
