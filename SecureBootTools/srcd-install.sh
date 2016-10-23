@@ -59,11 +59,20 @@ check_errors
 rm -f "rescue64"
 check_errors
 
+rm -f "altker64.signed"
+check_errors
+
+rm -f "altker64"
+check_errors
+
 rm -f "initram.igz"
 check_errors
 
-log "extracting kernel"
+log "extracting kernels"
 7z e srcd.iso isolinux/rescue64 1>/dev/null
+check_errors
+
+7z e srcd.iso isolinux/altker64 1>/dev/null
 check_errors
 
 7z e srcd.iso isolinux/initram.igz 1>/dev/null
@@ -72,8 +81,12 @@ check_errors
 cd "${olddir}"
 check_errors
 
-log "signing kernel"
+log "signing rescue64 kernel"
 "${script_dir}/sign-efi-binary.sh" "${script_dir}/local/rescue64" "${script_dir}/local/rescue64.signed"
+check_errors
+
+log "signing altker64 kernel"
+"${script_dir}/sign-efi-binary.sh" "${script_dir}/local/altker64" "${script_dir}/local/altker64.signed"
 check_errors
 
 #cleanup
@@ -88,6 +101,9 @@ mkdir -p "${efibase}/srcd"
 check_errors
 
 cp "${script_dir}/local/rescue64.signed" "${efibase}/srcd"
+check_errors
+
+cp "${script_dir}/local/altker64.signed" "${efibase}/srcd"
 check_errors
 
 cp "${script_dir}/local/initram.igz" "${efibase}/srcd"
