@@ -30,7 +30,7 @@ log "using temp dir: $dbdir"
 
 cleanup () {
  if [ ! -z "$dbdir" ] && [ -d "$dbdir" ]; then
-  log "cleaning up"
+  log "cleaning up temp dir $dbdir"
   "$shred_bin" "$dbdir"/*
   rm -rf "$dbdir"
  fi
