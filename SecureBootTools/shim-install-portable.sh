@@ -10,7 +10,7 @@ extra_dir_grub="/usr/share/grub2"
 #arch suffix
 efi_arch="x64"
 #override grub efi arch suffix
-grub_override="y"
+grub_override_arch="y"
 #script_dir=`dirname "$0"`
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
@@ -82,11 +82,15 @@ check_errors
 sed -i "s|__vendor__|BOOT|g" "${efidir}/grub.cfg"
 check_errors
 
-if [ "z$grub_override" = "zy" ]; then
+if [ "z$grub_override_arch" = "zy" ]; then
  cp "${source_dir_grub}/grub.efi" "${efidir}"
+ check_errors
+ cp "${source_dir_grub}/grub.der" "${efidir}"
  check_errors
 else
  cp "${source_dir_grub}/grub.efi" "${efidir}/grub${efi_arch}.efi"
+ check_errors
+ cp "${source_dir_grub}/grub.der" "${efidir}/grub${efi_arch}.der"
  check_errors
 fi
 
