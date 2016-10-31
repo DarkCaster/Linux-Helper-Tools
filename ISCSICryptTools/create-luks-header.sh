@@ -67,3 +67,18 @@ log "changing owner of header file"
 chown $user:$group "$script_dir/config/luks_header_$serial"
 check_errors
 
+cfgfile="$script_dir/config/luks_config_$serial.sh.in"
+
+if [ ! -f "$cfgfile" ]; then
+ log "creating example mount config"
+ echo "#!/bin/bash" >> "$cfgfile"
+ echo "device=\"$device\"" >> "$cfgfile"
+ echo "header=\"luks_header_$serial\"" >> "$cfgfile"
+ echo "keyfile=\"optional-keyfile-relative-to-config-dir\"" >> "$cfgfile"
+ echo "mountdir=\"/mnt/luks_$serial\"" >> "$cfgfile"
+ echo "mountcmd=\"mount -t ext4 -o defaults,rw,barrier=0,errors=remount-ro,discard,relatime,data=ordered\"" >> "$cfgfile"
+ echo "" >> "$cfgfile"
+ chown $user:$group "$cfgfile"
+ check_errors
+fi
+
