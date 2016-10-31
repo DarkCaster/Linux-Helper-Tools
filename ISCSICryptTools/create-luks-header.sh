@@ -26,6 +26,13 @@ check_errors () {
  fi
 }
 
+
+get_serial () {
+ local dpath="$1"
+ local serial=`2>/dev/null udevadm info --query=property --name="$dpath" | grep -e "SCSI_IDENT_SERIAL" | sed "s|^SCSI_IDENT_SERIAL=||"`
+ echo "$serial"
+}
+
 device="$@"
 test -z "$device" && show_usage
 
@@ -44,16 +51,19 @@ check_errors
 test -e "$device"
 check_errors "given device path is not exist"
 
-date=`date "+%Y-%m-%d_%H-%M"`
+serial=`get_serial "$device"`
+test -z "$serial" && log "cannot read drive serial, exiting" && exit 100
 
-log "creating header storage at $script_dir/config/luks-header_$date"
-dd if=/dev/urandom of="$script_dir/config/luks-header_$date" bs=1M count=2
-check_errors
+if [ ! -f "$script_dir/config/luks_header_$serial" ]; then
+ log "creating luks header-storage file at $script_dir/config/luks_header_$serial"
+ dd if=/dev/zero of="$script_dir/config/luks_header_$serial" bs=1M count=2
+ check_errors
+fi
 
-cryptsetup --cipher=aes-xts-plain64 --key-size=256 --hash=sha512 luksFormat "$device" --header "$script_dir/config/luks-header_$date" --align-payload=0
+cryptsetup --cipher=aes-xts-plain64 --key-size=256 --hash=sha512 luksFormat "$device" --header "$script_dir/config/luks_header_$serial" --align-payload=0
 check_errors
 
 log "changing owner of header file"
-chown $user:$group "$script_dir/config/luks-header_$date"
+chown $user:$group "$script_dir/config/luks_header_$serial"
 check_errors
 
