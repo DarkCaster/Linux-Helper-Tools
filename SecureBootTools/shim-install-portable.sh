@@ -17,7 +17,7 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 #try to use locally extracted shim and grub rpm, from opensuse
 test -d "${script_dir}/local/shim" && echo "using local shim binaries" && source_dir_shim="${script_dir}/local/shim${source_dir_shim}"
-test -d "${script_dir}/local/grub" && echo "using local grub binaries" && source_dir_grub="${script_dir}/local/grub${source_dir_grub}"
+test -d "${script_dir}/local/grub" && echo "using local grub binaries" && source_dir_grub="${script_dir}/local/grub${source_dir_grub}" && extra_dir_grub="${script_dir}/local/grub${extra_dir_grub}"
 
 show_usage () {
  echo "usage: shim-install-portable.sh <destination dir (mounted efi partition directory)>"
