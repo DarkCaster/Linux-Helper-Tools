@@ -4,7 +4,7 @@
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 show_usage () {
- echo "usage: create-luks-header.sh <device path>"
+ echo "usage: create-luks-header.sh <device path> [align-payload in sectors]"
  exit 100
 }
 
@@ -33,11 +33,14 @@ get_serial () {
  echo "$serial"
 }
 
-device="$@"
+device="$1"
 test -z "$device" && show_usage
 
 test -f "$script_dir/user.cfg.sh.in"
 check_errors "config file with user credentials is missing"
+
+align_payload="$2"
+test -z "$align_payload" && log "align_payload=0" && align_payload="0"
 
 . "$script_dir/user.cfg.sh.in"
 check_errors "error while sourcing config file with user credentials"
@@ -60,7 +63,7 @@ if [ ! -f "$script_dir/config/luks_header_$serial" ]; then
  check_errors
 fi
 
-cryptsetup --cipher=aes-xts-plain64 --key-size=256 --hash=sha512 luksFormat "$device" --header "$script_dir/config/luks_header_$serial" --align-payload=8192
+cryptsetup --cipher=aes-xts-plain64 --key-size=256 --hash=sha512 luksFormat "$device" --header "$script_dir/config/luks_header_$serial" --align-payload=$align_payload
 check_errors
 
 log "changing owner of header file"
