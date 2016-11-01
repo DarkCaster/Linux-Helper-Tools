@@ -76,6 +76,7 @@ if [ ! -f "$cfgfile" ]; then
  echo "iqn=\"<iqn for use with iscsi scripts>\"" >> "$cfgfile"
  echo "device=\"$device\"" >> "$cfgfile"
  echo "header=\"luks_header_$serial\"" >> "$cfgfile"
+ echo "cryptname=\"<dm device name that will be created in /dev/mapper directory>\"" >> "$cfgfile"
  echo "keyfile=\"<optional keyfile relative to config dir>\"" >> "$cfgfile"
  echo "mountdir=\"/mnt/luks_$serial\"" >> "$cfgfile"
  echo "mountcmd=\"mount -t ext4 -o defaults,rw,barrier=0,errors=remount-ro,discard,relatime,data=ordered\"" >> "$cfgfile"
