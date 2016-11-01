@@ -60,7 +60,7 @@ if [ ! -f "$script_dir/config/luks_header_$serial" ]; then
  check_errors
 fi
 
-cryptsetup --cipher=aes-xts-plain64 --key-size=256 --hash=sha512 luksFormat "$device" --header "$script_dir/config/luks_header_$serial" --align-payload=0
+cryptsetup --cipher=aes-xts-plain64 --key-size=256 --hash=sha512 luksFormat "$device" --header "$script_dir/config/luks_header_$serial" --align-payload=8192
 check_errors
 
 log "changing owner of header file"
