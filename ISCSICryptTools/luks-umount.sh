@@ -43,8 +43,12 @@ check_errors "config file is missing"
 . "$config"
 check_errors "error while sourcing config file"
 
-test -z "$mountdir" && log "mountdir variable not set" && exit 100
-test -z "$cryptname" && log "cryptname variable not set" && exit 100
+test ! -z "$mountdir"
+check_errors "mountdir variable not set"
+
+test ! -z "$cryptname"
+check_errors "cryptname variable not set"
+
 test -z "$timeout" && log "timeout variable not set, setting it to 10" && timeout="10"
 
 test -d "$mountdir"

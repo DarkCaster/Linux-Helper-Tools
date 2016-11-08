@@ -43,14 +43,25 @@ check_errors "config file is missing"
 . "$config"
 check_errors "error while sourcing config file"
 
-test -z "$device" && log "device variable not set" && exit 100
+test ! -z "$device"
+check_errors "device variable not set"
+
 header="$header"
-test -z "$header" && log "header variable not set" && exit 100
+test ! -z "$header"
+check_errors "header variable not set"
+
 keyfile="$keyfile"
 test ! -z "$keyfile" && test ! -f "$keyfile" && keyfile="$script_dir/config/$keyfile" && test ! -f "$keyfile" && keyfile=""
-test -z "$mountdir" && log "mountdir variable not set" && exit 100
-test -z "$mountcmd" && log "mountcmd variable not set" && exit 100
-test -z "$cryptname" && log "cryptname variable not set" && exit 100
+
+test ! -z "$mountdir"
+check_errors "mountdir variable not set"
+
+test ! -z "$mountcmd"
+check_errors "mountcmd variable not set"
+
+test ! -z "$cryptname"
+check_errors "cryptname variable not set"
+
 test -z "$timeout" && log "timeout variable not set, setting it to 10" && timeout="10"
 
 test ! -f "$header" && header="$script_dir/config/$header"
