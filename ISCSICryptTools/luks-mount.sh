@@ -73,7 +73,7 @@ check_errors "$mountdir directory is not exist"
 
 log "checking mountpoint"
 mountpoint -q "$mountdir"
-if [ "$?" = "0" ] then
+if [ "$?" = "0" ]; then
  false
  check_errors "$mountdir already mounted"
 fi
@@ -101,5 +101,5 @@ fi
 
 log "mounting $device"
 $mountcmd "/dev/mapper/$cryptname" "$mountdir"
-check_errors
+check_errors "failed to mount $device to $mountdir"
 

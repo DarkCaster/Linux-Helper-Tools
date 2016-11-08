@@ -6,6 +6,8 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 config="$1"
 usezenity="$2"
 
+export PATH="/usr/sbin:/sbin:$PATH"
+
 "$script_dir/iscsi-connect.sh" "$config" "$usezenity"
 test "$?" != "0" && exit 1
 

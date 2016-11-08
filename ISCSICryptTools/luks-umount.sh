@@ -63,7 +63,6 @@ umount "$mountdir"
 check_errors "umount $mountdir failed"
 
 log "closing luks-crypt device"
-cryptsetup luksClose "$cryptname"
+cryptsetup luksClose $cryptname
 check_errors "failed to close luks devie: $cryptname"
-
 
