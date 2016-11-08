@@ -4,7 +4,7 @@
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 show_usage () {
- echo "usage: luks-mount.sh <config file, optionally relative to config dir>"
+ echo "usage: luks-mount.sh <config file, optionally relative to config dir> [yes\no - use zenity for error reporting, default no]"
  exit 100
 }
 
@@ -13,21 +13,28 @@ log () {
  echo "$msg"
 }
 
+usezenity="no"
+
 check_errors () {
  local status="$?"
  local msg="$@"
+ local logger="log "
+ test "$usezenity" = "yes" && logger="zenity --error --text="
  if [ "$status" != "0" ]; then
   if [ "z$msg" != "z" ]; then
-   log "$msg"
+   $logger"$msg"
   else
-   log "ERROR: last operation finished with error code $status"
+   $logger"ERROR: last operation finished with error code $status"
   fi
   exit $status
  fi
 }
 
-config="$@"
+config="$1"
 test -z "$config" && show_usage
+
+usezenity="$2"
+test -z "$usezenity" && usezenity="no"
 
 test ! -f "$config" && config="$script_dir/config/$config"
 test -f "$config"
@@ -54,7 +61,11 @@ test -d "$mountdir"
 check_errors "$mountdir directory is not exist"
 
 log "checking mountpoint"
-mountpoint -q "$mountdir" && log "$mountdir already mounted" && exit 100
+mountpoint -q "$mountdir"
+if [ "$?" = "0" ] then
+ false
+ check_errors "$mountdir already mounted"
+fi
 
 log "awaiting device $device"
 check="false"
@@ -62,7 +73,11 @@ while test "$timeout" -gt 0 ; do
  test -e "$device" && check="true" && timeout="0"
  test "$check" = "false" && sleep 1 && timeout=`expr $timeout - 1`
 done
-test "$check" = "false" && log "device $device does not appear in selected timeout" && exit 100
+
+if [ "$check" = "false" ]; then
+ false
+ check_errors "device $device does not appear in selected timeout"
+fi
 
 if [ -z "$keyfile" ]; then
  log "TODO: mount with password, exiting"
