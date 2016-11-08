@@ -17,12 +17,12 @@ test -f "$output" && echo "checksums file list $output already exist" && exit 1
 olddir="$PWD"
 cd "$dest"
 
-while read line
+find . -mount -type f -printf '%P\n' | sort | while read line
 do
   echo "processing file: $line"
   md5sum -b "$line" >> "$output"
   test "$?" != "0" && echo "error while processing $line" && exit 1
-done < <(find . -mount -type f)
+done
 
 cd "$olddir"
 
