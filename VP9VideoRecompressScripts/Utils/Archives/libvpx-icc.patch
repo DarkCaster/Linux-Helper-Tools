@@ -1,0 +1,26 @@
+diff -uprN libvpx-git-2016-06-17.old/build/make/configure.sh libvpx-git-2016-06-17/build/make/configure.sh
+--- libvpx-git-2016-06-17.old/build/make/configure.sh	2016-06-17 18:01:53.000000000 +0300
++++ libvpx-git-2016-06-17/build/make/configure.sh	2016-06-17 18:15:06.765840485 +0300
+@@ -1150,7 +1150,7 @@ EOF
+           add_cflags -use-msasm  # remove -use-msasm too?
+           # add -no-intel-extensions to suppress warning #10237
+           # refer to http://software.intel.com/en-us/forums/topic/280199
+-          add_ldflags -i-static -no-intel-extensions
++          add_ldflags -static-intel -no-intel-extensions
+           enabled x86_64 && add_cflags -ipo -static -O3 -no-prec-div
+           enabled x86_64 && AR=xiar
+           case ${tune_cpu} in
+diff -uprN libvpx-git-2016-06-17.old/build/make/Makefile libvpx-git-2016-06-17/build/make/Makefile
+--- libvpx-git-2016-06-17.old/build/make/Makefile	2016-06-17 18:01:53.000000000 +0300
++++ libvpx-git-2016-06-17/build/make/Makefile	2016-06-17 18:17:04.177614106 +0300
+@@ -136,8 +136,8 @@ $(BUILD_PFX)%_sse4.c.d: CFLAGS += -msse4
+ $(BUILD_PFX)%_sse4.c.o: CFLAGS += -msse4.1
+ $(BUILD_PFX)%_avx.c.d: CFLAGS += -mavx
+ $(BUILD_PFX)%_avx.c.o: CFLAGS += -mavx
+-$(BUILD_PFX)%_avx2.c.d: CFLAGS += -mavx2
+-$(BUILD_PFX)%_avx2.c.o: CFLAGS += -mavx2
++$(BUILD_PFX)%_avx2.c.d: CFLAGS += -march=core-avx2
++$(BUILD_PFX)%_avx2.c.o: CFLAGS += -march=core-avx2
+ 
+ $(BUILD_PFX)%.c.d: %.c
+ 	$(if $(quiet),@echo "    [DEP] $@")

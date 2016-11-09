@@ -1,0 +1,53 @@
+#!/bin/bash
+
+function check_error {
+if [ "$?" != "0" ]; then
+	echo "Build ended with error !!!"
+	cd "$curdir"
+	rm -rf "$tmpdir"
+	exit 1
+fi
+}
+
+function install_from {
+	local from="$1"
+	cp -R "$from/"* "$curdir/Deps"
+	check_error
+}
+
+function prepare_pkg {
+	local pkg="$1"
+	local compr="$2"
+	cd "$tmpdir"
+	if [ "z$compr" = "zgz" ]; then
+		gzip -c -d "$curdir/$srcdirname"/$pkg*.tar.gz | tar -x --no-same-owner --no-same-permissions > /dev/null 2>&1
+		check_error
+	else
+		xz -c -d "$curdir/$srcdirname"/$pkg*.tar.xz | tar -x --no-same-owner --no-same-permissions > /dev/null 2>&1
+		check_error
+	fi
+	cd $pkg-*
+	check_error
+}
+
+function clean_pkg {
+	local pkg="$1"
+	cd "$tmpdir"
+	check_error
+	rm -rf $pkg*
+	check_error
+}
+
+function clean_deps {
+	rm -rf "$curdir"/Deps
+	check_error
+	mkdir "$curdir"/Deps
+	check_error
+}
+
+function patch_pkg {
+	local pfile="$1"
+	patch -p1 -i "$curdir/$srcdirname"/"$pfile"
+	check_error
+}
+
