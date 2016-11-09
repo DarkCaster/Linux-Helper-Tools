@@ -56,13 +56,18 @@ check_errors "$mountdir directory is not exist"
 
 log "checking mountpoint"
 mountpoint -q "$mountdir"
-check_errors "$mountdir not mounted"
 
-log "unmounting $mountdir"
-umount "$mountdir"
-check_errors "umount $mountdir failed"
+# umount, if mountpoint exist
+if [ "$?" = "0" ]; then
+ log "unmounting $mountdir"
+ umount "$mountdir"
+ check_errors "umount $mountdir failed"
+fi
 
-log "closing luks-crypt device"
-cryptsetup luksClose $cryptname
-check_errors "failed to close luks devie: $cryptname"
+# check for cryptdevice
+if [ -e "/dev/mapper/$cryptname" ]; then
+ log "closing luks-crypt device"
+ cryptsetup luksClose $cryptname
+ check_errors "failed to close luks devie: $cryptname"
+fi
 
