@@ -1,5 +1,7 @@
 #!/bin/bash
 
+checkout="f5141ea45fee014b529a264c1fa3bdedd42d038c"
+
 mkd="mktemp -d"
 tmpdir="$($mkd)"
 
@@ -9,6 +11,9 @@ curdir="$( cd "$( dirname "$0" )" && pwd )"
 srcdir="$curdir/$srcdirname"
 
 . "$srcdir"/service-funcs.sh.in
+
+"$curdir/download.sh" "$checkout"
+check_error
 
 clean_deps
 check_error
