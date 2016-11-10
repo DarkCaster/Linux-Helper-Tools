@@ -246,7 +246,20 @@ test ! -z "$denoise_opts" && usefilters="yes"
 #deinterlace filter setup
 test "z$deinterlace" != "z"  && deinterlace_opts="$deinterlace"
 test "z$deinterlace" = "z0"  && deinterlace_opts=""
-test "z$deinterlace" = "z1"  && deinterlace_opts="bwdif=0:-1:0"
+test "z$deinterlace" = "zbfr"  && deinterlace_opts="bwdif=0:-1:0"
+test "z$deinterlace" = "zbfi"  && deinterlace_opts="bwdif=1:-1:0"
+test "z$deinterlace" = "zk1"  && deinterlace_opts="kerndeint=0"
+test "z$deinterlace" = "zk2"  && deinterlace_opts="kerndeint=10"
+test "z$deinterlace" = "zk3"  && deinterlace_opts="kerndeint=128"
+test "z$deinterlace" = "zk1s"  && deinterlace_opts="kerndeint=thresh=0:sharp=1"
+test "z$deinterlace" = "zk2s"  && deinterlace_opts="kerndeint=thresh=10:sharp=1"
+test "z$deinterlace" = "zk3s"  && deinterlace_opts="kerndeint=thresh=128:sharp=1"
+# binary file needed: https://github.com/dubhater/vapoursynth-nnedi3/blob/master/src/nnedi3_weights.bin
+test "z$deinterlace" = "zn"  && deinterlace_opts="nnedi=weights=\"$temp_dir\nnedi3_weights.bin\":nns=n256:qual=slow:pscrn=new"
+
+test "z$deinterlace" = "zw"  && deinterlace_opts="w3fdif"
+test "z$deinterlace" = "zyfr"  && deinterlace_opts="yadif=0:-1:0"
+test "z$deinterlace" = "zyfi"  && deinterlace_opts="yadif=1:-1:0"
 
 test "z$deinterlace" = "z"   && deinterlace_opts=""
 test "z$vprofile" = "z0"     && deinterlace_opts=""
