@@ -11,6 +11,9 @@ denoise="$8"
 deinterlace="$9"
 
 shift 1
+crop="$9"
+
+shift 1
 bitdepth="$9"
 
 shift 1
@@ -29,6 +32,7 @@ video_sp_opts=""
 video_op_opts=""
 denoise_opts=""
 deinterlace_opts=""
+crop_opts=""
 
 use_vpxenc="true"
 use_tp="false"
@@ -254,8 +258,6 @@ test "z$deinterlace" = "zk3"  && deinterlace_opts="kerndeint=128"
 test "z$deinterlace" = "zk1s"  && deinterlace_opts="kerndeint=thresh=0:sharp=1"
 test "z$deinterlace" = "zk2s"  && deinterlace_opts="kerndeint=thresh=10:sharp=1"
 test "z$deinterlace" = "zk3s"  && deinterlace_opts="kerndeint=thresh=128:sharp=1"
-# binary file needed: https://github.com/dubhater/vapoursynth-nnedi3/blob/master/src/nnedi3_weights.bin
-test "z$deinterlace" = "zn"  && deinterlace_opts="nnedi=weights=\"$temp_dir\nnedi3_weights.bin\":nns=n256:qual=slow:pscrn=new"
 
 test "z$deinterlace" = "zw"  && deinterlace_opts="w3fdif"
 test "z$deinterlace" = "zyfr"  && deinterlace_opts="yadif=0:-1:0"
@@ -266,11 +268,22 @@ test "z$vprofile" = "z0"     && deinterlace_opts=""
 
 test ! -z "$deinterlace_opts" && usefilters="yes"
 
+#crop filter setup
+test "z$crop" != "z"      && crop_opts="$crop"
+test "z$crop" = "z0"      && crop_opts=""
+test "z$crop" = "zfhd4x3" && crop_opts="crop=1440:1080:240:0"
+
+test "z$crop" = "z"       && crop_opts=""
+test "z$vprofile" = "z0"  && crop_opts=""
+
+test ! -z "$crop_opts" && usefilters="yes"
+
 if [ "$usefilters" = "yes" ]; then
  filters="-vf "
  cnt=0
- for i in "$deinterlace_opts" "$denoise_opts"; do let cnt=cnt+1; done
- for i in "$deinterlace_opts" "$denoise_opts";
+ fstr="$crop_opts $deinterlace_opts $denoise_opts"
+ for i in $fstr; do let cnt=cnt+1; done
+ for i in $fstr;
  do
   filters="$filters $i"
   let cnt=cnt-1
