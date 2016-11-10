@@ -260,6 +260,9 @@ echo "ffbitopts=$ffbitopts" >> "$temp_dir/ffmpeg.log"
 echo "ffpixopts=$ffpixopts" >> "$temp_dir/ffmpeg.log"
 echo "vpxbitopts=$vpxbitopts" >> "$temp_dir/ffmpeg.log"
 
+echo -n "source file md5=" >> "$temp_dir/ffmpeg.log"
+cat "$video_src" | md5sum -b | cut -f1 -d' ' >> "$temp_dir/ffmpeg.log"
+
 if [ "z$use_vpxenc" != "ztrue" ]; then
  if [ "z$use_tp" = "ztrue" ]; then
   #process without vpxenc, two pass encode
