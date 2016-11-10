@@ -8,6 +8,9 @@ aprofile="$5"
 temp_dir="$6"
 vpxenc="$7"
 denoise="$8"
+deinterlace="$9"
+
+shift 1
 bitdepth="$9"
 
 shift 1
@@ -25,6 +28,7 @@ video_fp_opts=""
 video_sp_opts=""
 video_op_opts=""
 denoise_opts=""
+deinterlace_opts=""
 
 use_vpxenc="true"
 use_tp="false"
@@ -194,45 +198,72 @@ if [ "z$vprofile" = "z5" ] || [ "z$vprofile" = "z6" ]; then
  video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
 fi
 
+usefilters="no"
+filters=""
+
 #denoise filter setup
-test "z$denoise" != "z"  && denoise_opts="-vf $denoise"
+test "z$denoise" != "z"  && denoise_opts="$denoise"
 
 test "z$denoise" = "z0"  && denoise_opts=""
-test "z$denoise" = "z1"  && denoise_opts="-vf hqdn3d=0.5"
-test "z$denoise" = "z2"  && denoise_opts="-vf hqdn3d=1"
-test "z$denoise" = "z3"  && denoise_opts="-vf hqdn3d=1.5"
-test "z$denoise" = "z4"  && denoise_opts="-vf hqdn3d=2"
-test "z$denoise" = "z5"  && denoise_opts="-vf hqdn3d=2.5"
-test "z$denoise" = "z6"  && denoise_opts="-vf hqdn3d=3"
-test "z$denoise" = "z7"  && denoise_opts="-vf hqdn3d=3.5"
-test "z$denoise" = "z8"  && denoise_opts="-vf hqdn3d=4"
-test "z$denoise" = "z9"  && denoise_opts="-vf hqdn3d=4.5"
-test "z$denoise" = "z10" && denoise_opts="-vf hqdn3d=5"
-test "z$denoise" = "z11" && denoise_opts="-vf hqdn3d=5.5"
-test "z$denoise" = "z12" && denoise_opts="-vf hqdn3d=6"
-test "z$denoise" = "z13" && denoise_opts="-vf hqdn3d=6.5"
-test "z$denoise" = "z14" && denoise_opts="-vf hqdn3d=7"
-test "z$denoise" = "z15" && denoise_opts="-vf hqdn3d=7.5"
-test "z$denoise" = "z16" && denoise_opts="-vf hqdn3d=8"
-test "z$denoise" = "z17" && denoise_opts="-vf hqdn3d=8.5"
-test "z$denoise" = "z18" && denoise_opts="-vf hqdn3d=9"
-test "z$denoise" = "z19" && denoise_opts="-vf hqdn3d=9.5"
-test "z$denoise" = "z20" && denoise_opts="-vf hqdn3d=10"
+test "z$denoise" = "z1"  && denoise_opts="hqdn3d=0.5"
+test "z$denoise" = "z2"  && denoise_opts="hqdn3d=1"
+test "z$denoise" = "z3"  && denoise_opts="hqdn3d=1.5"
+test "z$denoise" = "z4"  && denoise_opts="hqdn3d=2"
+test "z$denoise" = "z5"  && denoise_opts="hqdn3d=2.5"
+test "z$denoise" = "z6"  && denoise_opts="hqdn3d=3"
+test "z$denoise" = "z7"  && denoise_opts="hqdn3d=3.5"
+test "z$denoise" = "z8"  && denoise_opts="hqdn3d=4"
+test "z$denoise" = "z9"  && denoise_opts="hqdn3d=4.5"
+test "z$denoise" = "z10" && denoise_opts="hqdn3d=5"
+test "z$denoise" = "z11" && denoise_opts="hqdn3d=5.5"
+test "z$denoise" = "z12" && denoise_opts="hqdn3d=6"
+test "z$denoise" = "z13" && denoise_opts="hqdn3d=6.5"
+test "z$denoise" = "z14" && denoise_opts="hqdn3d=7"
+test "z$denoise" = "z15" && denoise_opts="hqdn3d=7.5"
+test "z$denoise" = "z16" && denoise_opts="hqdn3d=8"
+test "z$denoise" = "z17" && denoise_opts="hqdn3d=8.5"
+test "z$denoise" = "z18" && denoise_opts="hqdn3d=9"
+test "z$denoise" = "z19" && denoise_opts="hqdn3d=9.5"
+test "z$denoise" = "z20" && denoise_opts="hqdn3d=10"
 
 #special denose preset levels
 
 #all parameters +0.5 levels (params between $denoise=1 and $denoise=2
-test "z$denoise" = "z1+0.5"  && denoise_opts="-vf hqdn3d=0.75"
+test "z$denoise" = "z1+0.5"  && denoise_opts="hqdn3d=0.75"
 
 #all parameters +0.5 levels (params between $denoise=2 and $denoise=3
-test "z$denoise" = "z2+0.5"  && denoise_opts="-vf hqdn3d=1.25"
+test "z$denoise" = "z2+0.5"  && denoise_opts="hqdn3d=1.25"
 
 #luma strength +2 levels (equalent to $denoise=4), chroma strength +2 levels (equalent to value at $denoise=4), luma tmp +0.05 levels (sligtly more than value at $denoise=2)
 #good for higher contrast noise on dark areas, but do not add any strong temporal artefacts (luma and chroma tails) that can be visible on recompressed material
-test "z$denoise" = "z2_ls+2_cs+2_lt+0.05"  && denoise_opts="-vf hqdn3d=2:1.5:1.6:1.125"
+test "z$denoise" = "z2_ls+2_cs+2_lt+0.05"  && denoise_opts="hqdn3d=2:1.5:1.6:1.125"
 
 test "z$denoise" = "z"   && denoise_opts=""
 test "z$vprofile" = "z0" && denoise_opts=""
+
+test ! -z "$denoise_opts" && usefilters="yes"
+
+#deinterlace filter setup
+test "z$deinterlace" != "z"  && deinterlace_opts="$deinterlace"
+test "z$deinterlace" = "z0"  && deinterlace_opts=""
+test "z$deinterlace" = "z1"  && deinterlace_opts="bwdif=0:-1:0"
+
+test "z$deinterlace" = "z"   && deinterlace_opts=""
+test "z$vprofile" = "z0"     && deinterlace_opts=""
+
+test ! -z "$deinterlace_opts" && usefilters="yes"
+
+if [ "$usefilters" = "yes" ]; then
+ filters="-vf "
+ cnt=0
+ for i in "$deinterlace_opts" "$denoise_opts"; do let cnt=cnt+1; done
+ for i in "$deinterlace_opts" "$denoise_opts";
+ do
+  filters="$filters $i"
+  let cnt=cnt-1
+  test $cnt -gt 0 && filters="$filters,"
+ done
+fi
 
 check_errors () {
  local status="$?"
@@ -254,7 +285,7 @@ echo "video_base_opts=$video_base_opts" >> "$temp_dir/ffmpeg.log"
 echo "video_fp_opts=$video_fp_opts" >> "$temp_dir/ffmpeg.log"
 echo "video_sp_opts=$video_sp_opts" >> "$temp_dir/ffmpeg.log"
 echo "video_op_opts=$video_op_opts" >> "$temp_dir/ffmpeg.log"
-echo "denoise_opts=$denoise_opts" >> "$temp_dir/ffmpeg.log"
+echo "filters=$filters" >> "$temp_dir/ffmpeg.log"
 echo "audio_opts=$audio_opts" >> "$temp_dir/ffmpeg.log"
 echo "ffbitopts=$ffbitopts" >> "$temp_dir/ffmpeg.log"
 echo "ffpixopts=$ffpixopts" >> "$temp_dir/ffmpeg.log"
@@ -267,15 +298,15 @@ if [ "z$use_vpxenc" != "ztrue" ]; then
  if [ "z$use_tp" = "ztrue" ]; then
   #process without vpxenc, two pass encode
   echo "****ffmpeg 1-st pass output****" >> "$temp_dir/ffmpeg.log"
-  </dev/null ffmpeg -i "$video_src" -map 0:v -map_chapters -1 $denoise_opts $video_base_opts $video_fp_opts -pass 1 -passlogfile passlog -f $format "$temp_dir/firstpass.tmp" >> "$temp_dir/ffmpeg.log" 2>&1
+  </dev/null ffmpeg -i "$video_src" -map 0:v -map_chapters -1 $filters $video_base_opts $video_fp_opts -pass 1 -passlogfile passlog -f $format "$temp_dir/firstpass.tmp" >> "$temp_dir/ffmpeg.log" 2>&1
   check_errors
   echo "****ffmpeg 2-nd pass output****" >> "$temp_dir/ffmpeg.log"
-  </dev/null ffmpeg -i "$video_src" -map 0 $denoise_opts -c copy $video_base_opts $video_sp_opts -pass 2 -passlogfile passlog $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
+  </dev/null ffmpeg -i "$video_src" -map 0 $filters -c copy $video_base_opts $video_sp_opts -pass 2 -passlogfile passlog $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
   check_errors
  else
   #process without vpxenc, simple single pass encode
   echo "*********ffmpeg output*********" >> "$temp_dir/ffmpeg.log"
-  </dev/null ffmpeg -i "$video_src" -map 0 $denoise_opts -c copy $video_base_opts $video_op_opts $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
+  </dev/null ffmpeg -i "$video_src" -map 0 $filters -c copy $video_base_opts $video_op_opts $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
   check_errors
  fi
 else
@@ -284,14 +315,14 @@ else
   #process with vpxenc, two pass encode, first pass
   echo "****ffmpeg 1-st pass output****" >> "$temp_dir/ffmpeg.log"
   echo "****vpxenc 1-st pass output****" >> "$temp_dir/vpxenc.log"
-  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $denoise_opts -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=1 --fpf=passlog.log $video_base_opts $video_fp_opts -o "$temp_dir/video-firstpass.webm" -
+  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=1 --fpf=passlog.log $video_base_opts $video_fp_opts -o "$temp_dir/video-firstpass.webm" -
   codes=`echo ${PIPESTATUS[@]}`
   test "$codes" != "0 0" && echo "ffmpeg or vpxenc failed at first pass with exit codes=$codes. see it's stuff at $temp_dir" && exit 1
 
   #second pass
   echo "****ffmpeg 2-nd pass output****" >> "$temp_dir/ffmpeg.log"
   echo "****vpxenc 2-nd pass output****" >> "$temp_dir/vpxenc.log"
-  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $denoise_opts -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=2 --fpf=passlog.log $video_base_opts $video_sp_opts -o "$temp_dir/video.webm" -
+  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=2 --fpf=passlog.log $video_base_opts $video_sp_opts -o "$temp_dir/video.webm" -
   codes=`echo ${PIPESTATUS[@]}`
   test "$codes" != "0 0" && echo "ffmpeg or vpxenc failed at second pass with exit codes=$codes. see it's stuff at $temp_dir" && exit 1
 
@@ -299,7 +330,7 @@ else
   #process with vpxenc, one pass encode
   echo "*********ffmpeg output*********" >> "$temp_dir/ffmpeg.log"
   echo "*********vpxenc output*********" >> "$temp_dir/vpxenc.log"
-  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $denoise_opts -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=1 $video_base_opts $video_op_opts -o "$temp_dir/video.webm" -
+  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=1 $video_base_opts $video_op_opts -o "$temp_dir/video.webm" -
   codes=`echo ${PIPESTATUS[@]}`
   test "$codes" != "0 0" && echo "ffmpeg or vpxenc failed with exit codes=$codes. see it's stuff at $temp_dir" && exit 1
  fi
