@@ -17,6 +17,9 @@ shift 1
 denoise="$9"
 
 shift 1
+deinterlace="$9"
+
+shift 1
 bitdepth="$9"
 
 shift 1
@@ -36,7 +39,7 @@ do
  filename=`basename "$line"`
  fbname="${filename%.*}"
  echo "job #$jobid processing: $filename"
- $nice -n 19 $compressor "$line" "$dest/$fbname.$ext" $format $vprofile $aprofile "$temp_dir" "$vpxenc" "$denoise" "$bitdepth" "$video_only"
+ $nice -n 19 $compressor "$line" "$dest/$fbname.$ext" $format $vprofile $aprofile "$temp_dir" "$vpxenc" "$denoise" "$deinterlace" "$bitdepth" "$video_only"
  check_errors
 done < "$filelist"
 
