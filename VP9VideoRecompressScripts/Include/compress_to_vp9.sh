@@ -20,6 +20,9 @@ shift 1
 video_only="$9"
 
 shift 1
+use_tempfile="$9"
+
+shift 1
 nnedi_weights="$9"
 
 thisuser=`id -u`
@@ -329,6 +332,20 @@ echo "vpxbitopts=$vpxbitopts" >> "$temp_dir/ffmpeg.log"
 echo -n "source file md5=" >> "$temp_dir/ffmpeg.log"
 cat "$video_src" | md5sum -b | cut -f1 -d' ' >> "$temp_dir/ffmpeg.log"
 
+video_src_bak=""
+
+if [ "z$use_tempfile" = "zyes" ]; then
+ #create preprocessed video file
+ echo "****ffmpeg preprocess output****" >> "$temp_dir/ffmpeg.log"
+ </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v ljpeg -f mkv "$temp_dir/temp_source.mkv"
+ check_errors
+ #clean filters string, because we applying filters on preprocessing
+ filters=""
+ #redirect video source to preprocessed temporary file
+ video_src_bak="$video_src"
+ video_src="$temp_dir/temp_source.mkv"
+fi
+
 if [ "z$use_vpxenc" != "ztrue" ]; then
  if [ "z$use_tp" = "ztrue" ]; then
   #process without vpxenc, two pass encode
@@ -375,6 +392,8 @@ else
   </dev/null ffmpeg -i "$temp_dir/video.webm" -threads 1 -c copy -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
   check_errors
  else
+  #restore original video_src if using temporary preprocess file
+  test ! -z "$video_src_bak" && video_src="$video_src_bak"
   #mux compressed videostream from video.webm and mux and recompress all other streams from source
   echo "****ffmpeg mux pass output*****" >> "$temp_dir/ffmpeg.log"
   </dev/null ffmpeg -i "$video_src" -i "$temp_dir/video.webm" -threads 1 -map 1:v -map 0 -map -0:v -c copy $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1

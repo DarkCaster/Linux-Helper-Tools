@@ -20,8 +20,11 @@ jobs_count="$9"
 shift 1
 video_only="$9"
 
+shift 1
+use_tempfile="$9"
+
 show_usage () {
- echo "usage: <video_src dir> <video_dest dir> [temp_dir_base] [name_pattern] [vprofile] [aprofile] [video denoise profile number 0-20, or custom video filter] [deinterlace profile name, or custom video filter] [crop profile name, or custom video filter] [codec bitdepth or force pixfmt 8-10-12-yuv420p-<custom pixfmt string>] [jobs_count] [video_only yes-no]"
+ echo "usage: <video_src dir> <video_dest dir> [temp_dir_base] [name_pattern] [vprofile] [aprofile] [video denoise profile number 0-20, or custom video filter] [deinterlace profile name, or custom video filter] [crop profile name, or custom video filter] [codec bitdepth or force pixfmt 8-10-12-yuv420p-<custom pixfmt string>] [jobs_count] [video_only yes-no] [use tempfile for preprocessing yes-no]"
  exit 1
 }
 
@@ -31,7 +34,8 @@ test "z$video_dest" = "z" && show_usage
 test "z$vprofile" = "z" && vprofile="0"
 test "z$aprofile" = "z" && aprofile="0"
 
-test "z$video_only" = "z" && video_only="no"
+test "z$video_only" != "zyes" && video_only="no"
+test "z$use_tempfile" != "zyes" && use_tempfile="no"
 
 format="matroska"
 ext="mkv"
@@ -82,6 +86,7 @@ echo "crop=$crop"
 echo "bitdepth=$bitdepth"
 echo "jobs count=$cpu_num"
 echo "video_only=$video_only"
+echo "use_tempfile=$use_tempfile"
 echo "nnedi_weights=$nnedi_weights"
 echo "******************"
 
@@ -150,7 +155,7 @@ do
 done < "$temp_dir/filelist.txt"
 
 for i in $(seq "$cpu_num"); do
- "$script_dir/Include/recompress-chunk.sh" "$i" "$temp_dir/filelist_chunk_$i.txt" "$video_dest" "$script_dir/Include/compress_to_vp9.sh" $format $ext $vprofile $aprofile "$temp_dir_base" "$vpxenc" "$denoise" "$deinterlace" "$crop" "$bitdepth" "$video_only" "$$nnedi_weights" &
+ "$script_dir/Include/recompress-chunk.sh" "$i" "$temp_dir/filelist_chunk_$i.txt" "$video_dest" "$script_dir/Include/compress_to_vp9.sh" $format $ext $vprofile $aprofile "$temp_dir_base" "$vpxenc" "$denoise" "$deinterlace" "$crop" "$bitdepth" "$video_only" "$use_tempfile" "$nnedi_weights" &
  pids="$pids $!"
  sleep 1
 done
