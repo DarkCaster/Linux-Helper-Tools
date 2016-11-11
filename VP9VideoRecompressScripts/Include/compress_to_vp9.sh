@@ -279,6 +279,7 @@ test ! -z "$deinterlace_opts" && usefilters="yes"
 test "z$crop" != "z"      && crop_opts="$crop"
 test "z$crop" = "z0"      && crop_opts=""
 test "z$crop" = "zfhd4x3" && crop_opts="crop=1440:1080:240:0"
+test "z$crop" = "zfhd4x3ext" && crop_opts="crop=1520:1080:200:0"
 
 test "z$crop" = "z"       && crop_opts=""
 test "z$vprofile" = "z0"  && crop_opts=""
