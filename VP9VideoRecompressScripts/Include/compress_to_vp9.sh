@@ -285,7 +285,7 @@ if [ "$usefilters" = "yes" ]; then
  for i in $fstr; do let cnt=cnt+1; done
  for i in $fstr;
  do
-  filters="$filters $i"
+  filters="${filters}${i}"
   let cnt=cnt-1
   test $cnt -gt 0 && filters="$filters,"
  done
