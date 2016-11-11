@@ -19,6 +19,9 @@ bitdepth="$9"
 shift 1
 video_only="$9"
 
+shift 1
+nnedi_weights="$9"
+
 thisuser=`id -u`
 
 test "z$temp_dir" = "z" && temp_dir=`mktemp -d -t vp9-compressor-$thisuser-XXXXXX` || temp_dir=`mktemp -p "$temp_dir" -d -t vp9-compressor-$thisuser-XXXXXX`
@@ -302,6 +305,11 @@ check_errors () {
 olddir="$PWD"
 cd "$temp_dir"
 check_errors
+
+if [ ! -z "$nnedi_weights" ]; then
+ cp "$nnedi_weights" .
+ check_errors
+fi
 
 echo "selected compression parameters:" >> "$temp_dir/ffmpeg.log"
 echo "use_vpxenc=$use_vpxenc" >> "$temp_dir/ffmpeg.log"

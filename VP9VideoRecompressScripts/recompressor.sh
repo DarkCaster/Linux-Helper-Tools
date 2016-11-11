@@ -59,6 +59,10 @@ do_exit () {
 #script_dir=`dirname "$0"`
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
+#find nnedi_weights
+nnedi_weights=""
+test -f "$script_dir/Utils/Archives/nnedi3_weights.bin" && nnedi_weights="$script_dir/Utils/Archives/nnedi3_weights.bin"
+
 #find vpxenc
 vpxenc=`which "$script_dir/Utils/Deps/bin/vpxenc" 2>/dev/null`
 test "z$vpxenc" = "z" && vpxenc=`which vpxenc 2>/dev/null`
@@ -78,6 +82,7 @@ echo "crop=$crop"
 echo "bitdepth=$bitdepth"
 echo "jobs count=$cpu_num"
 echo "video_only=$video_only"
+echo "nnedi_weights=$nnedi_weights"
 echo "******************"
 
 if [ ! -d "$temp_dir_base" ]; then
@@ -145,7 +150,7 @@ do
 done < "$temp_dir/filelist.txt"
 
 for i in $(seq "$cpu_num"); do
- "$script_dir/Include/recompress-chunk.sh" "$i" "$temp_dir/filelist_chunk_$i.txt" "$video_dest" "$script_dir/Include/compress_to_vp9.sh" $format $ext $vprofile $aprofile "$temp_dir_base" "$vpxenc" "$denoise" "$deinterlace" "$crop" "$bitdepth" "$video_only" &
+ "$script_dir/Include/recompress-chunk.sh" "$i" "$temp_dir/filelist_chunk_$i.txt" "$video_dest" "$script_dir/Include/compress_to_vp9.sh" $format $ext $vprofile $aprofile "$temp_dir_base" "$vpxenc" "$denoise" "$deinterlace" "$crop" "$bitdepth" "$video_only" "$$nnedi_weights" &
  pids="$pids $!"
  sleep 1
 done

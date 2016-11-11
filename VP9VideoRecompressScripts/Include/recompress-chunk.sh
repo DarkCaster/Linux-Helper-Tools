@@ -28,6 +28,9 @@ bitdepth="$9"
 shift 1
 video_only="$9"
 
+shift 1
+nnedi_weights="$9"
+
 check_errors () {
  local status="$?"
  if [ "$status" != "0" ]; then
@@ -42,7 +45,7 @@ do
  filename=`basename "$line"`
  fbname="${filename%.*}"
  echo "job #$jobid processing: $filename"
- $nice -n 19 $compressor "$line" "$dest/$fbname.$ext" $format $vprofile $aprofile "$temp_dir" "$vpxenc" "$denoise" "$deinterlace" "$crop" "$bitdepth" "$video_only"
+ $nice -n 19 $compressor "$line" "$dest/$fbname.$ext" $format $vprofile $aprofile "$temp_dir" "$vpxenc" "$denoise" "$deinterlace" "$crop" "$bitdepth" "$video_only" "$nnedi_weights"
  check_errors
 done < "$filelist"
 
