@@ -337,7 +337,7 @@ video_src_bak=""
 if [ "z$use_tempfile" = "zyes" ]; then
  #create preprocessed video file
  echo "****ffmpeg preprocess output****" >> "$temp_dir/ffmpeg.log"
- </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v ljpeg -f mkv "$temp_dir/temp_source.mkv"
+ </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v ljpeg -f matroska "$temp_dir/temp_source.mkv"
  check_errors
  #clean filters string, because we applying filters on preprocessing
  filters=""
