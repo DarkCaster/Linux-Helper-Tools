@@ -36,6 +36,11 @@ check_error
 rm -rf "$tmpdir"
 check_error
 
+echo "===INSTALLING SCRIPT FOR LOCAL USAGE==="
+
+./install.sh "$curdir/Local"
+check_error
+
 echo "===SCRIPT FINISHED==="
 exit 0
 
