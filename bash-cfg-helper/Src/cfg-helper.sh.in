@@ -1,0 +1,195 @@
+#!/bin/bash
+#
+
+config_file="$1"
+
+config_error() {
+ >&2 echo "$@"
+ exit 100
+}
+
+#setup crudini helper binary
+config_utility_dir="__CFGHELPER"
+crudini="$config_utility_dir/crudini.pyc"
+test ! -f "$crudini" && config_error "crudini python binary not found!"
+
+#basic config file checks
+test "z$config_file" = "z" && config_error "config file not specified"
+
+test ! -f "$config_file" && config_error "config file $config_file is not exists"
+config_file=`realpath "$config_file"`
+test ! -f "$config_file" && config_error "config file $config_file is not exists (realpath transformed)"
+
+config_dir="$( cd "$( dirname "$config_file" )" && pwd )"
+
+seed="$RANDOM"
+test "z$seed" = "z" && seed=0
+
+reseed_random_params() {
+ seed="$RANDOM"
+ test "z$seed" = "z" && seed=0
+ true
+}
+
+#TODO: use variables instead of files
+echo "TODO. now i'm reworking this old script: replace caching with variables instead of files"
+exit 1
+
+bash_cfg_sections=""
+bash_cfg_section_random_params=""
+
+#fill config sections cache
+cache_sectionlist() {
+ echo -n "" > "$config_cache_dir/sections.list"
+ python "$crudini" --get "$config_file" 2>/dev/null | grep -xvi "DEFAULT" | grep -xvi "random" | while read section
+ do
+  if [ "`python "$crudini" --get "$config_file" "$section" "enabled" 2>/dev/null`" = "true" ]; then
+   echo "$section" >> "$config_cache_dir/sections.list"
+  fi
+ done
+}
+
+cache_sectionlist
+
+#call right before parent script exit
+config_teardown() {
+ #cleanup variables
+}
+
+#fill section params caches
+cache_paramlist() {
+ cat "$config_cache_dir/sections.list" | while read section
+ do
+  python "$crudini" --get "$config_file" "$section" 2>/dev/null | grep -xvi "enabled" > "$config_cache_dir/section-$section-params.list"
+ done
+}
+
+cache_paramlist
+
+#fill random params cache
+cache_random_paramlist() {
+ echo -n "" > "$config_cache_dir/section-random-params.list"
+ 2>/dev/null python "$crudini" --get "$config_file" "random" > "$config_cache_dir/section-random-params.list"
+}
+
+cache_random_paramlist
+
+check_section() {
+ local section="$1"
+ if [ "z$section" != "z" ]; then
+  if [ `cat "$config_cache_dir/sections.list" | grep -xi "$section" | wc -l` = "1" ]; then
+   echo "true"
+  else
+   echo "false"
+  fi
+ else
+  echo "false"
+ fi
+}
+
+check_param() {
+ local section="$1"
+ local vname="$2"
+ if [ "z$section" != "z" ] && [ "z$vname" != "z" ] && [ `check_section "$section"` = "true" ]; then
+  if [ `cat "$config_cache_dir/section-$section-params.list" | grep -xi "$vname" | wc -l` = "1" ]; then
+   echo "true"
+  else
+   echo "false"
+  fi
+ else
+  echo "false"
+ fi
+}
+
+read_random_param() {
+ local prefix="$1"
+ local count=`cat "$config_cache_dir/section-random-params.list" | grep -i "^$prefix" | wc -l`
+ test "z$count" = "z0" && return
+ local index=`expr $seed % $count + 1`
+ local pn=`cat "$config_cache_dir/section-random-params.list" | grep -i "^$prefix" | sed -n "${index}p"`
+ python "$crudini" --get "$config_file" "random" "$pn" 2>/dev/null
+}
+
+transform_value() {
+ local string="$1"
+ test "z$string" = "z" && return
+ #define local variables (TODO: recheck variable declaration bug inside loop)
+ local token=""
+ local section=""
+ local value=""
+ local substring=""
+ local left=""
+ local right=""
+ local limit="10"
+ while true
+ do
+  #nullify used variables
+  token=""
+  section=""
+  value=""
+  substring=""
+  left=""
+  right=""
+  #1>&2 echo "debug 1: string=$string"
+  #check, do we have anything for replace
+  token=`echo "$string" | sed -n -e "s|\(^.*\)\(\[[a-z0-9 -\_]*:[a-z0-9 -\_]*\]\)\(.*\$\)|\2|p"`
+  test "z$token" = "z" && break
+  #detect section and value
+  section=`echo "$token" | sed -n -e "s|\(^\[\)\([a-z0-9 -\_]*\)\(:\)\([a-z0-9 -\_]*\)\(\].*\$\)|\2|p"`
+  value=`echo "$token" | sed -n -e "s|\(^\[\)\([a-z0-9 -\_]*\)\(:\)\([a-z0-9 -\_]*\)\(\].*\$\)|\4|p"`
+  if [ "z$section" = "zrandom" ]; then
+   #read random value with selected prefix
+   substring=`read_random_param "$value"`
+  else
+   #check variable availability
+   test "z$section" = "z" -o "z$value" = "z" -o `check_param "$section" "$value"` = "false" && break
+   #read part for substitution
+   substring=`python "$crudini" --get "$config_file" "$section" "$value" 2>/dev/null`
+  fi
+  #get left and right parts from source string
+  left=`echo "$string" | sed -n -e "s|\(^.*\)\(\[[a-z0-9 -\_]*:[a-z0-9 -\_]*\]\)\(.*\$\)|\1|p"`
+  right=`echo "$string" | sed -n -e "s|\(^.*\)\(\[[a-z0-9 -\_]*:[a-z0-9 -\_]*\]\)\(.*\$\)|\3|p"`
+  #form new string
+  string="${left}${substring}${right}"
+  #1>&2 echo "debug 2: string=$string"
+  limit=`expr $limit - 1`
+  test "z$limit" = "z0" && 1>&2 echo "transform_value max limit reached!" && break
+ done
+ #print new string with path substitution
+ echo "$string" | sed -e "s|\[cfg\]|$config_dir|g"
+}
+
+read_param() {
+ local section="$1"
+ local vname="$2"
+ local result=""
+ if [ `check_param "$section" "$vname"` = "true" ]; then
+  result=`python "$crudini" --get "$config_file" "$section" "$vname" 2>/dev/null`
+  result=`transform_value "$result"`
+  echo "$result"
+ fi
+}
+
+list_sections() {
+ cat "$config_cache_dir/sections.list"
+}
+
+list_params() {
+ local section="$1"
+ if [ "z$section" != "z" ] && [ `check_section "$section"` = "true" ]; then
+  cat "$config_cache_dir/section-$section-params.list"
+ fi
+}
+
+### TODO: caching for global params
+read_global_param() {
+ local vname="$1"
+ if [ "z$vname" != "z" ]; then
+  python "$crudini" --get "$config_file" DEFAULT "$vname" 2>/dev/null
+ fi
+}
+
+list_global_params() {
+ python "$crudini" --get "$config_file" DEFAULT 2>/dev/null
+}
+
