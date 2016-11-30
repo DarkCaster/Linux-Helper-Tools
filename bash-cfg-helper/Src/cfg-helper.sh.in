@@ -22,6 +22,16 @@ test ! -f "$config_file" && config_error "config file $config_file is not exists
 
 config_dir="$( cd "$( dirname "$config_file" )" && pwd )"
 
+python "$crudini" --get "$config_file" 1>/dev/null
+test "$?" != "0" && config_error "config file $config_file contain errors"
+
+config_cache_dir=`mktemp -d -t cfg-helper-XXXXXX`
+
+#call right before parent script exit
+config_teardown() {
+ rm -rf "$config_cache_dir"
+}
+
 seed="$RANDOM"
 test "z$seed" = "z" && seed=0
 
@@ -30,13 +40,6 @@ reseed_random_params() {
  test "z$seed" = "z" && seed=0
  true
 }
-
-#TODO: use variables instead of files
-echo "TODO. now i'm reworking this old script: replace caching with variables instead of files"
-exit 1
-
-bash_cfg_sections=""
-bash_cfg_section_random_params=""
 
 #fill config sections cache
 cache_sectionlist() {
@@ -50,11 +53,6 @@ cache_sectionlist() {
 }
 
 cache_sectionlist
-
-#call right before parent script exit
-config_teardown() {
- #cleanup variables
-}
 
 #fill section params caches
 cache_paramlist() {
