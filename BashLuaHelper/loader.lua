@@ -74,6 +74,10 @@ for i,ar in ipairs(arg) do
    par="workdir"
   elseif ar == "-c" then
    par="exec"
+  elseif ar == "-pre" then
+   par="preexec"
+  elseif ar == "-post" then
+   par="postexec"
   elseif ar == "-e" then
    par="add_export"
    exnum=exnum+1
