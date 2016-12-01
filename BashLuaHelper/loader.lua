@@ -13,6 +13,12 @@
 loader={}
 loader["export"]={}
 
+-- logging
+function loader.log(msg)
+-- TODO: extend logging
+ print(msg)
+end
+
 -- show usage
 function loader_show_usage()
  print("usage: loader.lua <params>")
@@ -57,12 +63,12 @@ end
 
 set=false
 par="none"
-exnum=-1
+exnum=0
 
 for i,ar in ipairs(arg) do
  if set == true then
   if par == "add_export" then
-   loader.export[exnum]=string.format("%s",ar)
+   loader.export[exnum] = string.format("%s",ar)
   else
    loader_set_param(par,ar)
   end
@@ -82,7 +88,7 @@ for i,ar in ipairs(arg) do
    par="add_export"
    exnum=exnum+1
   else
-   print(string.format("incorrect parameter: %s",ar))
+   print("incorrect parameter: " .. ar)
    print()
    loader_show_usage()
   end
@@ -95,14 +101,13 @@ loader_param_not_set_check("tmpdir")
 loader_param_not_set_check("workdir")
 loader_param_not_set_check("exec")
 
-if loader.export[0] == nil then
+if loader.export[1] == nil then
  print("at least one global variable name to export must be provided!")
  print()
  loader_show_usage()
 end
 
 -- unset non-needed defines
-
 exnum=nil
 set=nil
 par=nil
@@ -114,9 +119,8 @@ loader_set_param=nil
 -- TODO: define some config verification logic
 
 -- execute pre-script
-
 if loader.preexec ~= nil then
- print("running preexec script")
+ loader.log("running preexec script")
  dofile(loader.preexec)
 end
 
@@ -126,7 +130,7 @@ dofile(loader.exec)
 
 -- execute post-script
 if loader.postexec ~= nil then
- print("running postexec script")
+ loader.log("running postexec script")
  dofile(loader.postexec)
 end
 
