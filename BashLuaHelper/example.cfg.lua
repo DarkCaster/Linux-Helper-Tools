@@ -1,12 +1,18 @@
 -- load this config script and execute with bash helper (or loader.lua)
-print("processing example config")
-
 config =
 {
-	param1="value",
-	table=
+	value="some text there",
+	sub=
 	{
-		value=123,
-		value2=456
+		number1=123,
+		number2="123",
+		string="123x",
+	}
+	paths
+	{
+		tempdir=loader.tmpdir,
+		workdir=loader.workdir,
+		dynpath=loader.workdir .. loader.slash .. "file"
 	}
 }
+
