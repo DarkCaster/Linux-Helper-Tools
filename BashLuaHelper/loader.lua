@@ -14,6 +14,7 @@
 loader={}
 loader["export"]={}
 loader.pathseparator=package.config:sub(1,1)
+loader.slash=loader.pathseparator
 
 -- logging
 function loader.log(...)
