@@ -1,5 +1,7 @@
 #!/usr/bin/lua
 
+-- Copyright (c) 2016 DarkCaster, MIT License, see https://github.com/DarkCaster/Linux-Helper-Tools for more info
+
 -- helper script basic logic:
 
 -- parse cmdline args, save all internal state into loader lable for use inside user config scripts
