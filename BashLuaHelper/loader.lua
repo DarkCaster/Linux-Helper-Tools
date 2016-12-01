@@ -134,4 +134,26 @@ if loader.postexec ~= nil then
  dofile(loader.postexec)
 end
 
+function loader_recursive_export(name,node)
+--debug
+ loader.log("processing table: " .. name)
+ for key,value in pairs(node) do
+  if type(value) == "boolean" or type(value) == "number" or type(value) == "string" then
+   loader.log(string.format("saving %s.%s value",name,key))
+  elseif type(value) == "table" then
+   loader_recursive_export(string.format("%s.%s",name,key),value)
+  end
+ end
+end
+
+for index,value in ipairs(loader.export) do
+ loadstring("target = " .. value)
+ if type(target) == "nil" then
+  loader.log(string.format("global variable %s is nil",value))
+ elseif type(target) == "boolean" or type(target) == "number" or type(target) == "string" then
+  loader.log(string.format("saving %s value",value))
+ elseif type(target) == "table" then
+  loader_recursive_export(value,target)
+ end
+end
 
