@@ -10,5 +10,3 @@ config =
 		value2=456
 	}
 }
-
-print(config.table.value2)

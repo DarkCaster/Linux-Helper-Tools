@@ -3,6 +3,7 @@
 -- helper script basic logic:
 
 -- parse cmdline args, save all internal state into loader lable for use inside user config scripts
+-- TODO: add logic, that perform verification of config variables passed with -e options, and explicitly transform it to one format (for example: root.sub1.sub2.value)
 -- TODO: define some basic config-script verification logic
 -- ???
 -- sequentially, execute lua scripts from remaining args
@@ -12,10 +13,12 @@
 -- storage for loader params
 loader={}
 loader["export"]={}
+loader.pathseparator=package.config:sub(1,1)
 
 -- logging
-function loader.log(msg)
--- TODO: extend logging
+function loader.log(...)
+ local msg = string.format(...)
+-- TODO: create more advanced logging
  print(msg)
 end
 
@@ -134,24 +137,30 @@ if loader.postexec ~= nil then
  dofile(loader.postexec)
 end
 
+function loader_export(name,value)
+ local target = assert(io.open(loader.tmpdir .. loader.pathseparator .. name, "w"))
+ target:write(value)
+ target:close()
+end
+
 function loader_recursive_export(name,node)
---debug
- loader.log("processing table: " .. name)
+ --loader.log("processing table: " .. name)
  for key,value in pairs(node) do
+  local cur_name=string.format("%s.%s",name,key)
   if type(value) == "boolean" or type(value) == "number" or type(value) == "string" then
-   loader.log(string.format("saving %s.%s value",name,key))
+   loader_export(cur_name,value)
   elseif type(value) == "table" then
-   loader_recursive_export(string.format("%s.%s",name,key),value)
+   loader_recursive_export(cur_name,value)
   end
  end
 end
 
 for index,value in ipairs(loader.export) do
- loadstring("target = " .. value)
+ loadstring("target = " .. value)()
  if type(target) == "nil" then
-  loader.log(string.format("global variable %s is nil",value))
+  loader.log("global variable %s is nil",value)
  elseif type(target) == "boolean" or type(target) == "number" or type(target) == "string" then
-  loader.log(string.format("saving %s value",value))
+  loader_export(value,target)
  elseif type(target) == "table" then
   loader_recursive_export(value,target)
  end
