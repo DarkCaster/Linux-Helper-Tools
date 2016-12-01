@@ -7,8 +7,8 @@ config =
 		number1=123,
 		number2="123",
 		string="123x",
-	}
-	paths
+	},
+	paths=
 	{
 		tempdir=loader.tmpdir,
 		workdir=loader.workdir,
