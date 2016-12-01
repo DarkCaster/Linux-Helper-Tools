@@ -14,7 +14,7 @@ loader={}
 loader["export"]={}
 
 -- show usage
-function LoaderShowUsage()
+function loader_show_usage()
  print("usage: loader.lua <params>")
  print("")
  print("mandatory params:")
@@ -29,23 +29,23 @@ function LoaderShowUsage()
  os.exit(1)
 end
 
-function LoaderParamSetCheck(par)
+function loader_param_set_check(par)
  if loader[par] ~= nil then
   print(string.format("param \"%s\" already set",par))
   print()
-  LoaderShowUsage()
+  loader_show_usage()
  end
 end
 
-function LoaderParamNotSetCheck(par)
+function loader_param_not_set_check(par)
  if loader[par] == nil then
   print(string.format("param \"%s\" is not set",par))
   print()
-  LoaderShowUsage()
+  loader_show_usage()
  end
 end
 
-function LoaderSetParam (name, value)
+function loader_set_param (name, value)
  if name == nil then
   error(string.format("param \"%s\" is nil",name))
  end
@@ -64,7 +64,7 @@ for i,ar in ipairs(arg) do
   if par == "add_export" then
    loader.export[exnum]=string.format("%s",ar)
   else
-   LoaderSetParam(par,ar)
+   loader_set_param(par,ar)
   end
   set = false
  else
@@ -84,24 +84,32 @@ for i,ar in ipairs(arg) do
   else
    print(string.format("incorrect parameter: %s",ar))
    print()
-   LoaderShowUsage()
+   loader_show_usage()
   end
-  LoaderParamSetCheck(par)
+  loader_param_set_check(par)
   set = true
  end
 end
 
-LoaderParamNotSetCheck("tmpdir")
-LoaderParamNotSetCheck("workdir")
-LoaderParamNotSetCheck("exec")
+loader_param_not_set_check("tmpdir")
+loader_param_not_set_check("workdir")
+loader_param_not_set_check("exec")
 
 if loader.export[0] == nil then
  print("at least one global variable name to export must be provided!")
  print()
- LoaderShowUsage()
+ loader_show_usage()
 end
+
+-- unset non-needed defines
 
 exnum=nil
 set=nil
 par=nil
+loader_show_usage=nil
+loader_param_set_check=nil
+loader_param_not_set_check=nil
+loader_set_param=nil
+
+
 
