@@ -2,10 +2,10 @@
 
 -- helper script basic logic:
 
--- get temporary dir
--- get workdir
+-- parse cmdline args, save all internal state into loader lable for use inside user config scripts
+-- TODO: define some basic config-script verification logic
 -- ???
--- sequentially, execute lua scripts from remaining args (include?)
+-- sequentially, execute lua scripts from remaining args
 -- recursively iterate through global params, saving valid value contents to text files inside temp dir for later reuse inside bash scripts
 -- profit!
 
@@ -111,5 +111,23 @@ loader_param_set_check=nil
 loader_param_not_set_check=nil
 loader_set_param=nil
 
+-- TODO: define some config verification logic
+
+-- execute pre-script
+
+if loader.preexec ~= nil then
+ print("running preexec script")
+ dofile(loader.preexec)
+end
+
+-- execute main script
+print("running main config script")
+dofile(loader.exec)
+
+-- execute post-script
+if loader.postexec ~= nil then
+ print("running postexec script")
+ dofile(loader.postexec)
+end
 
 
