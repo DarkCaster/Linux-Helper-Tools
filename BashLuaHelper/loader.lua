@@ -15,6 +15,7 @@
 -- storage for loader params
 loader={}
 loader["export"]={}
+loader["extra"]={}
 loader.pathseparator=package.config:sub(1,1)
 loader.slash=loader.pathseparator
 
@@ -38,6 +39,7 @@ function loader_show_usage()
  print("optional params:")
  print("-pre <script>: Optional lua script, executed before main config script. May contain some additional functions for use with main script. Non zero exit code aborts further execution.")
  print("-post <script>: Optional lua script, executed after main config script. May contain some some verification logic for use with main script. Non zero exit code aborts further execution.")
+ print("-ext <string>: You may pass multiple -ext params. Add extra string and store it inside loader.extra table (indexed by number, starting from 1). You can refer loader.extra elements in your config/pre/post scripts")
  os.exit(1)
 end
 
@@ -69,12 +71,15 @@ end
 
 set=false
 par="none"
-exnum=0
+export_cnt=0
+extra_cnt=0
 
 for i,ar in ipairs(arg) do
  if set == true then
   if par == "add_export" then
-   loader.export[exnum] = string.format("%s",ar)
+   loader.export[export_cnt] = string.format("%s",ar)
+  elseif par == "add_extra" then
+   loader.extra[extra_cnt] = string.format("%s",ar)
   else
    loader_set_param(par,ar)
   end
@@ -92,7 +97,10 @@ for i,ar in ipairs(arg) do
    par="postexec"
   elseif ar == "-e" then
    par="add_export"
-   exnum=exnum+1
+   export_cnt=export_cnt+1
+  elseif ar == "-ext" then
+   par="add_extra"
+   extra_cnt=extra_cnt+1
   else
    print("incorrect parameter: " .. ar)
    print()
@@ -114,7 +122,8 @@ if loader.export[1] == nil then
 end
 
 -- unset non-needed defines
-exnum=nil
+export_cnt=nil
+extra_cnt=nul
 set=nil
 par=nil
 loader_show_usage=nil
