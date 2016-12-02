@@ -1,3 +1,5 @@
+loader.log("message from optional post script")
+
 assert(tonumber(config.sub.number1) ~= nil)
 assert(tonumber(config.sub.number2) ~= nil)
 --assert(tonumber(config.sub.string) ~= nil)

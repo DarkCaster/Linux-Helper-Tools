@@ -1,4 +1,7 @@
 -- load this config script and execute with bash helper (or loader.lua)
+
+loader.log("message from main config script")
+
 config =
 {
 	value="some text there",

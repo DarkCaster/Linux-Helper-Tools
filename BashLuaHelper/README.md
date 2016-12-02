@@ -6,4 +6,5 @@ You can also put all verification logic to a separate script, that will be execu
 
 You need an installed lua interpreter in your system. Tested with Lua v5.2.2
 
-TODO: usage description and examples
+TODO: usage description and examples. for now see example.sh source for usage example
+
