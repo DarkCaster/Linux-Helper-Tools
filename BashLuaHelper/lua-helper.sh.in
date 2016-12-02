@@ -1,5 +1,4 @@
 #!/bin/sh
-#
 
 # source this script to provide functions for access global config variables exported from your lua script
 
@@ -8,7 +7,7 @@
 
 #TODO: store all generated stuff not in temporary plain-text files, but somewhere else
 
-lua_cache_dir=`mktemp -d -t lua-helper-X-XXXXXX`
+lua_cache_dir=`mktemp -d -t lua-helper-XXXXXXXX`
 lua_startup_params="$lua_cache_dir/loader.params"
 
 lua_helper_log_error () {
