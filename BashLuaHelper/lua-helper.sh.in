@@ -10,7 +10,11 @@
 lua_helper_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 lua_cache_dir=`mktemp -d -t lua-helper-XXXXXXXX`
-lua_startup_params="$lua_cache_dir/loader.params"
+lua_startup_params=""
+
+lua_add_param() {
+ lua_startup_params=`echo -n "$lua_startup_params $@"`
+}
 
 lua_helper_log_error () {
  >&2 echo "$@"
@@ -44,8 +48,8 @@ test -z "$lua_config_script" && lua_helper_showusage
 test ! -e "$lua_config_script" && lua_helper_log_error "main config file not found" && lua_helper_showusage
 lua_config_script=`realpath "$lua_config_script"`
 lua_workdir=`dirname $lua_config_script`
-echo -n " -c \"$lua_config_script\"" >> "$lua_startup_params"
-echo -n " -t \"$lua_cache_dir\"" >> "$lua_startup_params"
+lua_add_param " -c \"$lua_config_script\""
+lua_add_param " -t \"$lua_cache_dir\""
 shift 1
 
 lua_helper_parseopts () {
@@ -63,16 +67,16 @@ lua_helper_parseopts () {
      test ! -z "$lua_pre_script" && lua_helper_log_error "multiple -b options detected" && lua_helper_showusage
      lua_pre_script="$OPTARG"
      test ! -e "$lua_pre_script" && lua_helper_log_error "pre script not found" && lua_helper_showusage
-     echo -n " -pre \"$lua_pre_script\"" >> "$lua_startup_params"
+     lua_add_param " -pre \"$lua_pre_script\""
    ;;
    "a")
      test ! -z "$lua_post_script" && lua_helper_log_error "multiple -a options detected" && lua_helper_showusage
      lua_post_script="$OPTARG"
      test ! -e "$lua_post_script" && lua_helper_log_error "post script not found" && lua_helper_showusage
-     echo -n " -post \"$lua_post_script\"" >> "$lua_startup_params"
+     lua_add_param " -post \"$lua_post_script\""
    ;;
    "o")
-     echo -n " -ext \"$OPTARG\"" >> "$lua_startup_params"
+     lua_add_param " -ext \"$OPTARG\""
    ;;
    "w")
      lua_workdir="$OPTARG"
@@ -97,12 +101,33 @@ lua_helper_parseopts () {
  done
 
  test -z "$lua_workdir" && lua_helper_log_error "workdir is empty string" && lua_helper_showusage
- echo -n " -w \"$lua_workdir\"" >> "$lua_startup_params"
+ lua_add_param " -w \"$lua_workdir\""
  test -z "$lua_exports" && lua_helper_log_error "you must select at least one variable to export from your lua script" && lua_helper_showusage
- echo -n "$lua_exports" >> "$lua_startup_params"
+ lua_add_param "$lua_exports"
 }
 
 lua_helper_parseopts $@
 
-cat "$lua_startup_params" | xargs lua "$lua_helper_dir/loader.lua"
+echo "$lua_startup_params" | xargs lua "$lua_helper_dir/loader.lua"
+if [ "$?" != "0" ]; then
+ lua_helper_log_error "loader.lua script failed"
+ lua_helper_teardown
+ exit 1
+fi
+
+#cache exported variable names
+lua_variables=`ls -1 "$lua_cache_dir"`
+
+check_param() {
+ if [ -z `echo "$lua_variables" | grep -x "$@"` ]; then
+  false
+ echo
+  true
+ fi
+}
+
+read_param() {
+ local vname="$@"
+ test check_param "$vname" && cat "$vname" 2>/dev/null
+}
 
