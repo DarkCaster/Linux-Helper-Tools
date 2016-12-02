@@ -1,6 +1,6 @@
 # Bash Lua Helper
 
-Parse and provide readonly access to selected global variables from lua scripts for use inside your bash (or posix-shell) scripts.
+Parse and provide readonly access to selected global variables from lua scripts for use inside your bash (v4.0 and up) scripts.
 You can use this tool to provide an advanced configuration facility for use with your bash-scripts, and use all features provided by lua language to perform management of config file options.
 You can also put all verification logic to a separate script, that will be executed right after main config script.
 

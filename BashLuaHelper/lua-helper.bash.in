@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-# source this script to provide functions for access global config variables exported from your lua script
+# source this script to provide read-access to global config variables exported from your lua script
 
 # Copyright (c) 2016 DarkCaster, MIT License, see https://github.com/DarkCaster/Linux-Helper-Tools for more info
 # see https://github.com/DarkCaster/Linux-Helper-Tools/tree/master/BashLuaHelper for usage info
