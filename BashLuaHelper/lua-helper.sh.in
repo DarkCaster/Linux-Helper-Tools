@@ -7,6 +7,8 @@
 
 #TODO: store all generated stuff not in temporary plain-text files, but somewhere else
 
+lua_helper_dir="$( cd "$( dirname "$0" )" && pwd )"
+
 lua_cache_dir=`mktemp -d -t lua-helper-XXXXXXXX`
 lua_startup_params="$lua_cache_dir/loader.params"
 
@@ -101,4 +103,6 @@ lua_helper_parseopts () {
 }
 
 lua_helper_parseopts $@
+
+cat "$lua_startup_params" | xargs lua "$lua_helper_dir/loader.lua"
 
