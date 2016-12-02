@@ -6,8 +6,100 @@
 # Copyright (c) 2016 DarkCaster, MIT License, see https://github.com/DarkCaster/Linux-Helper-Tools for more info
 # see https://github.com/DarkCaster/Linux-Helper-Tools/tree/master/BashLuaHelper for usage info
 
-config_script="$1"
-pre_script="$2"
-post_script="$3"
+#TODO: store all generated stuff not in temporary plain-text files, but somewhere else
 
+lua_cache_dir=`mktemp -d -t lua-helper-X-XXXXXX`
+lua_startup_params="$lua_cache_dir/loader.params"
+
+lua_helper_log_error () {
+ >&2 echo "$@"
+}
+
+lua_helper_teardown () {
+ rm -rf "$lua_cache_dir"
+}
+
+lua_helper_showusage () {
+ lua_helper_log_error ""
+ lua_helper_log_error "usage: . lua-helper.sh.in <main lua script> <options>"
+ lua_helper_log_error ""
+ lua_helper_log_error "mandatory options:"
+ lua_helper_log_error "-e <name> global variable from lua script to export (if variable is a table, this will export all fields recursively)"
+ lua_helper_log_error " you can pass multiple -e options"
+ lua_helper_log_error ""
+ lua_helper_log_error "other options:"
+ lua_helper_log_error "-b <pre script> lua script, that will be executed in context of loader.lua, just before main script"
+ lua_helper_log_error "-a <post script> lua script, that will be executed in context of loader.lua, after main script."
+ lua_helper_log_error " this script will have access to all global variables and context changes that main script has made"
+ lua_helper_log_error "-o <string> add extra user string to loader.extra table (indexed by number starting from 1). multiple options can be selected"
+ lua_helper_log_error "-w <dir> non default work directory. will be stored at loader.workdir. by default, config file base directory will be used"
+ lua_helper_log_error "-h show this help"
+ lua_helper_teardown
+ exit 100
+}
+
+lua_config_script="$1"
+test -z "$lua_config_script" && lua_helper_showusage
+test ! -e "$lua_config_script" && lua_helper_log_error "main config file not found" && lua_helper_showusage
+lua_config_script=`realpath "$lua_config_script"`
+lua_workdir=`dirname $lua_config_script`
+echo -n " -c \"$lua_config_script\"" >> "$lua_startup_params"
+echo -n " -t \"$lua_cache_dir\"" >> "$lua_startup_params"
+shift 1
+
+lua_helper_parseopts () {
+ local lua_exports=""
+ local lua_pre_script=""
+ local lua_post_script=""
+ local optname
+ while getopts ":e:b:a:o:w:h" optname
+ do
+  case "$optname" in
+   "e")
+     lua_exports="$lua_exports -e \"$OPTARG\""
+   ;;
+   "b")
+     test ! -z "$lua_pre_script" && lua_helper_log_error "multiple -b options detected" && lua_helper_showusage
+     lua_pre_script="$OPTARG"
+     test ! -e "$lua_pre_script" && lua_helper_log_error "pre script not found" && lua_helper_showusage
+     echo -n " -pre \"$lua_pre_script\"" >> "$lua_startup_params"
+   ;;
+   "a")
+     test ! -z "$lua_post_script" && lua_helper_log_error "multiple -a options detected" && lua_helper_showusage
+     lua_post_script="$OPTARG"
+     test ! -e "$lua_post_script" && lua_helper_log_error "post script not found" && lua_helper_showusage
+     echo -n " -post \"$lua_post_script\"" >> "$lua_startup_params"
+   ;;
+   "o")
+     echo -n " -ext \"$OPTARG\"" >> "$lua_startup_params"
+   ;;
+   "w")
+     lua_workdir="$OPTARG"
+   ;;
+   "h")
+     lua_helper_showusage
+   ;;
+   "?")
+     lua_helper_log_error "Unknown option $OPTARG"
+     lua_helper_showusage
+   ;;
+   ":")
+     lua_helper_log_error "No argument given for option $OPTARG"
+     lua_helper_showusage
+   ;;
+   *)
+     # Should not occur
+     lua_helper_log_error "Unknown error while processing options"
+     lua_helper_showusage
+   ;;
+  esac
+ done
+
+ test -z "$lua_workdir" && lua_helper_log_error "workdir is empty string" && lua_helper_showusage
+ echo -n " -w \"$lua_workdir\"" >> "$lua_startup_params"
+ test -z "$lua_exports" && lua_helper_log_error "you must select at least one variable to export from your lua script" && lua_helper_showusage
+ echo -n "$lua_exports" >> "$lua_startup_params"
+}
+
+lua_helper_parseopts $@
 
