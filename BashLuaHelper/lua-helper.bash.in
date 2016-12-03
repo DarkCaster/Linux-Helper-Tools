@@ -11,6 +11,7 @@ lua_helper_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 lua_cache_dir=`mktemp -d -t lua-helper-XXXXXXXX`
 lua_startup_params=""
+lua_result_name="cfg"
 
 lua_add_param() {
  lua_startup_params=`echo -n "$lua_startup_params $@"`
@@ -22,6 +23,7 @@ lua_helper_log_error () {
 
 lua_helper_teardown () {
  rm -rf "$lua_cache_dir"
+ true
 }
 
 lua_helper_showusage () {
@@ -38,9 +40,17 @@ lua_helper_showusage () {
  lua_helper_log_error " this script will have access to all global variables and context changes that main script has made"
  lua_helper_log_error "-o <string> add extra user string to loader.extra table (indexed by number starting from 1). multiple options can be selected"
  lua_helper_log_error "-w <dir> non default work directory. will be stored at loader.workdir. by default, config file base directory will be used"
+ lua_helper_log_error "-r <associative array name> name of associative array, that will contain all exported variables from lua script. by default will be used name \"cfg\""
  lua_helper_log_error "-h show this help"
  lua_helper_teardown
  exit 100
+}
+
+lua_helper_check_bad_chars () {
+ local target="$1"
+ local msg_pre="$2"
+ # TODO: some regexp magic
+ true
 }
 
 lua_config_script="$1"
@@ -61,6 +71,7 @@ lua_helper_parseopts () {
  do
   case "$optname" in
    "e")
+     lua_helper_check_bad_chars "$OPTARG" "exported global variable"
      lua_exports="$lua_exports -e \"$OPTARG\""
    ;;
    "b")
@@ -80,6 +91,10 @@ lua_helper_parseopts () {
    ;;
    "w")
      lua_workdir="$OPTARG"
+   ;;
+   "r")
+     lua_helper_check_bad_chars "$OPTARG" "result associative array name"
+     lua_result_name="$OPTARG"
    ;;
    "h")
      lua_helper_showusage
@@ -115,19 +130,16 @@ if [ "$?" != "0" ]; then
  exit 1
 fi
 
-#cache exported variable names
-lua_variables=`ls -1 "$lua_cache_dir"`
+declare -A "$lua_result_name"
 
-check_param() {
- if [ -z `echo "$lua_variables" | grep -x "$@"` ]; then
-  false
- echo
-  true
- fi
+lua_helper_fill_result () {
+ while read target
+ do
+  lua_helper_check_bad_chars "$target" "filename with exported variable contents \"$target\""
+  eval $lua_result_name'['$target']'='$(<"'"$lua_cache_dir/$target"'")'
+ done < <(ls -1 "$lua_cache_dir")
 }
 
-read_param() {
- local vname="$@"
- test check_param "$vname" && cat "$vname" 2>/dev/null
-}
+lua_helper_fill_result
+lua_helper_teardown
 
