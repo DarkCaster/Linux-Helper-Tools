@@ -3,7 +3,7 @@
 bash_lua_helper=""
 
 find_lua_user_dir="$@"
-find_lua_helper_dir="$( cd "$( dirname "$0" )" && pwd )"
+find_lua_helper_dir="$( cd "$( dirname "$BASH_SOURCE" )" && pwd )"
 
 find_in_dir () {
  test -z "$@" && return 1
