@@ -12,8 +12,15 @@ bin_dir=`realpath $bin_dir`
 "$script_dir/../BashLuaHelper/install.sh" "$bin_dir"
 
 mkdir -p "$bin_dir"
-cp "$script_dir/wine-build.sh" "$bin_dir"
-cp "$script_dir/wine-launcher.sh" "$bin_dir"
+
+deploy () {
+ cp "$@" "$bin_dir"
+}
+
+deploy "$script_dir/find-lua-helper.bash.in"
+deploy "$script_dir/wine-build.pre.lua"
+deploy "$script_dir/wine-build.sh"
+deploy "$script_dir/wine-launcher.sh"
 
 if [ "$default_install" = "yes" ]; then
  mkdir -p "$HOME/bin"
