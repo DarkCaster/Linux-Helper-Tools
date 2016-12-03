@@ -10,6 +10,7 @@ config =
 		number1=123,
 		number2="123",
 		string="123x",
+		problematic_string=" $ ! \\ \\\\ \\\\\\ ! / // /// [ ] ( ) !"
 	},
 	paths=
 	{
