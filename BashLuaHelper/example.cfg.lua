@@ -4,7 +4,7 @@ loader.log("message from main config script")
 
 config =
 {
-	value="some text there",
+	value="this variable is not selected for export, see example.bash for details",
 	sub=
 	{
 		number1=123,
@@ -12,7 +12,11 @@ config =
 		string="123x",
 		multiline_string="line1\nline2\nline3",
 		non_latin_string="Съешь еще этих мягких мексиканских кактусов, да выпей текилы",
-		problematic_string=" $ $$ & && \\ \\\\ ! !! [ [[ ] ]] ( (( ) )) ' '' \" \"\" ` `` \\n \\t \\r / // ? ?? !"
+		problematic_string=" $ $$ & && \\ \\\\ ! !! [ [[ ] ]] ( (( ) )) ' '' \" \"\" ` `` \\n \\t \\r / // ? ?? !",
+		sub=
+		{
+			message="another message",
+		},
 	},
 	paths=
 	{
@@ -21,4 +25,7 @@ config =
 		dynpath=loader.workdir .. loader.slash .. "file"
 	}
 }
+
+-- add yet another value
+config.sub.sub.message2="yet " .. config.sub.sub.message
 

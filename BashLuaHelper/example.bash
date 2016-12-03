@@ -19,5 +19,7 @@ echo "example.bash says: cfg[config.sub.number1] = ${cfg[config.sub.number1]}"
 echo "example.bash says: cfg[config.sub.string] = ${cfg[config.sub.string]}"
 echo "example.bash says: cfg[config.sub.problematic_string] = ${cfg[config.sub.problematic_string]}"
 echo "example.bash says: cfg[config.sub.non_latin_string] = ${cfg[config.sub.non_latin_string]}"
+echo "example.bash says: cfg[config.sub.sub.message] = ${cfg[config.sub.sub.message]}"
+echo "example.bash says: cfg[config.sub.sub.message2] = ${cfg[config.sub.sub.message2]}"
 echo "example.bash says: cfg[config.sub.multiline_string] = ${cfg[config.sub.multiline_string]}"
 
