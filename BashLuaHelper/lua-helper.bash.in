@@ -155,6 +155,11 @@ eval $lua_export_list_name'=`ls -1 "'"$lua_cache_dir"'"`'
 
 lua_helper_teardown
 
+#create helper function to check variable availability
+eval 'check_lua_export () {
+ [ ! -z `echo "$'$lua_export_list_name'" | grep -x "$@"` ]
+}'
+
 #perform environment cleanup
 unset -f lua_helper_fill_result
 unset -f lua_helper_parseopts
