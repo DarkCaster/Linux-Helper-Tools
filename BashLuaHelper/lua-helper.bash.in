@@ -12,6 +12,7 @@ lua_helper_dir="$( cd "$( dirname "$0" )" && pwd )"
 lua_cache_dir=`mktemp -d -t lua-helper-XXXXXXXX`
 lua_startup_params=""
 lua_result_name="cfg"
+lua_export_list_name="cfg_list"
 
 lua_add_param() {
  lua_startup_params=`echo -n "$lua_startup_params $@"`
@@ -41,6 +42,7 @@ lua_helper_showusage () {
  lua_helper_log_error "-o <string> add extra user string to loader.extra table (indexed by number starting from 1). multiple options can be selected"
  lua_helper_log_error "-w <dir> non default work directory. will be stored at loader.workdir. by default, config file base directory will be used"
  lua_helper_log_error "-r <associative array name> name of associative array, that will contain all exported variables from lua script. by default will be used name \"cfg\""
+ lua_helper_log_error "-l <variable name> custom variable name that will contain list (multiline) of all exported variables. by default will be used name \"cfg_list\""
  lua_helper_log_error "-h show this help"
  lua_helper_teardown
  exit 100
@@ -67,7 +69,7 @@ lua_helper_parseopts () {
  local lua_pre_script=""
  local lua_post_script=""
  local optname
- while getopts ":e:b:a:o:w:r:h" optname
+ while getopts ":e:b:a:o:w:r:l:h" optname
  do
   case "$optname" in
    "e")
@@ -95,6 +97,10 @@ lua_helper_parseopts () {
    "r")
      lua_helper_check_bad_chars "$OPTARG" "result associative array name"
      lua_result_name="$OPTARG"
+   ;;
+   "l")
+     lua_helper_check_bad_chars "$OPTARG" "export list variable name"
+     lua_export_list_name="$OPTARG"
    ;;
    "h")
      lua_helper_showusage
