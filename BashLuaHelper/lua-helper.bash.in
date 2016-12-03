@@ -136,6 +136,8 @@ if [ "$?" != "0" ]; then
  exit 1
 fi
 
+#create result associative array and fill it with global variables exported from lua config.
+#see example.bash for usage details
 declare -A "$lua_result_name"
 
 lua_helper_fill_result () {
@@ -147,6 +149,10 @@ lua_helper_fill_result () {
 }
 
 lua_helper_fill_result
+
+#create list (multiline variable) with all exported variables names
+eval $lua_export_list_name'=`ls -1 "'"$lua_cache_dir"'"`'
+
 lua_helper_teardown
 
 #perform environment cleanup
