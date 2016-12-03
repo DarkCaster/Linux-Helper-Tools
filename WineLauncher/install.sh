@@ -18,7 +18,9 @@ deploy () {
 }
 
 deploy "$script_dir/find-lua-helper.bash.in"
-deploy "$script_dir/wine-build.pre.lua"
+deploy "$script_dir/build.pre.lua"
+deploy "$script_dir/build.post.lua"
+deploy "$script_dir/wine-build.cfg.lua"
 deploy "$script_dir/wine-build.sh"
 deploy "$script_dir/wine-launcher.sh"
 
