@@ -67,7 +67,7 @@ lua_helper_parseopts () {
  local lua_pre_script=""
  local lua_post_script=""
  local optname
- while getopts ":e:b:a:o:w:h" optname
+ while getopts ":e:b:a:o:w:r:h" optname
  do
   case "$optname" in
    "e")
@@ -142,4 +142,20 @@ lua_helper_fill_result () {
 
 lua_helper_fill_result
 lua_helper_teardown
+
+#perform environment cleanup
+unset -f lua_helper_fill_result
+unset -f lua_helper_parseopts
+unset -f lua_helper_check_bad_chars
+unset -f lua_helper_showusage
+unset -f lua_helper_teardown
+unset -f lua_helper_log_error
+unset -f lua_add_param
+unset lua_helper_dir
+unset lua_cache_dir
+unset lua_startup_params
+unset lua_result_name
+unset lua_export_list_name
+unset lua_config_script
+unset lua_workdir
 
