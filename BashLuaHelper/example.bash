@@ -10,6 +10,9 @@ echo "example.bash says: sourcing lua-helper.bash.in"
 # ^ options at this line is optional ^
 
 echo "example.bash says: lua-helper.bash.in complete"
+echo "example.bash says: my own cmdline params=$@"
+echo "example.bash says: names of all global variables exported from lua script:"
+echo "$cfg_list"
 echo "example.bash says: config.value is not selected for export, so cfg[config.value] = ${cfg[config.value]}"
 echo "example.bash says: config.empty is not found in lua config file, so cfg[config.empty] = ${cfg[config.empty]}"
 echo "example.bash says: cfg[config.paths.tempdir] = ${cfg[config.paths.tempdir]}"
