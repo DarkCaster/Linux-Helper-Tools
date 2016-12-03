@@ -6,7 +6,7 @@ echo "example.bash says: sourcing lua-helper.bash.in"
 
 # all paths may be relative to current dir
 . "$script_dir/lua-helper.bash.in" "$script_dir/example.cfg.lua" -e config.sub \
--e config.paths -e config.empty -r cfg -l cfg_list -b "$script_dir/example.pre.lua" -a "$script_dir/example.post.lua" -o test1 -o test2 -w /tmp
+-e config.paths -e config.empty -e wrong.table -e empty -r cfg -l cfg_list -b "$script_dir/example.pre.lua" -a "$script_dir/example.post.lua" -o test1 -o test2 -w /tmp
 # ^ options at this line is optional ^
 
 echo "example.bash says: lua-helper.bash.in complete"
@@ -17,6 +17,10 @@ echo "$cfg_list"
 echo ""
 echo -n "example.bash says: check for config.empty variable availability is "
 check_lua_export config.empty && echo "passed, but should fail !!!" || echo "failed, as expected"
+echo -n "example.bash says: check for wrong.table variable availability is "
+check_lua_export wrong.table && echo "passed, but should fail !!!" || echo "failed, as expected"
+echo -n "example.bash says: check for empty variable availability is "
+check_lua_export empty && echo "passed, but should fail !!!" || echo "failed, as expected"
 echo -n "example.bash says: check for config.value variable availability is "
 check_lua_export config.value && echo "passed, but should fail !!!" || echo "failed, as expected"
 echo -n "example.bash says: check for config.sub.string variable availability is "

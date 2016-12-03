@@ -168,9 +168,9 @@ function loader_recursive_export(name,node)
 end
 
 for index,value in ipairs(loader.export) do
- loadstring("target = " .. value)()
- if type(target) == "nil" then
-  loader.log("global variable %s is nil",value)
+ local status,target=pcall(loadstring("return " .. value))
+ if status == false or type(target) == "nil" then
+  loader.log("requested global variable or table with name %s is not exist",value)
  elseif type(target) == "boolean" or type(target) == "number" or type(target) == "string" then
   loader_export(value,target)
  elseif type(target) == "table" then
