@@ -16,14 +16,14 @@ profiles=
 	{
 		src=
 		{
-			-- wget, local
-			type="wget",
+			-- wget-tarbz2, local
+			type="wget-tarbz",
 			link="https://dl.winehq.org/wine/source/1.8/wine-1.8.5.tar.bz2",
 			-- optional
 			sign="https://dl.winehq.org/wine/source/1.8/wine-1.8.5.tar.bz2.sign",
 		},
 		build_seq={ prepare=build_seq.prepare, make=build_seq.make, install=build_seq.install,
-			configure={ "./configure --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-hal" .. prefix_addon, 'echo "configure complete"' },
+			configure={ "./configure --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-hal " .. prefix_addon, 'echo "configure complete"' },
 		},
 	},
 }
