@@ -13,4 +13,4 @@ test -z "$profile" && echo "usage: wine-launcher.sh <config file> <exec profile>
 shift 1
 
 . "$script_dir/find-lua-helper.bash.in"
-. "$bash_lua_helper" "$config" -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -x "$@"
+. "$bash_lua_helper" "$config" -e prefix -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -x "$@"

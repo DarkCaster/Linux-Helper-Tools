@@ -38,3 +38,6 @@ if type(prefix.dll_overrides)=="table" then
  end
 end
 
+-- TODO create and check profile variable from selected profile
+profile={}
+
