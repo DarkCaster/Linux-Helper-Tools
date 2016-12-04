@@ -8,9 +8,10 @@ prefix =
 	-- optional parameters, applied on every launch and prefix create:
 	arch = "win32", -- wine arch. will be exported as WINEARCH env variable, do not change after prefix created
 	lang = "en_US.UTF-8",	-- override current env lang settings.
-	wine = loader.workdir .. "winedist", -- path to wine installation. should be build and installed by wine-build.sh script
-	-- optional parameters, some of them will be only applied on prefix create:
+	-- wine = loader.workdir .. "winedist", -- path to wine installation. should be build and installed by wine-build.sh script
+	wine = "/mnt/data/Wine/wine_distribs/wine185_suse421",
 	docs = loader.workdir .. "docs", -- my documents folder(s) will be relinked to this path
+	-- optional parameters, some of them will be only applied on prefix create:
 	owner = "Penguinator", -- set owner
 	org = "Iceberg.inc", -- set company
 	menu = false, -- if set to false, it will override winemenubuilder so this prefix will not create or change xdg menus and entries at all
