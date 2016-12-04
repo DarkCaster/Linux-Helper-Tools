@@ -14,3 +14,17 @@ shift 1
 
 . "$script_dir/find-lua-helper.bash.in"
 . "$bash_lua_helper" "$config" -e prefix -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -x "$@"
+
+log () {
+ echo "[ $@ ]"
+}
+
+check_errors () {
+ local status="$?"
+ if [ "$status" != "0" ]; then
+  log "ERROR: last operation finished with error code $status"
+  exit $status
+ fi
+}
+
+
