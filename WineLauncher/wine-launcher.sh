@@ -12,9 +12,5 @@ profile="$1"
 test -z "$profile" && echo "usage: wine-launcher.sh <config file> <exec profile> [other parameters, will be forwarded to executed apps]" && exit 1
 shift 1
 
-params="$@"
-params_key="-o"
-test -z "$params" && params_key=""
-
 . "$script_dir/find-lua-helper.bash.in"
-. "$bash_lua_helper" "$config" -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" $params_key "$params"
+. "$bash_lua_helper" "$config" -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -x "$@"
