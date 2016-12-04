@@ -69,6 +69,17 @@ function loader_set_param (name, value)
  loader[name]=string.format("%s",value)
 end
 
+function loader_set_dir (name, value)
+ -- original not processed dir
+ loader_set_param(name .. "_raw",value)
+ -- check last character in dir, add path separator if missing
+ if string.sub(value, -1, -1) == loader.slash then
+  loader_set_param(name,value)
+ else
+  loader_set_param(name,value .. loader.slash)
+ end
+end
+
 set=false
 par="none"
 export_cnt=0
@@ -80,6 +91,8 @@ for i,ar in ipairs(arg) do
    loader.export[export_cnt] = string.format("%s",ar)
   elseif par == "add_extra" then
    loader.extra[extra_cnt] = string.format("%s",ar)
+  elseif par == "workdir" or par == "tmpdir" then
+   loader_set_dir(par,ar)
   else
    loader_set_param(par,ar)
   end
@@ -130,6 +143,7 @@ loader_show_usage=nil
 loader_param_set_check=nil
 loader_param_not_set_check=nil
 loader_set_param=nil
+loader_set_dir=nil
 
 -- TODO: define some config verification logic
 

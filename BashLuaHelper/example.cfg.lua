@@ -22,7 +22,10 @@ config =
 	{
 		tempdir=loader.tmpdir,
 		workdir=loader.workdir,
-		dynpath=loader.workdir .. loader.slash .. "file"
+		dynpath=loader.workdir .. "file",
+		tempdir_raw=loader.tmpdir_raw,
+		workdir_raw=loader.workdir_raw,
+		dynpath_raw=loader.workdir_raw .. loader.slash .. "file",
 	}
 }
 
