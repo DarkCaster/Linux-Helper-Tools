@@ -23,6 +23,8 @@ deploy "$script_dir/build.post.lua"
 deploy "$script_dir/wine-build.cfg.lua"
 deploy "$script_dir/wine-build.sh"
 deploy "$script_dir/wine-launcher.sh"
+deploy "$script_dir/launcher.pre.lua"
+deploy "$script_dir/launcher.post.lua"
 
 if [ "$default_install" = "yes" ]; then
  mkdir -p "$HOME/bin"
