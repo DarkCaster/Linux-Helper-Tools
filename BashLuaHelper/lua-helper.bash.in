@@ -146,7 +146,7 @@ lua_helper_parseopts () {
  lua_add_param "$lua_exports"
 }
 
-lua_helper_parseopts $@
+lua_helper_parseopts "$@"
 
 echo "$lua_startup_params" | xargs lua "$lua_helper_dir/loader.lua"
 if [ "$?" != "0" ]; then
