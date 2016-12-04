@@ -177,7 +177,7 @@ end
 
 function loader_export(name,value)
  local target = assert(io.open(loader.tmpdir .. loader.pathseparator .. name, "w"))
- target:write(value)
+ target:write(string.format("%s",value))
  target:close()
 end
 
