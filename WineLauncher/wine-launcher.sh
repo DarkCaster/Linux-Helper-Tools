@@ -13,7 +13,7 @@ test -z "$profile" && echo "usage: wine-launcher.sh <config file> <exec profile>
 shift 1
 
 . "$script_dir/find-lua-helper.bash.in"
-. "$bash_lua_helper" "$config" -e prefix -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -x "$@"
+. "$bash_lua_helper" "$config" -e prefix -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -o "$script_dir" -x "$@"
 
 log () {
  echo "[ $@ ]"
@@ -110,7 +110,6 @@ wineboot
 check_errors
 
 #TODO: overrides
-exit 1
 
 log "setting up owner and organization"
 regfile=`mktemp -p "$wineroot/drive_c" --suffix=.reg tmpreg-XXXXXX`

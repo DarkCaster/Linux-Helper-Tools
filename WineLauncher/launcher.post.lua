@@ -38,6 +38,23 @@ if type(prefix.dll_overrides)=="table" then
  end
 end
 
+if type(prefix.menu) == "boolean" or prefix.menu == true then
+ if type(prefix.dll_overrides)=="nil" then prefix.dll_overrides={} end
+ prefix.dll_overrides.winemenubuilder = { "native", loader.extra[2] .. loader.slash .. "winemenubuilder.exe", "winemenubuilder.exe" }
+end
+
+-- create override_list to simplify loop in wine-launcher.sh
+if type(prefix.dll_overrides)=="table" then
+ prefix.override_list=""
+ for key,value in pairs(prefix.dll_overrides) do
+  if prefix.override_list == "" then
+   prefix.override_list=string.format("%s",key)
+  else
+   prefix.override_list=string.format("%s %s", prefix.override_list, key)
+  end
+ end
+end
+
 -- TODO create and check profile variable from selected profile
 profile={}
 
