@@ -43,12 +43,109 @@ fi
 
 if [ ! -d "${cfg[prefix.root]}" ]; then
  log "creating ${cfg[prefix.root]} root dir for wine prefix"
- mkdir -p "$wineroot"
+ mkdir -p "${cfg[prefix.root]}"
  check_errors
 fi
 
 wineroot=`realpath "${cfg[prefix.root]}"`
 test ! -d "$wineroot" && log "failed to transform ${cfg[prefix.root]} dir with realpath" && exit 1
 export WINEPREFIX="$wineroot"
+
+docsdir=""
+if check_lua_export prefix.docs; then
+ if [ ! -d "${cfg[prefix.docs]}" ]; then
+  log "creating ${cfg[prefix.docs]} docs dir"
+  mkdir -p "${cfg[prefix.docs]}"
+  check_errors
+ fi
+ docsdir=`realpath "${cfg[prefix.docs]}"`
+ test ! -d "$docsdir" && log "failed to transform ${cfg[prefix.docs]} dir with realpath" && exit 1
+fi
+
+if check_lua_export prefix.lang; then
+ export LANG="${cfg[prefix.lang]}"
+ export LC_ALL="${cfg[prefix.lang]}"
+fi
+
+if check_lua_export prefix.arch; then
+ export WINEARCH="${cfg[prefix.arch]}"
+fi
+
+owner="${cfg[prefix.owner]}"
+test -z "$owner" && owner="$USER"
+org="${cfg[prefix.org]}"
+test -z "$org" && org=`uname -n`
+
+#extra preparations. TODO: move to lua config, as optional commands
+unset SDL_AUDIODRIVER
+
+create_override() {
+ local mode="$1"
+ local src="$2"
+ local target="$3"
+ local name="$4"
+ log "creating override: $name"
+ cp "$src" "$wineroot/drive_c/windows/system32/$target"
+ check_errors
+ local regfile=`mktemp -p "$wineroot/drive_c" --suffix=.reg tmpreg-XXXXXX`
+ echo "REGEDIT4" >> "$regfile"
+ echo "" >> "$regfile"
+ echo "[HKEY_CURRENT_USER\Software\Wine\DllOverrides]" >> "$regfile"
+ echo "\"$name\"=\"$mode\"" >> "$regfile"
+ regedit "$regfile"
+ check_errors
+ rm "$regfile"
+ check_errors
+}
+
+#wineboot, if prefix not initialized
+if [ ! -f "$wineroot/launcher.init.mark" ]; then
+################################################
+
+touch "$wineroot/launcher.init.mark"
+log "performing init for wineprefix in $wineroot"
+
+log "running wineboot"
+wineboot
+check_errors
+
+#TODO: overrides
+exit 1
+
+log "setting up owner and organization"
+regfile=`mktemp -p "$wineroot/drive_c" --suffix=.reg tmpreg-XXXXXX`
+echo "REGEDIT4" >> "$regfile"
+echo "" >> "$regfile"
+echo "[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion]" >> "$regfile"
+echo "\"RegisteredOwner\"=\"$owner\"" >> "$regfile"
+echo "\"RegisteredOrganization\"=\"$org\"" >> "$regfile"
+echo "" >> "$regfile"
+echo "[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion]" >> "$regfile"
+echo "\"RegisteredOwner\"=\"$owner\"" >> "$regfile"
+echo "\"RegisteredOrganization\"=\"$org\"" >> "$regfile"
+regedit "$regfile"
+check_errors
+rm "$regfile"
+check_errors
+
+################################################
+fi
+
+if [ ! -z "$docsdir" ]; then
+ log "updating userdata directories"
+ pwddir="$PWD"
+ cd "$wineroot/drive_c/users/$USER"
+ while read line
+ do
+  link=`readlink -f "$line"`
+  link=`realpath "$link"`
+  test "$docsdir" = "$link" && continue
+  log "processing link: $line"
+  rm "$line"
+  ln -s "$docsdir" "$line"
+ done <<< "$(find * -type l)"
+ cd "$pwddir"
+ pwddir=""
+fi
 
 
