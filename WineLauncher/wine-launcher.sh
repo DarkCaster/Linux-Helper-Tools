@@ -85,8 +85,10 @@ create_override() {
  local target="$3"
  local name="$4"
  log "creating override: $name"
- cp "$src" "$wineroot/drive_c/windows/system32/$target"
- check_errors
+ if [ ! -z "$src" ] && [ ! -z "$target" ]; then
+  cp "$src" "$wineroot/drive_c/windows/system32/$target"
+  check_errors
+ fi
  local regfile=`mktemp -p "$wineroot/drive_c" --suffix=.reg tmpreg-XXXXXX`
  echo "REGEDIT4" >> "$regfile"
  echo "" >> "$regfile"
@@ -109,7 +111,14 @@ log "running wineboot"
 wineboot
 check_errors
 
-#TODO: overrides
+for override in ${cfg[prefix.override_list]}
+do
+ create_override \
+ "${cfg[prefix.dll_overrides.$override.1]}" \
+ "${cfg[prefix.dll_overrides.$override.2]}" \
+ "${cfg[prefix.dll_overrides.$override.3]}" \
+ "${cfg[prefix.dll_overrides.$override.4]}"
+done
 
 log "setting up owner and organization"
 regfile=`mktemp -p "$wineroot/drive_c" --suffix=.reg tmpreg-XXXXXX`
