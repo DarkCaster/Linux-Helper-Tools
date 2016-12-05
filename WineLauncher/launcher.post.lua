@@ -40,7 +40,7 @@ end
 
 if type(prefix.menu) == "boolean" or prefix.menu == true then
  if type(prefix.dll_overrides)=="nil" then prefix.dll_overrides={} end
- prefix.dll_overrides.winemenubuilder = { "native", loader.extra[2] .. loader.slash .. "winemenubuilder.exe", "winemenubuilder.exe" }
+ prefix.dll_overrides.winemenubuilder = { "native", loader.extra[2] .. loader.slash .. "winemenubuilder.exe", "winemenubuilder.exe", "winemenubuilder.exe"}
 end
 
 -- create override_list to simplify loop in wine-launcher.sh
