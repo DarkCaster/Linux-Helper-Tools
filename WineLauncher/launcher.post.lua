@@ -55,6 +55,6 @@ if type(prefix.dll_overrides)=="table" then
  end
 end
 
--- TODO create and check profile variable from selected profile
-profile={}
+profile=loadstring("return " .. loader.extra[1])()
+assert(type(profile)=="table", "selected profile is not a table")
 

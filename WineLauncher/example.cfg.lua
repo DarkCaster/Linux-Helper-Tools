@@ -27,4 +27,23 @@ prefix =
 	-- TODO: drives configuration, custom deploy tasks and such stuff
 }
 
+-- exec profiles for configured prefix. at least one is mandatory
+winecfg =
+{
+	-- TODO: run sequence
+	run =
+	{
+		{ "command", "run type" },
+	},
+	desktop =
+	{
+		-- TODO: stuff for desktop file creator
+		icon = "",
+		name = "",
+		description = "",
+		comment = "",
+		categories = "",
+		mimetypes = "",
+	},
+}
 
