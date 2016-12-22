@@ -156,4 +156,8 @@ if [ ! -z "$docsdir" ]; then
  pwddir=""
 fi
 
+log "running profile $profile"
+cd "${cfg[profile.run.2]}"
+check_errors
+eval "${cfg[profile.run.1]}"
 
