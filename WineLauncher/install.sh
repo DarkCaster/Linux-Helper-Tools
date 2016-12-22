@@ -26,6 +26,7 @@ deploy "$script_dir/wine-launcher.sh"
 deploy "$script_dir/launcher.pre.lua"
 deploy "$script_dir/launcher.post.lua"
 deploy "$script_dir/winemenubuilder.exe"
+deploy "$script_dir/desktop-file-creator.sh"
 
 if [ "$default_install" = "yes" ]; then
  mkdir -p "$HOME/bin"
