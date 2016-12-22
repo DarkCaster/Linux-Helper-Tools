@@ -66,7 +66,7 @@ end
 
 if type(profile.run[2])=="nil" then
  profile.run[2]=loader.path.combine(prefix.root,"drive_c","windows","system32")
- print(profile.run[2])
+ --print(profile.run[2])
 end
 
 assert(type(profile.desktop)=="nil" or type(profile.desktop)=="table", "\"desktop\" subtable is not a table type")
