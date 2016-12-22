@@ -1,9 +1,8 @@
 -- example config for wine-launcher script.
+
 -- some of extra helper global vars for use inside this config:
 -- launcher_dir - directory, where all wine-launcger stuff installed
 -- loader.args - indexed array, where all extra command line arguments is stored (starting from index 1)
-
-
 
 -- prefix definition. mandatory
 prefix =
@@ -60,4 +59,23 @@ winecfg =
 		startupnotify = false, -- optional
 	},
 }
+
+-- run interactive shell with all needed env setup to start wine for current prefix
+-- (try "winefile" or "wine regedit" commands for example)
+shell = { run = { "bash" } }
+
+-- run cmd.exe shell
+cmd = { run = { "wine cmd.exe" } }
+
+-- multiline bash syntax example
+test = { run = { '\
+echo "pwd is $PWD" \
+echo "example" \
+for i in 1 2 3 \
+do \
+ echo "$i" \
+done \
+',
+"/",
+ } }
 
