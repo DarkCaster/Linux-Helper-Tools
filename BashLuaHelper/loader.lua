@@ -157,6 +157,47 @@ loader_param_not_set_check=nil
 loader_set_param=nil
 loader_set_dir=nil
 
+-- define some path string management logic
+loader["path"]={}
+
+function loader.path.trim_lead_slashes(path,min_len)
+ local p=string.format("%s",path)
+ while string.len(p) > min_len and string.sub(p, 1, 1) == loader.slash do
+  p=string.sub(p,2)
+ end
+ return p
+end
+
+function loader.path.trim_trail_slashes(path,min_len)
+ local p=string.format("%s",path)
+ while string.len(p) > min_len and string.sub(p,-1,-1) == loader.slash do
+  p=string.sub(p,1,-2)
+ end
+ return p
+end
+
+function loader.path.append_slash(path)
+ local p=string.format("%s",path)
+ if string.len(p) > 0 and string.sub(p, -1, -1) ~= loader.slash then
+  p=p .. loader.slash
+ end
+ return p
+end
+
+-- export path function for path combine
+function loader.path.combine(first, second, ...)
+ local f=string.format("%s",first)
+ local s=string.format("%s",second)
+ local a={ ... }
+ f=loader.path.append_slash(loader.path.trim_trail_slashes(f,1))
+ s=loader.path.trim_trail_slashes(loader.path.trim_lead_slashes(s,0),0)
+ local c=f .. s
+ for i,v in ipairs(a) do
+  c=loader.path.combine(c,v)
+ end
+ return c
+end
+
 -- TODO: define some config verification logic
 
 -- execute pre-script
