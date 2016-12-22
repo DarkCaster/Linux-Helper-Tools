@@ -15,6 +15,8 @@ shift 1
 . "$script_dir/find-lua-helper.bash.in"
 . "$bash_lua_helper" "$config" -e prefix -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -o "$script_dir" -x "$@"
 
+shift $#
+
 log () {
  echo "[ $@ ]"
 }
