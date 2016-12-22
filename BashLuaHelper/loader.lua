@@ -161,17 +161,17 @@ loader_set_dir=nil
 
 -- execute pre-script
 if loader.preexec ~= nil then
- loader.log("running preexec script")
+ -- loader.log("running preexec script")
  dofile(loader.preexec)
 end
 
 -- execute main script
-print("running main config script")
+-- print("running main config script")
 dofile(loader.exec)
 
 -- execute post-script
 if loader.postexec ~= nil then
- loader.log("running postexec script")
+ -- loader.log("running postexec script")
  dofile(loader.postexec)
 end
 
