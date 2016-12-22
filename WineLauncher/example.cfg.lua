@@ -75,6 +75,9 @@ for i in 1 2 3 \
 do \
  echo "$i" \
 done \
+false \
+check_errors \
+echo "you should not see this!" \
 ',
 "/",
  } }

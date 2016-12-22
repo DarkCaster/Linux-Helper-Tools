@@ -56,7 +56,7 @@ if type(prefix.dll_overrides)=="table" then
 end
 
 profile=loadstring("return " .. loader.extra[1])()
-assert(type(profile)=="table", "selected profile is not a table")
+assert(type(profile)=="table", "selected profile is missing or not a table")
 assert(type(profile.run)=="table", "\"run\" subtable is not a table type or missing")
 
 for index,field in ipairs(profile.run) do
