@@ -30,20 +30,29 @@ prefix =
 -- exec profiles for configured prefix. at least one is mandatory
 winecfg =
 {
-	-- TODO: run sequence
+	-- command to run by this profile.
 	run =
 	{
-		{ "command", "run type" },
+		-- will be executed by wine-launcher using eval
+		-- with all neccesary env setup for current prefix.
+		-- so, you can freely use bash syntax, and combine commands together as you like.
+		-- additionally, there is a helper bash function "check_errors" that will check last command status and perform exit if error code is not zero
+		--
+		-- first element - string: command to execute.
+		"echo \"starting winecfg at $PWD\"; winecfg",
+		-- second element - string: optional path to set before performing exec. if omited, it will be set to "c:\windows\system32" dir inside prefix.
+		prefix.root,
 	},
+    -- optional info for desktop file creator helper script.
 	desktop =
 	{
-		-- TODO: stuff for desktop file creator
-		icon = "",
-		name = "",
-		description = "",
-		comment = "",
-		categories = "",
-		mimetypes = "",
+		name = "winecfg", -- mandatory (if desktop section exist)
+		comment = "winecfg for prefix at " .. prefix.root, -- optional
+		icon = "wine-winecfg", -- optional
+		categories = "", -- optional
+		mimetypes = "", -- optional
+		terminal = false, -- optional
+		startupnotify = false, -- optional
 	},
 }
 
