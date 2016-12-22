@@ -14,7 +14,7 @@ if type(prefix.dll_overrides)=="table" then
  for key,value in pairs(prefix.dll_overrides) do
   assert(type(value)=="table", "prefix.dll_overrides." .. key .. " param incorrect")
   assert(#value==3 or #value==4, "prefix.dll_overrides." .. key .. " table length is incorrect")
-  for index,field in pairs(value) do
+  for index,field in ipairs(value) do
    assert(type(field)=="string", "prefix.dll_overrides." .. key .. "." .. index .. " value is incorrect")
   end
   assert(value[1]=="native" or value[1]=="builtin" or value[1]=="native,builtin" or value[1]=="builtin,native", "prefix.dll_overrides." .. key .. "[1] field is incorrect")
@@ -57,4 +57,9 @@ end
 
 profile=loadstring("return " .. loader.extra[1])()
 assert(type(profile)=="table", "selected profile is not a table")
+assert(type(profile.run)=="table", "\"run\" subtable is not a table type or missing")
+for index,field in ipairs(profile.run) do
+ assert(index<3, "profile.run table has more than two parameters")
+ assert(type(field)=="string", "profile.run[" .. index .. "] value is incorrect")
+end
 
