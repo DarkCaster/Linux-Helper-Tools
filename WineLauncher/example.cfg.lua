@@ -9,7 +9,7 @@
 prefix =
 {
 	-- mandatory parameters:
-	root = loader.workdir .. "root", -- root directory, where wine prefix will be created.
+	root = loader.path.combine(loader.workdir,"root"), -- root directory, where wine prefix will be created.
 	-- optional parameters, applied on every launch and prefix create:
 	arch = "win32", -- wine arch. will be exported as WINEARCH env variable, do not change after prefix created
 	lang = "en_US.UTF-8",	-- override current env lang settings.
