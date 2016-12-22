@@ -56,7 +56,7 @@ winecfg =
 		comment = "winecfg for prefix at " .. prefix.root, -- optional
 		icon = "wine-winecfg", -- optional
 		categories = "", -- optional
-		mimetypes = "", -- optional
+		mimetype = "", -- optional
 		terminal = false, -- optional
 		startupnotify = false, -- optional
 	},

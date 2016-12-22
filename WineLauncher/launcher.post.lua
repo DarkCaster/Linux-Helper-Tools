@@ -75,13 +75,13 @@ if type(profile.desktop)=="table" then
  assert(type(profile.desktop.comment)=="nil" or type(profile.desktop.comment)=="string","profile.desktop.comment value is incorrect")
  assert(type(profile.desktop.icon)=="nil" or type(profile.desktop.icon)=="string","profile.desktop.icon value is incorrect")
  assert(type(profile.desktop.categories)=="nil" or type(profile.desktop.categories)=="string","profile.desktop.categories value is incorrect")
- assert(type(profile.desktop.mimetypes)=="nil" or type(profile.desktop.mimetypes)=="string","profile.desktop.mimetypes value is incorrect")
+ assert(type(profile.desktop.mimetype)=="nil" or type(profile.desktop.mimetype)=="string","profile.desktop.mimetype value is incorrect")
  assert(type(profile.desktop.terminal)=="nil" or type(profile.desktop.terminal)=="boolean","profile.desktop.terminal value is incorrect")
  assert(type(profile.desktop.startupnotify)=="nil" or type(profile.desktop.startupnotify)=="boolean","profile.desktop.startupnotify value is incorrect")
  if type(profile.desktop.comment)=="nil" then profile.desktop.comment="wine-launcher profile for " .. profile.desktop.name end
  if type(profile.desktop.icon)=="nil" then profile.desktop.icon="wine" end
  if type(profile.desktop.categories)=="nil" then profile.desktop.categories="Application;" end
- if type(profile.desktop.mimetypes)=="nil" then profile.desktop.mimetypes="" end
+ if type(profile.desktop.mimetype)=="nil" then profile.desktop.mimetype="" end
  if type(profile.desktop.terminal)=="nil" then profile.desktop.terminal=false end
  if type(profile.desktop.startupnotify)=="nil" then profile.desktop.startupnotify=false end
  profile.desktop.filename="wine-launcher-profile-" .. loader.extra[1] .. ".desktop"
