@@ -40,10 +40,12 @@ winecfg =
 		-- will be executed by wine-launcher using eval
 		-- with all neccesary env setup for current prefix.
 		-- so, you can freely use bash syntax, and combine commands together as you like.
-		-- additionally, there is a helper bash function "check_errors" that will check last command status and perform exit if error code is not zero
+		-- additionally, there are some helper bash functions, thay you may use:
+		--     check_errors: will check last command status and perform exit if error code is not zero
+		--     log <message>: will display (using echo) and log message (TODO: now it is only display message on screen)
 		--
 		-- first element - string: command to execute.
-		"echo \"starting winecfg at $PWD\"; winecfg",
+		"log \"starting winecfg at $PWD\"; winecfg",
 		-- second element - string: optional path to set before performing exec. if omited, it will be set to "c:\windows\system32" dir inside prefix.
 		prefix.root,
 	},
@@ -69,15 +71,15 @@ cmd = { run = { "wine cmd.exe" } }
 
 -- multiline bash syntax example
 test = { run = { '\
-echo "pwd is $PWD" \
-echo "example" \
+log "pwd is $PWD" \
+log "example" \
 for i in 1 2 3 \
 do \
  echo "$i" \
 done \
 false \
 check_errors \
-echo "you should not see this!" \
+log "you should not see this!" \
 ',
 "/",
  } }
