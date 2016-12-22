@@ -33,3 +33,7 @@ if [ "$default_install" = "yes" ]; then
  ln -s "$bin_dir/wine-launcher.sh" "$HOME/bin/wine-launcher.sh"
 fi
 
+if [ -d "$script_dir/extra" ]; then
+ cp -rf "$script_dir/extra" "$bin_dir"
+fi
+
