@@ -51,7 +51,7 @@ winecfg =
     -- optional info for desktop file creator helper script.
 	desktop =
 	{
-		name = "winecfg", -- mandatory (if desktop section exist)
+		name = "run winecfg", -- mandatory (if desktop section exist)
 		comment = "winecfg for prefix at " .. prefix.root, -- optional
 		icon = "wine-winecfg", -- optional
 		categories = "", -- optional
