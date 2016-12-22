@@ -157,6 +157,25 @@ if [ ! -z "$docsdir" ]; then
 fi
 
 log "running profile $profile"
+
+#cleanup
+unset -f create_override
+unset pwddir
+unset link
+unset line
+unset docsdir
+unset wineroot
+unset regfile
+unset org
+unset owner
+unset override
+unset winedist
+unset bash_lua_helper
+unset profile
+unset config
+unset script_link
+unset script_dir
+
 cd "${cfg[profile.run.2]}"
 check_errors
 eval "${cfg[profile.run.1]}"
