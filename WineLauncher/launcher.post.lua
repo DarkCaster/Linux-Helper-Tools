@@ -58,15 +58,32 @@ end
 profile=loadstring("return " .. loader.extra[1])()
 assert(type(profile)=="table", "selected profile is not a table")
 assert(type(profile.run)=="table", "\"run\" subtable is not a table type or missing")
+
 for index,field in ipairs(profile.run) do
  assert(index<3, "\"run\" subtable has more than two parameters")
  assert(type(field)=="string", "run[" .. index .. "] value is incorrect")
 end
+
 if type(profile.run[2])=="nil" then
  profile.run[2]=loader.path.combine(prefix.root,"drive_c","windows","system32")
  print(profile.run[2])
 end
-assert(type(profile.desktop)=="table" or type(profile.desktop)=="nil", "\"desktop\" subtable is not a table type")
+
+assert(type(profile.desktop)=="nil" or type(profile.desktop)=="table", "\"desktop\" subtable is not a table type")
 if type(profile.desktop)=="table" then
+ assert(type(profile.desktop.name)=="string","profile.desktop.name value is incorrect")
+ assert(type(profile.desktop.comment)=="nil" or type(profile.desktop.comment)=="string","profile.desktop.comment value is incorrect")
+ assert(type(profile.desktop.icon)=="nil" or type(profile.desktop.icon)=="string","profile.desktop.icon value is incorrect")
+ assert(type(profile.desktop.categories)=="nil" or type(profile.desktop.categories)=="string","profile.desktop.categories value is incorrect")
+ assert(type(profile.desktop.mimetypes)=="nil" or type(profile.desktop.mimetypes)=="string","profile.desktop.mimetypes value is incorrect")
+ assert(type(profile.desktop.terminal)=="nil" or type(profile.desktop.terminal)=="boolean","profile.desktop.terminal value is incorrect")
+ assert(type(profile.desktop.startupnotify)=="nil" or type(profile.desktop.startupnotify)=="boolean","profile.desktop.startupnotify value is incorrect")
+ if type(profile.desktop.comment)=="nil" then profile.desktop.comment="wine-launcher profile for " .. profile.desktop.name end
+ if type(profile.desktop.icon)=="nil" then profile.desktop.icon="wine" end
+ if type(profile.desktop.categories)=="nil" then profile.desktop.categories="Application;" end
+ if type(profile.desktop.mimetypes)=="nil" then profile.desktop.mimetypes="" end
+ if type(profile.desktop.terminal)=="nil" then profile.desktop.terminal=false end
+ if type(profile.desktop.startupnotify)=="nil" then profile.desktop.startupnotify=false end
+ profile.desktop.filename="wine-launcher-profile-" .. loader.extra[1] .. ".desktop"
 end
 
