@@ -59,7 +59,14 @@ profile=loadstring("return " .. loader.extra[1])()
 assert(type(profile)=="table", "selected profile is not a table")
 assert(type(profile.run)=="table", "\"run\" subtable is not a table type or missing")
 for index,field in ipairs(profile.run) do
- assert(index<3, "profile.run table has more than two parameters")
- assert(type(field)=="string", "profile.run[" .. index .. "] value is incorrect")
+ assert(index<3, "\"run\" subtable has more than two parameters")
+ assert(type(field)=="string", "run[" .. index .. "] value is incorrect")
+end
+if type(profile.run[2])=="nil" then
+ profile.run[2]=loader.path.combine(prefix.root,"drive_c","windows","system32")
+ print(profile.run[2])
+end
+assert(type(profile.desktop)=="table" or type(profile.desktop)=="nil", "\"desktop\" subtable is not a table type")
+if type(profile.desktop)=="table" then
 end
 
