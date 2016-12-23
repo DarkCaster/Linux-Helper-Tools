@@ -1,7 +1,8 @@
 #!/bin/bash
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
-script_link=`readlink "$script_dir/$0"`
+self=`basename "$0"`
+script_link=`readlink "$script_dir/$self"`
 test ! -z "$script_link" && script_dir=`realpath \`dirname "$script_link"\``
 
 config="$1"
@@ -16,6 +17,8 @@ shift 1
 . "$bash_lua_helper" "$config" -e prefix -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -o "$script_dir" -x "$@"
 
 shift $#
+
+test -z "${cfg+x}" && echo "can't find variable with bash_lua_helper results. bash_lua_helper failed!" && exit 1
 
 log () {
  echo "[ $@ ]"
