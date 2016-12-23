@@ -18,7 +18,7 @@ shift 1
 
 shift $#
 
-test -z ${cfg+x} && echo "can't find variable with bash_lua_helper results. bash_lua_helper failed!" && exit 1
+test "${#cfg[@]}" = "0" && echo "can't find variable with bash_lua_helper results. bash_lua_helper failed!" && exit 1
 
 log () {
  echo "[ $@ ]"
@@ -185,6 +185,7 @@ unset profile
 unset config
 unset script_link
 unset script_dir
+unset self
 
 cd "${cfg[profile.run.2]}"
 check_errors
