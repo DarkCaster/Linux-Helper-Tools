@@ -54,16 +54,18 @@ echo "Terminal=${cfg[profile.desktop.terminal]}" >> "$tmp_desktop"
 echo "StartupNotify=${cfg[profile.desktop.startupnotify]}" >> "$tmp_desktop"
 chmod 755 "$tmp_desktop"
 
+###################################
 if [ "$create_cat" = "true" ]; then
 
 #create and install directory file
-tmp_dirfile="$tmp_dir/wine.directory"
+tmp_dirfile="$tmp_dir/wineapps.directory"
 echo "#!/usr/bin/env xdg-open" >> "$tmp_dirfile"
 echo "[Desktop Entry]" >> "$tmp_dirfile"
 echo "Version=1.0" >> "$tmp_dirfile"
 echo "Type=Directory" >> "$tmp_dirfile"
-echo "Name=Wine" >> "$tmp_dirfile"
+echo "Name=Wine Applications" >> "$tmp_dirfile"
 echo "Icon=wine" >> "$tmp_dirfile"
+
 mkdir -p "$HOME/.local/share/desktop-directories"
 mv "$tmp_dirfile" "$HOME/.local/share/desktop-directories"
 
@@ -75,20 +77,22 @@ cat << EOF > "$tmp_menufile"
 <Menu>
 	<Name>Applications</Name>
 	<Menu>
-		<Name>Wine</Name>
-		<Directory>wine.directory</Directory>
+		<Name>Wine Applications</Name>
+		<Directory>wineapps.directory</Directory>
 		<Include>
 			<Category>Wine</Category>
 		</Include>
 	</Menu>
 </Menu>
 EOF
+
 mkdir -p "$HOME/.config/menus/applications-merged"
 test ! -e "$HOME/.config/menus/mate-applications-merged" && ln -s applications-merged "$HOME/.config/menus/mate-applications-merged"
 cp "$tmp_menufile" "$HOME/.config/menus/applications-merged"
 mv "$tmp_menufile" "$HOME/.config/menus/mate-applications-merged"
 
 fi
+###################################
 
 mkdir -p "$HOME/.local/share/applications"
 mv "$tmp_desktop" "$HOME/.local/share/applications"
