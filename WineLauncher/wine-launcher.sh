@@ -100,7 +100,7 @@ create_override() {
  echo "" >> "$regfile"
  echo "[HKEY_CURRENT_USER\Software\Wine\DllOverrides]" >> "$regfile"
  echo "\"$name\"=\"$mode\"" >> "$regfile"
- regedit "$regfile"
+ regedit "$regfile" 2>/dev/null
  check_errors
  rm "$regfile"
  check_errors
@@ -127,7 +127,7 @@ apply_tweaks() {
   echo "\"FontSmoothingOrientation\"=dword:0000000${cfg[tweaks.fontsmooth.orientation]}" >> "$regfile"
   echo "\"FontSmoothingType\"=dword:0000000${cfg[tweaks.fontsmooth.type]}" >> "$regfile"
   echo "\"FontSmoothingGamma\"=dword:00000578" >> "$regfile"
-  regedit "$regfile"
+  regedit "$regfile" 2>/dev/null
   check_errors
   rm "$regfile"
   check_errors

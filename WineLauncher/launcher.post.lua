@@ -89,7 +89,7 @@ if type(tweaks)=="table" then
    tweaks.fontsmooth.orientation=1
   elseif fontsmooth=="bgr" then
    tweaks.fontsmooth.mode=2
-   tweaks.fontsmooth.type=1
+   tweaks.fontsmooth.type=2
    tweaks.fontsmooth.orientation=0
   else
    error("fontsmooth value incorrect")
