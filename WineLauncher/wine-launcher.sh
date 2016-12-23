@@ -174,6 +174,17 @@ check_errors
 rm "$regfile"
 check_errors
 
+if check_lua_export prefix.extra_cmd.1; then
+ log "executing extra commands"
+ pwddir="$PWD"
+ cd "${cfg[prefix.extra_cmd.2]}"
+ check_errors
+ eval "${cfg[prefix.extra_cmd.1]}"
+ check_errors
+ cd "$pwddir"
+ check_errors
+fi
+
 log "applying tweaks"
 apply_tweaks
 test "$profile" = "tweaks" && exit 0

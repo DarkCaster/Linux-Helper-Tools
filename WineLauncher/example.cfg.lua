@@ -19,8 +19,7 @@ prefix =
 	owner = "Penguinator", -- set owner
 	org = "Iceberg.inc", -- set company
 	menu = false, -- if set to false, it will override winemenubuilder so this prefix will not create or change xdg menus and entries at all
-	-- create dll_overrides when perfix is setting up
-	dll_overrides = -- dll's will be copied from user location to wine's system32 and overriden with selected rule
+	dll_overrides = -- create dll_overrides when perfix is setting up, dll's will be copied from user location to wine's system32 and overriden with selected rule
 	{
 		-- parameter format is { <override rule>, <dll source path>, <dll target file name without path>, [optional override name that entered to winecfg window, will be created automatically if missing] }
 		winemp3 = { "native", loader.path.combine(loader.workdir,"extra","l3codecx.acm"), "winemp3.acm" },
@@ -28,6 +27,20 @@ prefix =
 		glu32 = { "builtin,native", loader.path.combine(loader.workdir,"extra","glu32.dll"), "glu32.dll" },
 		-- if source or target filename is missing, override name must be present. so, rule will be created, but nothing will be copied to wineprefix
 		dnsapi = { "native,builtin", "", "", "dnsapi" },
+	},
+	extra_cmd = -- run extra command after prefix setup is complete, may be used to copy or install some stuff
+	{
+		-- first element is a string with command, that will be executed by wine-launcher script using eval.
+		-- you can use bash syntax, and combine commands together as you do inside your bash scripts.
+		-- use this feature with caution, because you can interfere with internal state of launcher script,
+		-- it is better to launch external script here, rather than enter commands inplace.
+		"mkdir -p \"../Resources/Themes/luna\" \
+		check_errors \
+		cp \"" .. loader.path.combine(loader.workdir,"extra","themes","luna.msstyles") .. "\" \"../Resources/Themes/luna\" \
+		check_errors"
+		,
+		-- second element - string: optional path to set before performing exec. if omited, it will be set to "c:\windows\system32" dir inside prefix.
+		-- loader.workdir,
 	},
 	-- TODO: drives configuration, custom deploy tasks and such stuff
 }

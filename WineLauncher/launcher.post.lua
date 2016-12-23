@@ -8,6 +8,7 @@ assert(type(prefix.owner)=="nil" or type(prefix.owner)=="string", "prefix.owner 
 assert(type(prefix.org)=="nil" or type(prefix.org)=="string", "prefix.org param incorrect")
 assert(type(prefix.menu)=="nil" or type(prefix.menu)=="boolean", "prefix.menu param incorrect")
 assert(type(prefix.dll_overrides)=="nil" or type(prefix.dll_overrides)=="table", "prefix.dll_overrides param incorrect")
+assert(type(prefix.extra_cmd)=="nil" or type(prefix.extra_cmd)=="table", "prefix.extra_cmd param incorrect")
 assert(type(tweaks)=="nil" or type(tweaks)=="table", "tweaks param incorrect")
 
 -- check prefix.dll_overrides and generate missing fields
@@ -53,6 +54,17 @@ if type(prefix.dll_overrides)=="table" then
   else
    prefix.override_list=string.format("%s %s", prefix.override_list, key)
   end
+ end
+end
+
+-- check extra_cmd
+if type(prefix.extra_cmd)=="table" then
+ for index,field in ipairs(prefix.extra_cmd) do
+  assert(index<3, "\"prefix.extra_cmd\" table has more than two elements")
+  assert(type(field)=="string", "prefix.extra_cmd[" .. index .. "] value is incorrect")
+ end
+ if type(prefix.extra_cmd[2])=="nil" then
+  prefix.extra_cmd[2]=loader.path.combine(prefix.root,"drive_c","windows","system32")
  end
 end
 
