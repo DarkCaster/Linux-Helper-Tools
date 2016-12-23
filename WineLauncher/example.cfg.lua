@@ -81,6 +81,9 @@ shell = { run = { "bash" } }
 -- run cmd.exe shell
 cmd = { run = { "wine cmd.exe" } }
 
+-- run winetricks
+winetricks = { run = { tweaks.winetricks } }
+
 -- multiline bash syntax example
 test = { run = { '\
 log "pwd is $PWD" \
