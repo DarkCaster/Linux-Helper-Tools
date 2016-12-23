@@ -22,9 +22,9 @@ prefix =
 	dll_overrides = -- create dll_overrides when perfix is setting up, dll's will be copied from user location to wine's system32 and overriden with selected rule
 	{
 		-- parameter format is { <override rule>, <dll source path>, <dll target file name without path>, [optional override name that entered to winecfg window, will be created automatically if missing] }
-		winemp3 = { "native", loader.path.combine(loader.workdir,"extra","l3codecx.acm"), "winemp3.acm" },
-		imm32 = { "native", loader.path.combine(loader.workdir,"extra","imm32.dll"), "imm32.dll" },
-		glu32 = { "builtin,native", loader.path.combine(loader.workdir,"extra","glu32.dll"), "glu32.dll" },
+		winemp3 = { "native", loader.path.combine(launcher_dir,"extra","l3codecx.acm"), "winemp3.acm" },
+		imm32 = { "native", loader.path.combine(launcher_dir,"extra","imm32.dll"), "imm32.dll" },
+		glu32 = { "builtin,native", loader.path.combine(launcher_dir,"extra","glu32.dll"), "glu32.dll" },
 		-- if source or target filename is missing, override name must be present. so, rule will be created, but nothing will be copied to wineprefix
 		dnsapi = { "native,builtin", "", "", "dnsapi" },
 	},
@@ -36,7 +36,7 @@ prefix =
 		-- it is better to launch external script here, rather than enter commands inplace.
 		"mkdir -p \"../Resources/Themes/luna\" \
 		check_errors \
-		cp \"" .. loader.path.combine(loader.workdir,"extra","themes","luna.msstyles") .. "\" \"../Resources/Themes/luna\" \
+		cp \"" .. loader.path.combine(launcher_dir,"extra","themes","luna.msstyles") .. "\" \"../Resources/Themes/luna\" \
 		check_errors"
 		,
 		-- second element - string: optional path to set before performing exec. if omited, it will be set to "c:\windows\system32" dir inside prefix.
@@ -51,7 +51,7 @@ tweaks =
 {
 	-- path to winetricks script. it is mandatory for some tweaks to work
 	-- download it from here: https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-	winetricks=loader.path.combine(loader.workdir,"extra","winetricks"),
+	winetricks=loader.path.combine(launcher_dir,"extra","winetricks"),
 	allfonts=false, -- if set to true, it will run winetricks allfonts that will download and install extra fonts
 	-- if font smoothing not working properly, try this before starting wine: xrdb -query | grep -vE 'Xft\.(anti|hint|rgba)' | xrdb
 	fontsmooth="simple", -- none,simple,rgb,bgr; none - no smothing, simple - grayscale, rgb - cleartype rgb, bgr - cleartype bgr
