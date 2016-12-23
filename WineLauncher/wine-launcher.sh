@@ -18,7 +18,7 @@ shift 1
 
 shift $#
 
-test -z "${cfg+x}" && echo "can't find variable with bash_lua_helper results. bash_lua_helper failed!" && exit 1
+test -z ${cfg+x} && echo "can't find variable with bash_lua_helper results. bash_lua_helper failed!" && exit 1
 
 log () {
  echo "[ $@ ]"
@@ -110,6 +110,8 @@ if [ ! -f "$wineroot/launcher.init.mark" ]; then
 ################################################
 
 touch "$wineroot/launcher.init.mark"
+check_errors
+
 log "performing init for wineprefix in $wineroot"
 
 log "running wineboot"
@@ -148,6 +150,7 @@ if [ ! -z "$docsdir" ]; then
  log "updating userdata directories"
  pwddir="$PWD"
  cd "$wineroot/drive_c/users/$USER"
+ check_errors
  while read line
  do
   link=`readlink -f "$line"`
@@ -155,10 +158,12 @@ if [ ! -z "$docsdir" ]; then
   test "$docsdir" = "$link" && continue
   log "processing link: $line"
   rm "$line"
+  check_errors
   ln -s "$docsdir" "$line"
+  check_errors
  done <<< "$(find * -type l)"
  cd "$pwddir"
- pwddir=""
+ check_errors
 fi
 
 log "running profile $profile"
