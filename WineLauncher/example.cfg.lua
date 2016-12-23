@@ -19,6 +19,7 @@ prefix =
 	owner = "Penguinator", -- set owner
 	org = "Iceberg.inc", -- set company
 	menu = false, -- if set to false, it will override winemenubuilder so this prefix will not create or change xdg menus and entries at all
+	-- create dll_overrides when perfix is setting up
 	dll_overrides = -- dll's will be copied from user location to wine's system32 and overriden with selected rule
 	{
 		-- parameter format is { <override rule>, <dll source path>, <dll target file name without path>, [optional override name that entered to winecfg window, will be created automatically if missing] }
@@ -29,6 +30,13 @@ prefix =
 		dnsapi = { "native,builtin", "", "", "dnsapi" },
 	},
 	-- TODO: drives configuration, custom deploy tasks and such stuff
+}
+
+-- tweaks. optional. will be applied on prefix create
+-- may be reapplied if you run wine-launcher.sh with pseudoprofile "tweaks"
+tweaks =
+{
+	fontsmooth="none", -- none,simple,rgb,bgr; none - no smothing, simple - grayscale, rgb - cleartype rgb, bgr - cleartype bgr
 }
 
 -- exec profiles for configured prefix. at least one is mandatory

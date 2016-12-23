@@ -8,6 +8,7 @@ assert(type(prefix.owner)=="nil" or type(prefix.owner)=="string", "prefix.owner 
 assert(type(prefix.org)=="nil" or type(prefix.org)=="string", "prefix.org param incorrect")
 assert(type(prefix.menu)=="nil" or type(prefix.menu)=="boolean", "prefix.menu param incorrect")
 assert(type(prefix.dll_overrides)=="nil" or type(prefix.dll_overrides)=="table", "prefix.dll_overrides param incorrect")
+assert(type(tweaks)=="nil" or type(tweaks)=="table", "tweaks param incorrect")
 
 -- check prefix.dll_overrides and generate missing fields
 if type(prefix.dll_overrides)=="table" then
@@ -55,8 +56,46 @@ if type(prefix.dll_overrides)=="table" then
  end
 end
 
+-- check tweaks, generate stuff
+if type(tweaks)=="table" then
+ -- fontsmooth
+ assert(type(tweaks.fontsmooth)=="nil" or type(tweaks.fontsmooth)=="string", "tweaks.fontsmooth param incorrect")
+ if type(tweaks.fontsmooth)=="string" then
+  fontsmooth=tweaks.fontsmooth
+  tweaks.fontsmooth={ enabled=true }
+  if fontsmooth=="none" then
+   tweaks.fontsmooth.mode=0
+   tweaks.fontsmooth.type=0
+   tweaks.fontsmooth.orientation=1
+  elseif fontsmooth=="simple" then
+   tweaks.fontsmooth.mode=2
+   tweaks.fontsmooth.type=1
+   tweaks.fontsmooth.orientation=1
+  elseif fontsmooth=="rgb" then
+   tweaks.fontsmooth.mode=2
+   tweaks.fontsmooth.type=2
+   tweaks.fontsmooth.orientation=1
+  elseif fontsmooth=="bgr" then
+   tweaks.fontsmooth.mode=2
+   tweaks.fontsmooth.type=1
+   tweaks.fontsmooth.orientation=0
+  else
+   error("fontsmooth value incorrect")
+  end
+ else
+  tweaks.fontsmooth={ enabled=false }
+ end
+end
+
+-- load profile, and perform it's verification
 profile=loadstring("return " .. loader.extra[1])()
 assert(type(profile)=="table", "selected profile is missing or not a table")
+
+-- if "tweaks" pseudo-profile selected, then skip regular profile checks
+if loader.extra[1]=="tweaks" then
+ os.exit()
+end
+
 assert(type(profile.run)=="table", "\"run\" subtable is not a table type or missing")
 
 for index,field in ipairs(profile.run) do
