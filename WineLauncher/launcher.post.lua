@@ -58,6 +58,18 @@ end
 
 -- check tweaks, generate stuff
 if type(tweaks)=="table" then
+ tweaks.enabled=true
+ -- winetricks
+ assert(type(tweaks.winetricks)=="nil" or ( type(tweaks.winetricks)=="string" and string.len(tweaks.winetricks)>0 ), "tweaks.winetricks param incorrect")
+ -- allfonts
+ assert(type(tweaks.allfonts)=="nil" or type(tweaks.allfonts)=="boolean", "tweaks.allfonts param incorrect")
+ if type(tweaks.allfonts)~="boolean" then
+  tweaks.allfonts=false
+ else
+  if type(tweaks.winetricks)=="nil" and tweaks.allfonts==true then
+   error("allfonts tweak requires winetricks")
+  end
+ end
  -- fontsmooth
  assert(type(tweaks.fontsmooth)=="nil" or type(tweaks.fontsmooth)=="string", "tweaks.fontsmooth param incorrect")
  if type(tweaks.fontsmooth)=="string" then
@@ -85,17 +97,20 @@ if type(tweaks)=="table" then
  else
   tweaks.fontsmooth={ enabled=false }
  end
+else
+ tweaks={ enabled=false }
 end
 
 -- load profile, and perform it's verification
 profile=loadstring("return " .. loader.extra[1])()
-assert(type(profile)=="table", "selected profile is missing or not a table")
 
 -- if "tweaks" pseudo-profile selected, then skip regular profile checks
 if loader.extra[1]=="tweaks" then
- os.exit()
+ return
 end
 
+-- verify selected profile, and generate some helper stuff
+assert(type(profile)=="table", "selected profile is missing or not a table")
 assert(type(profile.run)=="table", "\"run\" subtable is not a table type or missing")
 
 for index,field in ipairs(profile.run) do

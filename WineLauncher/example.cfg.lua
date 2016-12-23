@@ -36,7 +36,11 @@ prefix =
 -- may be reapplied if you run wine-launcher.sh with pseudoprofile "tweaks"
 tweaks =
 {
-	fontsmooth="none", -- none,simple,rgb,bgr; none - no smothing, simple - grayscale, rgb - cleartype rgb, bgr - cleartype bgr
+	-- path to winetricks script. it is mandatory for some tweaks to work
+	-- download it from here: https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+	winetricks=loader.path.combine(loader.workdir,"extra","winetricks"),
+	allfonts=false, -- if set to true, it will run winetricks allfonts that will download and install extra fonts
+	fontsmooth="simple", -- none,simple,rgb,bgr; none - no smothing, simple - grayscale, rgb - cleartype rgb, bgr - cleartype bgr
 }
 
 -- exec profiles for configured prefix. at least one is mandatory

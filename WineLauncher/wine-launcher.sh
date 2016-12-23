@@ -15,7 +15,7 @@ test -z "$profile" && echo "usage: wine-launcher.sh <config file> <exec profile>
 shift 1
 
 . "$script_dir/find-lua-helper.bash.in"
-. "$bash_lua_helper" "$config" -e prefix -e profile -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -o "$script_dir" -x "$@"
+. "$bash_lua_helper" "$config" -e prefix -e profile -e tweaks -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -o "$script_dir" -x "$@"
 
 shift $#
 
@@ -106,6 +106,36 @@ create_override() {
  check_errors
 }
 
+apply_tweaks() {
+ test "${cfg[tweaks.enabled]}" = "false" && return
+
+ #allfonts
+ if "${cfg[tweaks.allfonts]}" = "true"; then
+  log "applying allfonts tweak"
+  "${cfg[tweaks.winetricks]}" allfonts
+  check_errors
+ fi
+
+ #fontsmooth. idea taken from here: http://www.ubuntugeek.com/ubuntu-tip-easy-way-to-enable-font-smoothing-in-wine.html
+ if "${cfg[tweaks.fontsmooth.enabled]}" = "true"; then
+  log "applying fontsmooth tweak"
+  local regfile=`mktemp -p "$wineroot/drive_c" --suffix=.reg tmpreg-XXXXXX`
+  echo "REGEDIT4" >> "$regfile"
+  echo "" >> "$regfile"
+  echo "[HKEY_CURRENT_USER\Control Panel\Desktop]" >> "$regfile"
+  echo "\"FontSmoothing\"=\"${cfg[tweaks.fontsmooth.mode]}\"" >> "$regfile"
+  echo "\"FontSmoothingOrientation\"=dword:0000000${cfg[tweaks.fontsmooth.orientation]}" >> "$regfile"
+  echo "\"FontSmoothingType\"=dword:0000000${cfg[tweaks.fontsmooth.type]}" >> "$regfile"
+  echo "\"FontSmoothingGamma\"=dword:00000578" >> "$regfile"
+  regedit "$regfile"
+  check_errors
+  rm "$regfile"
+  check_errors
+ fi
+
+ true
+}
+
 #wineboot, if prefix not initialized
 if [ ! -f "$wineroot/launcher.init.mark" ]; then
 ################################################
@@ -144,6 +174,10 @@ check_errors
 rm "$regfile"
 check_errors
 
+log "applying tweaks"
+apply_tweaks
+test "$profile" = "tweaks" && exit 0
+
 ################################################
 fi
 
@@ -167,10 +201,17 @@ if [ ! -z "$docsdir" ]; then
  check_errors
 fi
 
+if [ "$profile" = "tweaks" ]; then
+ log "re-applying tweaks"
+ apply_tweaks
+ exit 0
+fi
+
 log "running profile $profile"
 
 #cleanup
 unset -f create_override
+unset -f apply_tweaks
 unset pwddir
 unset link
 unset line
