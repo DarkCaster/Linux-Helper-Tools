@@ -53,6 +53,7 @@ tweaks =
 	-- download it from here: https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 	winetricks=loader.path.combine(loader.workdir,"extra","winetricks"),
 	allfonts=false, -- if set to true, it will run winetricks allfonts that will download and install extra fonts
+	-- if font smoothing not working properly, try this before starting wine: xrdb -query | grep -vE 'Xft\.(anti|hint|rgba)' | xrdb
 	fontsmooth="simple", -- none,simple,rgb,bgr; none - no smothing, simple - grayscale, rgb - cleartype rgb, bgr - cleartype bgr
 }
 
