@@ -70,7 +70,7 @@ mkdir -p "$HOME/.local/share/desktop-directories"
 mv "$tmp_dirfile" "$HOME/.local/share/desktop-directories"
 
 #create and install menu file
-tmp_menufile="$tmp_dir/wine.menu"
+tmp_menufile="$tmp_dir/wineapps.menu"
 cat << EOF > "$tmp_menufile"
 <!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
     "http://www.freedesktop.org/standards/menu-spec/menu-1.0.dtd">
