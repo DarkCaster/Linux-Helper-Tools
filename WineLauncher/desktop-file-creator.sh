@@ -1,8 +1,10 @@
 #!/bin/bash
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
-script_link=`readlink "$script_dir/$0"`
-test ! -z "$script_link" && script_dir=`realpath \`dirname "$script_link"\``
+self=`basename "$0"`
+test ! -e "$script_dir/$self" && echo "script_dir detection failed. cannot proceed!" && exit 1
+script_file=`readlink "$script_dir/$self"`
+test ! -z "$script_file" && script_dir=`realpath \`dirname "$script_file"\``
 
 config="$1"
 test -z "$config" && echo "usage: desktop-file-creator.sh <config file> <exec profile> [true, to create separate wine startmenu category]" && exit 1

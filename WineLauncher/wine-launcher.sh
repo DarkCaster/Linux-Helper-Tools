@@ -2,8 +2,9 @@
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 self=`basename "$0"`
-script_link=`readlink "$script_dir/$self"`
-test ! -z "$script_link" && script_dir=`realpath \`dirname "$script_link"\``
+test ! -e "$script_dir/$self" && echo "script_dir detection failed. cannot proceed!" && exit 1
+script_file=`readlink "$script_dir/$self"`
+test ! -z "$script_file" && script_dir=`realpath \`dirname "$script_file"\``
 
 config="$1"
 test -z "$config" && echo "usage: wine-launcher.sh <config file> <exec profile> [other parameters, will be forwarded to executed apps]" && exit 1
@@ -183,7 +184,7 @@ unset winedist
 unset bash_lua_helper
 unset profile
 unset config
-unset script_link
+unset script_file
 unset script_dir
 unset self
 
