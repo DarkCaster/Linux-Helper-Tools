@@ -38,7 +38,7 @@ if type(prefix.dll_overrides)=="table" then
  end
 end
 
-if type(prefix.menu) == "boolean" or prefix.menu == true then
+if type(prefix.menu)~="boolean" or prefix.menu==false then
  if type(prefix.dll_overrides)=="nil" then prefix.dll_overrides={} end
  prefix.dll_overrides.winemenubuilder = { "native", loader.extra[2] .. loader.slash .. "winemenubuilder.exe", "winemenubuilder.exe", "winemenubuilder.exe"}
 end
