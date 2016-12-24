@@ -1,5 +1,6 @@
 #!/bin/bash
 
+curdir="$PWD"
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 self=`basename "$0"`
 test ! -e "$script_dir/$self" && echo "script_dir detection failed. cannot proceed!" && exit 1
@@ -15,7 +16,7 @@ test -z "$profile" && echo "usage: wine-launcher.sh <config file> <exec profile>
 shift 1
 
 . "$script_dir/find-lua-helper.bash.in"
-. "$bash_lua_helper" "$config" -e prefix -e profile -e tweaks -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -o "$script_dir" -x "$@"
+. "$bash_lua_helper" "$config" -e prefix -e profile -e tweaks -b "$script_dir/launcher.pre.lua" -a "$script_dir/launcher.post.lua" -o "$profile" -o "$script_dir" -o "$curdir" -x "$@"
 
 shift $#
 

@@ -1,7 +1,8 @@
 -- example config for wine-launcher script.
 
 -- some of extra helper global vars for use inside this config:
--- launcher_dir - directory, where all wine-launcger stuff installed
+-- launcher_dir - directory, where all wine-launcher stuff installed
+-- launcher_pwd - current directory, at the moment of wine-launcher invocation 
 -- loader.args - indexed array, where all extra command line arguments is stored (starting from index 1)
 
 -- prefix definition. mandatory
