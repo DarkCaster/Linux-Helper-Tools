@@ -25,37 +25,12 @@ shift $#
 
 test "${#cfg[@]}" = "0" && echo "can't find variable with bash_lua_helper results. bash_lua_helper failed!" && exit 1
 
-if ! check_lua_export profile.desktop.name; then
- echo "desktop sub-table for selected profile is missing"
- exit 1
-fi
-
 tmp_dir=`mktemp -d -t desktop-file-creator-XXXXXXXX`
-tmp_desktop="$tmp_dir/${cfg[profile.desktop.filename]}"
-
-# create desktop file
-echo "#!/usr/bin/env xdg-open" >> "$tmp_desktop"
-echo "[Desktop Entry]" >> "$tmp_desktop"
-echo "Type=Application" >> "$tmp_desktop"
-echo "Name=${cfg[profile.desktop.name]}" >> "$tmp_desktop"
-echo "GenericName=wine-launcher.sh \"$config\" \"$profile\"" >> "$tmp_desktop"
-echo "Comment=${cfg[profile.desktop.comment]}" >> "$tmp_desktop"
-echo "Exec=wine-launcher.sh \"$config\" \"$profile\"" >> "$tmp_desktop"
-echo "Icon=${cfg[profile.desktop.icon]}" >> "$tmp_desktop"
-if [ "$create_cat" = "true" ]; then
- echo "Categories=Wine;${cfg[profile.desktop.categories]}" >> "$tmp_desktop"
-else
- echo "Categories=${cfg[profile.desktop.categories]}" >> "$tmp_desktop"
-fi
-if [ ! -z "${cfg[profile.desktop.mimetype]}" ]; then
- echo "MimeType=${cfg[profile.desktop.mimetype]}" >> "$tmp_desktop"
-fi
-echo "Terminal=${cfg[profile.desktop.terminal]}" >> "$tmp_desktop"
-echo "StartupNotify=${cfg[profile.desktop.startupnotify]}" >> "$tmp_desktop"
-chmod 755 "$tmp_desktop"
 
 ###################################
 if [ "$create_cat" = "true" ]; then
+
+echo "creating Wine Applications submenu and Wine category"
 
 #create and install directory file
 tmp_dirfile="$tmp_dir/wineapps.directory"
@@ -94,9 +69,59 @@ mv "$tmp_menufile" "$HOME/.config/menus/mate-applications-merged"
 fi
 ###################################
 
+###################################
+if check_lua_export profile.desktop.name; then
+
+echo "creating desktop file for profile $profile"
+
+tmp_desktop="$tmp_dir/${cfg[profile.desktop.filename]}"
+
+# create desktop file
+echo "#!/usr/bin/env xdg-open" >> "$tmp_desktop"
+echo "[Desktop Entry]" >> "$tmp_desktop"
+echo "Type=Application" >> "$tmp_desktop"
+echo "Name=${cfg[profile.desktop.name]}" >> "$tmp_desktop"
+echo "GenericName=wine-launcher.sh \"$config\" \"$profile\"" >> "$tmp_desktop"
+echo "Comment=${cfg[profile.desktop.comment]}" >> "$tmp_desktop"
+echo "Exec=wine-launcher.sh \"$config\" \"$profile\"" >> "$tmp_desktop"
+echo "Icon=${cfg[profile.desktop.icon]}" >> "$tmp_desktop"
+if [ "$create_cat" = "true" ]; then
+ echo "Categories=Wine;${cfg[profile.desktop.categories]}" >> "$tmp_desktop"
+else
+ echo "Categories=${cfg[profile.desktop.categories]}" >> "$tmp_desktop"
+fi
+if [ ! -z "${cfg[profile.desktop.mimetype]}" ]; then
+ echo "MimeType=${cfg[profile.desktop.mimetype]}" >> "$tmp_desktop"
+fi
+echo "Terminal=${cfg[profile.desktop.terminal]}" >> "$tmp_desktop"
+echo "StartupNotify=${cfg[profile.desktop.startupnotify]}" >> "$tmp_desktop"
+chmod 755 "$tmp_desktop"
+
 test -e "$HOME/.local/share/applications/${cfg[profile.desktop.filename]}" && rm "$HOME/.local/share/applications/${cfg[profile.desktop.filename]}"
 mkdir -p "$HOME/.local/share/applications"
 mv "$tmp_desktop" "$HOME/.local/share/applications"
+
+fi
+###################################
+
+###################################
+if check_lua_export profile.mime_list; then
+
+echo "installing mime packages for profile $profile"
+
+mkdir -p "$HOME/.local/share/mime"
+
+for target in ${cfg[profile.mime_list]}
+do
+ echo "installing $target package"
+ echo "${cfg[profile.mime.$target]}" > "$HOME/.local/share/mime/$target.xml"
+done
+
+echo "runnint update-mime-database"
+update-mime-database "$HOME/.local/share/mime"
+
+fi
+###################################
 
 rm -rf "$tmp_dir"
 

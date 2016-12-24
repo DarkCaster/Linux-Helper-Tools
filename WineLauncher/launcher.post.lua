@@ -156,13 +156,13 @@ end
 assert(type(profile.mime)=="nil" or type(profile.mime)=="table", "\"mime\" subtable is not a table type")
 if type(profile.mime)=="table" then
  --create list of files to install
- prefix.mime_list=""
- for key,value in pairs(prefix.mime) do
+ profile.mime_list=""
+ for key,value in pairs(profile.mime) do
   assert(type(value)=="string", "prefix.mime." .. key .. " must be a string")
-  if prefix.mime_list == "" then
-   prefix.mime_list=string.format("%s",key)
+  if profile.mime_list == "" then
+   profile.mime_list=string.format("%s",key)
   else
-   prefix.mime_list=string.format("%s %s", prefix.mime_list, key)
+   profile.mime_list=string.format("%s %s", profile.mime_list, key)
   end
  end
 end
