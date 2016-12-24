@@ -107,20 +107,48 @@ regedit =
 		fi',
 		launcher.pwd,
 	},
+	desktop =
+	{
+		name = "run regedit",
+		comment = "regedit for prefix at " .. prefix.root,
+		icon = "wine-winecfg",
+		mimetype = "text/x-ms-regedit",
+		terminal = false,
+		startupnotify = false,
+	},
+}
+
+notepad =
+{
+	run =
+	{
+		launcher.gen_filename_from_args() ..
+		'test ! -z "$filename" && wine notepad "$filename" || wine notepad',
+		launcher.pwd,
+	},
+	desktop =
+	{
+		name = "notepad",
+		comment = "notepad for prefix at " .. prefix.root,
+		icon = "wine-notepad",
+		mimetype = "text/x-wine-notepad-test",
+		terminal = false,
+		startupnotify = true,
+	},
 	-- optional info about mime xml package file deploy. for use with desktop file creator
 	mime =
 	{
 		-- for each string it will create <stringname>.xml file at ~/.local/share/mime and run update-mime-database
-		wine_regfile='<?xml version="1.0" encoding="UTF-8"?>\
+		notepad_test='<?xml version="1.0" encoding="UTF-8"?>\
 			<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">\
-				<mime-type type="application/x-wine-regfile">\
-					<comment>Registry Data File</comment>\
-					<icon name="text-x-install"/>\
+				<mime-type type="text/x-wine-notepad-test">\
+					<comment>Notepad File</comment>\
+					<icon name="text-plain"/>\
 					<glob-deleteall/>\
-					<glob pattern="*.reg"/>\
+					<glob pattern="*.notepad"/>\
 				</mime-type>\
 			</mime-info>'
-	}
+	},
 }
 
 -- run interactive shell with all needed env setup to start wine for current prefix
