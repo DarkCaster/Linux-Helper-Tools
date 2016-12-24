@@ -99,7 +99,7 @@ regedit =
 	run =
 	{
 		launcher.gen_filename_from_args() ..
-		'wine regedit "$filename"\
+		'test ! -z "$filename" && wine regedit "$filename" || wine regedit\
 		if [ "z$?" = "z0" ]; then\
 			test ! -z "$filename" && zenity --info --text="file $filename import complete"\
 		else\
