@@ -153,3 +153,17 @@ if type(profile.desktop)=="table" then
  profile.desktop.filename="wine-launcher-profile-" .. loader.extra[1] .. ".desktop"
 end
 
+assert(type(profile.mime)=="nil" or type(profile.mime)=="table", "\"mime\" subtable is not a table type")
+if type(profile.mime)=="table" then
+ --create list of files to install
+ prefix.mime_list=""
+ for key,value in pairs(prefix.mime) do
+  assert(type(value)=="string", "prefix.mime." .. key .. " must be a string")
+  if prefix.mime_list == "" then
+   prefix.mime_list=string.format("%s",key)
+  else
+   prefix.mime_list=string.format("%s %s", prefix.mime_list, key)
+  end
+ end
+end
+

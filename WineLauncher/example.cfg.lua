@@ -94,6 +94,35 @@ winecfg =
 	},
 }
 
+regedit =
+{
+	run =
+	{
+		launcher.gen_filename_from_args() ..
+		'wine regedit "$filename"\
+		if [ "z$?" = "z0" ]; then\
+			test ! -z "$filename" && zenity --info --text="file $filename import complete"\
+		else\
+			test ! -z "$filename" && zenity --error --text="file $filename import failed"\
+		fi',
+		launcher.pwd,
+	},
+	-- optional info about mime xml package file deploy. for use with desktop file creator
+	mime =
+	{
+		-- for each string it will create <stringname>.xml file at ~/.local/share/mime and run update-mime-database
+		wine_regfile='<?xml version="1.0" encoding="UTF-8"?>\
+			<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">\
+				<mime-type type="application/x-wine-regfile">\
+					<comment>Registry Data File</comment>\
+					<icon name="text-x-install"/>\
+					<glob-deleteall/>\
+					<glob pattern="*.reg"/>\
+				</mime-type>\
+			</mime-info>'
+	}
+}
+
 -- run interactive shell with all needed env setup to start wine for current prefix
 -- (try "winefile" or "wine regedit" commands for example)
 shell = { run = { "bash" } }
