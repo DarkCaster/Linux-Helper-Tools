@@ -7,13 +7,20 @@ script_file=`readlink "$script_dir/$self"`
 test ! -z "$script_file" && script_dir=`realpath \`dirname "$script_file"\``
 
 config="$1"
-test -z "$config" && echo "usage: desktop-file-creator.sh <config file> <exec profile> [true, to create separate wine startmenu category]" && exit 1
+test -z "$config" && echo "usage: desktop-file-creator.sh <config file> <exec profile> <action: install\uninstall> [true, to create separate wine startmenu category]" && exit 1
 config=`realpath -s "$config"`
 test ! -f "$config" && echo "config file missing" && exit 1
 shift 1
 
 profile="$1"
-test -z "$profile" && echo "usage: desktop-file-creator.sh <config file> <exec profile> [true, to create separate wine startmenu category]" && exit 1
+test -z "$profile" && echo "usage: desktop-file-creator.sh <config file> <exec profile> <action: install\uninstall> [true, to create separate wine startmenu category]" && exit 1
+shift 1
+
+action="$1"
+test -z "$action" && echo "usage: desktop-file-creator.sh <config file> <exec profile> <action: install\uninstall> [true, to create separate wine startmenu category]" && exit 1
+if [ "$action" != "install" ] && [ "$action" != "uninstall" ]; then
+ echo "action param incorrect" && exit 1
+fi
 shift 1
 
 create_cat="$1"
@@ -28,7 +35,7 @@ test "${#cfg[@]}" = "0" && echo "can't find variable with bash_lua_helper result
 tmp_dir=`mktemp -d -t desktop-file-creator-XXXXXXXX`
 
 ###################################
-if [ "$create_cat" = "true" ]; then
+if [ "$create_cat" = "true" ] && [ "$action" != "install" ]; then
 
 echo "creating Wine Applications submenu and Wine category"
 
@@ -72,6 +79,8 @@ fi
 ###################################
 if check_lua_export profile.desktop.name; then
 
+if [ "$action" = "install" ]; then
+
 echo "creating desktop file for profile $profile"
 
 tmp_desktop="$tmp_dir/${cfg[profile.desktop.filename]}"
@@ -101,11 +110,20 @@ test -e "$HOME/.local/share/applications/${cfg[profile.desktop.filename]}" && rm
 mkdir -p "$HOME/.local/share/applications"
 mv "$tmp_desktop" "$HOME/.local/share/applications"
 
+else
+
+echo "removing desktop file for profile $profile"
+rm "$HOME/.local/share/applications/${cfg[profile.desktop.filename]}"
+
+fi
+
 fi
 ###################################
 
 ###################################
 if check_lua_export profile.mime_list; then
+
+if [ "$action" = "install" ]; then
 
 echo "installing mime packages for profile $profile"
 
@@ -117,7 +135,18 @@ do
  echo "${cfg[profile.mime.$target]}" > "$HOME/.local/share/mime/$target.xml"
 done
 
-echo "runnint update-mime-database"
+else
+
+echo "removing mime packages for profile $profile"
+for target in ${cfg[profile.mime_list]}
+do
+ echo "removing $target package"
+ rm "$HOME/.local/share/mime/$target.xml"
+done
+
+fi
+
+echo "running update-mime-database"
 update-mime-database "$HOME/.local/share/mime"
 
 fi
