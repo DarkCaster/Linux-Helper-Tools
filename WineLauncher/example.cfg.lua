@@ -143,7 +143,7 @@ notepad =
 			<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">\
 				<mime-type type="text/x-wine-notepad-test">\
 					<comment>Notepad File</comment>\
-					<icon name="text-plain"/>\
+					<icon name="wine-notepad"/>\
 					<glob-deleteall/>\
 					<glob pattern="*.notepad"/>\
 				</mime-type>\
