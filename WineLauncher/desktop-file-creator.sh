@@ -40,7 +40,7 @@ echo "Type=Application" >> "$tmp_desktop"
 echo "Name=${cfg[profile.desktop.name]}" >> "$tmp_desktop"
 echo "GenericName=wine-launcher.sh \"$config\" \"$profile\"" >> "$tmp_desktop"
 echo "Comment=${cfg[profile.desktop.comment]}" >> "$tmp_desktop"
-echo "Exec=wine-launcher.sh \"$config\" \"$profile\" %u" >> "$tmp_desktop"
+echo "Exec=wine-launcher.sh \"$config\" \"$profile\"" >> "$tmp_desktop"
 echo "Icon=${cfg[profile.desktop.icon]}" >> "$tmp_desktop"
 if [ "$create_cat" = "true" ]; then
  echo "Categories=Wine;${cfg[profile.desktop.categories]}" >> "$tmp_desktop"
@@ -94,6 +94,7 @@ mv "$tmp_menufile" "$HOME/.config/menus/mate-applications-merged"
 fi
 ###################################
 
+test -e "$HOME/.local/share/applications/${cfg[profile.desktop.filename]}" && rm "$HOME/.local/share/applications/${cfg[profile.desktop.filename]}"
 mkdir -p "$HOME/.local/share/applications"
 mv "$tmp_desktop" "$HOME/.local/share/applications"
 
