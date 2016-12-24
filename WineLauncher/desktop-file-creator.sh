@@ -8,7 +8,7 @@ test ! -z "$script_file" && script_dir=`realpath \`dirname "$script_file"\``
 
 config="$1"
 test -z "$config" && echo "usage: desktop-file-creator.sh <config file> <exec profile> [true, to create separate wine startmenu category]" && exit 1
-config=`realpath "$config"`
+config=`realpath -s "$config"`
 test ! -f "$config" && echo "config file missing" && exit 1
 shift 1
 
