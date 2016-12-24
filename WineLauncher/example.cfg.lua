@@ -1,9 +1,14 @@
 -- example config for wine-launcher script.
 
 -- some of extra helper global vars for use inside this config:
--- launcher_dir - directory, where all wine-launcher stuff installed
--- launcher_pwd - current directory, at the moment of wine-launcher invocation 
 -- loader.args - indexed array, where all extra command line arguments is stored (starting from index 1)
+-- launcher.dir - directory, where all wine-launcher stuff installed
+-- launcher.pwd - current directory, at the moment of wine-launcher invocation
+-- launcher.gen_filename(par) - function that will convert linux filename string to bash evaluation,
+--     that will define bash "filename" variable with linux filename converted to wine filename when executed.
+--     see notepad++.lua for usage example.
+-- launcher.gen_filename_from_args() - function that will convert linux filename from loader.args[1] param (first extra parameter passed to wine-launcher script)
+--     see notepad++.lua for usage example.
 
 -- prefix definition. mandatory
 prefix =
@@ -23,9 +28,9 @@ prefix =
 	dll_overrides = -- create dll_overrides when perfix is setting up, dll's will be copied from user location to wine's system32 and overriden with selected rule
 	{
 		-- parameter format is { <override rule>, <dll source path>, <dll target file name without path>, [optional override name that entered to winecfg window, will be created automatically if missing] }
-		winemp3 = { "native", loader.path.combine(launcher_dir,"extra","l3codecx.acm"), "winemp3.acm" },
-		imm32 = { "native", loader.path.combine(launcher_dir,"extra","imm32.dll"), "imm32.dll" },
-		glu32 = { "builtin,native", loader.path.combine(launcher_dir,"extra","glu32.dll"), "glu32.dll" },
+		winemp3 = { "native", loader.path.combine(launcher.dir,"extra","l3codecx.acm"), "winemp3.acm" },
+		imm32 = { "native", loader.path.combine(launcher.dir,"extra","imm32.dll"), "imm32.dll" },
+		glu32 = { "builtin,native", loader.path.combine(launcher.dir,"extra","glu32.dll"), "glu32.dll" },
 		-- if source or target filename is missing, override name must be present. so, rule will be created, but nothing will be copied to wineprefix
 		dnsapi = { "native,builtin", "", "", "dnsapi" },
 	},
@@ -37,7 +42,7 @@ prefix =
 		-- it is better to launch external script here, rather than enter commands inplace.
 		"mkdir -p \"../Resources/Themes/luna\" \
 		check_errors \
-		cp \"" .. loader.path.combine(launcher_dir,"extra","themes","luna.msstyles") .. "\" \"../Resources/Themes/luna\" \
+		cp \"" .. loader.path.combine(launcher.dir,"extra","themes","luna.msstyles") .. "\" \"../Resources/Themes/luna\" \
 		check_errors"
 		,
 		-- second element - string: optional path to set before performing exec. if omited, it will be set to "c:\windows\system32" dir inside prefix.
@@ -52,7 +57,7 @@ tweaks =
 {
 	-- path to winetricks script. it is mandatory for some tweaks to work
 	-- download it from here: https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-	winetricks=loader.path.combine(launcher_dir,"extra","winetricks"),
+	winetricks=loader.path.combine(launcher.dir,"extra","winetricks"),
 	allfonts=false, -- if set to true, it will run winetricks allfonts that will download and install extra fonts
 	-- if font smoothing not working properly, try this before starting wine: xrdb -query | grep -vE 'Xft\.(anti|hint|rgba)' | xrdb
 	fontsmooth="simple", -- none,simple,rgb,bgr; none - no smothing, simple - grayscale, rgb - cleartype rgb, bgr - cleartype bgr
