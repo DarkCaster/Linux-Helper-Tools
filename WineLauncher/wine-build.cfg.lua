@@ -12,6 +12,21 @@ build_seq=
 
 profiles=
 {
+	wine_1755_suse421=
+	{
+		src=
+		{
+			-- wget-tarbz2, local
+			type="wget-tarbz",
+			link="https://dl.winehq.org/wine/source/1.7/wine-1.7.55.tar.bz2",
+			-- optional
+			sign="https://dl.winehq.org/wine/source/1.7/wine-1.7.55.tar.bz2.sign",
+		},
+		build_seq={ prepare=build_seq.prepare, make=build_seq.make, install=build_seq.install,
+			configure={ "./configure --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-hal " .. prefix_addon, 'echo "configure complete"' },
+		},
+	},
+
 	wine_186_suse421=
 	{
 		src=
@@ -38,7 +53,7 @@ profiles=
 			sign="https://dl.winehq.org/wine/source/2.0/wine-2.0-rc3.tar.bz2.sign",
 		},
 		build_seq={ prepare=build_seq.prepare, make=build_seq.make, install=build_seq.install,
-			configure={ "./configure --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-hal " .. prefix_addon, 'echo "configure complete;"', "read" },
+			configure={ "./configure --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-hal " .. prefix_addon, 'echo "configure complete;"' },
 		},
 	},
 }
