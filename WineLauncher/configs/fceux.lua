@@ -44,3 +44,24 @@ fceux =
 	},
 }
 
+fceux_custom =
+{
+	run =
+	{
+		loader.path.combine(loader.workdir,"mount-roms.sh") .. '\
+		check_errors\
+		wine fceux.exe\
+		' .. loader.path.combine(loader.workdir,"umount-roms.sh"),
+		loader.path.combine(prefix.root,"drive_c","fceux")
+	},
+	desktop =
+	{
+		name = "FCEUX",
+		comment = "FCEUX NES emulator",
+		icon = loader.path.combine(loader.workdir,"fceux.png"),
+		categories = "Game;",
+		terminal = false,
+		startupnotify = false,
+	},
+}
+
