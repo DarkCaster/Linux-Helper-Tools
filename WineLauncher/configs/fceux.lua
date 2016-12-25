@@ -50,7 +50,7 @@ fceux_custom =
 	{
 		loader.path.combine(loader.workdir,"mount-roms.sh") .. '\
 		check_errors\
-		wine fceux.exe\
+		wine fceux.exe 1>"' .. loader.path.combine(loader.workdir,"fceux.log") ..'" 2>&1\
 		' .. loader.path.combine(loader.workdir,"umount-roms.sh"),
 		loader.path.combine(prefix.root,"drive_c","fceux")
 	},
