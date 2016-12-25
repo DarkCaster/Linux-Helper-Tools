@@ -36,8 +36,6 @@ check_errors () {
  fi
 }
 
-echo "$cfg_list"
-
 case "${cfg[build.src.type]}" in
  "wget-tarbz")
   echo "downloading source from ${cfg[build.src.link]}"
