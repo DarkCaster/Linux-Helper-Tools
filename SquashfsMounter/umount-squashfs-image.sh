@@ -39,6 +39,8 @@ exit_with_lock(){
  exit $code
 }
 
+lock_enter
+
 #get full image path
 image=`realpath "$image"`
 log "trying to umount squashfs image: $image"

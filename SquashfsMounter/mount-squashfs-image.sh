@@ -41,11 +41,12 @@ exit_with_lock(){
  exit $code
 }
 
+
+lock_enter
+
 #get full image path
 image=`realpath "$image"`
 log "trying to mount squashfs image: $image"
-
-lock_enter
 
 #check image is exist
 check=`$losetup -j "$image" | wc -l`
