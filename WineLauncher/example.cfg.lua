@@ -131,6 +131,7 @@ notepad =
 		name = "notepad",
 		comment = "notepad for prefix at " .. prefix.root,
 		icon = "wine-notepad",
+		categories = "Utility;TextEditor;",
 		mimetype = "text/x-wine-notepad-test",
 		terminal = false,
 		startupnotify = true,

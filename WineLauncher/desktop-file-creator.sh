@@ -35,7 +35,7 @@ test "${#cfg[@]}" = "0" && echo "can't find variable with bash_lua_helper result
 tmp_dir=`mktemp -d -t desktop-file-creator-XXXXXXXX`
 
 ###################################
-if [ "$create_cat" = "true" ] && [ "$action" != "install" ]; then
+if [ "$create_cat" = "true" ] && [ "$action" = "install" ]; then
 
 echo "creating Wine Applications submenu and Wine category"
 
