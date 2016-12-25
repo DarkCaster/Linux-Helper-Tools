@@ -82,6 +82,7 @@ profiles=
 		{
 			prepare=
 			{
+				string.format("\"%s\" \"%s\" \"%s\" \"%s\"", self, "libmpg123", prefix, config),
 				'export CXXFLAGS="-I'.. prefix ..'/include"',
 				'export CPPFLAGS="-I'.. prefix ..'/include"',
 				'export CFLAGS="-I'.. prefix ..'/include"',
