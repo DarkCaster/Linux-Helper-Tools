@@ -134,6 +134,27 @@ apply_tweaks() {
   check_errors
  fi
 
+ #alttabfocus
+ if check_lua_export tweaks.alttabfocus; then
+  log "applying alttabfocus tweak"
+  local regfile=`mktemp -p "$wineroot/drive_c" --suffix=.reg tmpreg-XXXXXX`
+  if "${cfg[tweaks.alttabfocus]}" = "true"; then
+   echo "REGEDIT4" >> "$regfile"
+   echo "" >> "$regfile"
+   echo "[HKEY_CURRENT_USER\Software\Wine\X11 Driver]" >> "$regfile"
+   echo "\"UseTakeFocus\"=\"N\"" >> "$regfile"
+  else
+   echo "REGEDIT4" >> "$regfile"
+   echo "" >> "$regfile"
+   echo "[HKEY_CURRENT_USER\Software\Wine\X11 Driver]" >> "$regfile"
+   echo "\"UseTakeFocus\"=-" >> "$regfile"
+  fi
+  regedit "$regfile" 2>/dev/null
+  check_errors
+  rm "$regfile"
+  check_errors
+ fi
+
  true
 }
 

@@ -109,6 +109,8 @@ if type(tweaks)=="table" then
  else
   tweaks.fontsmooth={ enabled=false }
  end
+ -- alttabfocus
+ assert(type(tweaks.alttabfocus)=="nil" or type(tweaks.alttabfocus)=="boolean", "tweaks.alttabfocus param incorrect")
 else
  tweaks={ enabled=false }
 end

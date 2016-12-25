@@ -61,6 +61,7 @@ tweaks =
 	allfonts=false, -- if set to true, it will run winetricks allfonts that will download and install extra fonts
 	-- if font smoothing not working properly, try this before starting wine: xrdb -query | grep -vE 'Xft\.(anti|hint|rgba)' | xrdb
 	fontsmooth="simple", -- none,simple,rgb,bgr; none - no smothing, simple - grayscale, rgb - cleartype rgb, bgr - cleartype bgr
+	alttabfocus=true, -- see https://forum.winehq.org/viewtopic.php?f=8&t=20646 for more info, true - set value, false - remove value, no alttabfocus param - do nothing
 }
 
 -- exec profiles for configured prefix. at least one is mandatory
