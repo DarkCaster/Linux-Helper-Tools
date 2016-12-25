@@ -124,6 +124,7 @@ fi
 if check_lua_export profile.mime_list; then
 
 mkdir -p "$HOME/.local/share/mime/packages"
+mkdir -p "$HOME/.local/share/applications"
 
 if [ "$action" = "install" ]; then
 
@@ -148,6 +149,9 @@ fi
 
 echo "running update-mime-database"
 update-mime-database "$HOME/.local/share/mime"
+
+echo "running update-desktop-database"
+update-desktop-database "$HOME/.local/share/applications"
 
 fi
 ###################################
