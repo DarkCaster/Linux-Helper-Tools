@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=SquashFS Image Mounter
+Icon=application-x-cd-image
+TryExec=mount-squashfs-image.sh
+Exec=mount-squashfs-image.sh %f
+Terminal=false
+Categories=System;
+MimeType=application/x-squashfs;
+NoDisplay=true
