@@ -44,7 +44,7 @@ if check_lua_export prefix.wine; then
  test ! -d "$winedist" && log "directory $winedist is missing" && exit 1
  export WINESERVER="$winedist/bin/wineserver"
  export WINELOADER="$winedist/bin/wine"
- export LD_LIBRARY_PATH="$winedist/lib64:$LD_LIBRARY_PATH"
+ export LD_LIBRARY_PATH="$winedist/lib64:$winedist/lib:$LD_LIBRARY_PATH"
  export PATH="$winedist/bin:$PATH"
 fi
 
