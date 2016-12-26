@@ -160,6 +160,9 @@ shell = { run = { "bash" } }
 -- run cmd.exe shell
 cmd = { run = { "wine cmd.exe" } }
 
+-- control panel
+control = { run = { "wine control" } }
+
 -- run winetricks
 winetricks = { run = { tweaks.winetricks } }
 

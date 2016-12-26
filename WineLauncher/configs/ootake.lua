@@ -25,6 +25,8 @@ cmd = { run = { "wine cmd.exe" } }
 
 winetricks = { run = { tweaks.winetricks } }
 
+control = { run = { "wine control" } }
+
 ootake =
 {
 	run =
