@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=__exec
+Hidden=false
+X-MATE-Autostart-enabled=true
+Name=systemd-for-desktop
+Comment=Prepare systemd env to be able to run desktop applications
+

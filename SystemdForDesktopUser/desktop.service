@@ -1,0 +1,9 @@
+[Unit]
+Description=Wait for systemd env setup for graphical user session is complete.
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=__start
+ExecStop=__stop
+
