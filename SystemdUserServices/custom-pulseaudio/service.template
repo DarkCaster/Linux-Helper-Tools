@@ -1,0 +1,11 @@
+[Unit]
+Description=Custom pulseaudio instance
+
+[Service]
+Type=forking
+ExecStart=__start
+ExecStop=__stop
+
+[Install]
+WantedBy=desktop.target
+
