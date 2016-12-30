@@ -89,7 +89,7 @@ if [ `check_proc "$pulse"` = "r" ]; then
  do_exit 1
 fi
 
-$pulse
+$pulse -D
 wait_for_proc started "$pulse"
 
 do_exit $?
