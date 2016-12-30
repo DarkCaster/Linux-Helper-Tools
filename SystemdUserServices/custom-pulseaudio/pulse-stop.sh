@@ -54,7 +54,7 @@ wait_for_proc () {
   try=`expr $try + 1`
   sleep 1
  done
- test $try -lt $waittime && return 0
+ test -z "$try" && return 0
  return 1
 }
 
