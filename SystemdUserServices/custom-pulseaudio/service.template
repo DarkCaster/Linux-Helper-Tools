@@ -3,8 +3,10 @@ Description=Custom pulseaudio instance
 
 [Service]
 Type=forking
-ExecStart=__start
-ExecStop=__stop
+ExecStartPre=__dir/restore-alsa-levels.sh
+ExecStart=__dir/pulse-start.sh
+ExecStop=__dir/pulse-stop.sh
+ExecStopPost=__dir/save-alsa-levels.sh
 
 [Install]
 WantedBy=desktop.target
