@@ -1,0 +1,13 @@
+[Unit]
+Description=Run dropbox as daemon
+
+[Service]
+Type=forking
+RestartSec=10
+Restart=on-abort
+ExecStart=__start
+ExecStop=__stop
+
+[Install]
+WantedBy=desktop.target
+
