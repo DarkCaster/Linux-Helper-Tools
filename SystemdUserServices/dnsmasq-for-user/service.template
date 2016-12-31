@@ -1,0 +1,11 @@
+[Unit]
+Description=User instance of dnsmasq. Configured authbind utility is required to start service in userspace
+
+[Service]
+Type=forking
+ExecStart=__start
+ExecStop=__stop
+
+[Install]
+WantedBy=desktop.target
+

@@ -1,0 +1,28 @@
+#interface=eno1
+#bind-interfaces
+
+listen-address=192.168.10.1
+
+port=0
+no-resolv
+no-poll
+no-hosts
+
+dhcp-range=192.168.10.10,192.168.10.49,255.255.255.0,24h
+dhcp-host=11:22:33:44:55:66,slave,192.168.10.50,infinite
+dhcp-authoritative
+dhcp-option=3
+dhcp-option=6
+
+#custom options with iSCSI target and resource server prefix
+dhcp-option-force=226,"tftp://192.168.10.1"
+dhcp-option-force=230,"iscsi:192.168.10.1:tcp:3260:0:iqn.2013-05.home:winroot"
+
+address=/master/192.168.10.1
+
+enable-tftp
+tftp-root=/var/lib/empty
+
+#example pxe boot image, relative to tftp-root
+#dhcp-boot=undionly.kpxe
+
