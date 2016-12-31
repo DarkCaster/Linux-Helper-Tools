@@ -17,6 +17,8 @@ bin_dir="$HOME/apps/systemd-services/dnsmasq"
 mkdir -p "$bin_dir"
 cp "$script_dir/dmsq-start.sh" "$bin_dir"
 chmod 755 "$bin_dir/dmsq-start.sh"
+cp "$script_dir/dmsq-post.sh" "$bin_dir"
+chmod 755 "$bin_dir/dmsq-post.sh"
 cp "$script_dir/dmsq-stop.sh" "$bin_dir"
 chmod 755 "$bin_dir/dmsq-stop.sh"
 
@@ -28,6 +30,7 @@ unit="dnsmasq-for-user.service"
 cp "$script_dir/service.template" "/tmp/$unit"
 sed -i -e "s|__start|$bin_dir/dmsq-start.sh \"$config_dir/dnsmasq.conf.in\"|g" "/tmp/$unit"
 sed -i -e "s|__stop|$bin_dir/dmsq-stop.sh|g" "/tmp/$unit"
+sed -i -e "s|__dir|$bin_dir|g" "/tmp/$unit"
 mv "/tmp/$unit" "$unit_dir/$unit"
 
 systemctl --user daemon-reload
