@@ -45,8 +45,10 @@ test -z "$align_payload" && log "align_payload=0" && align_payload="0"
 . "$script_dir/user.cfg.sh.in"
 check_errors "error while sourcing config file with user credentials"
 
-mkdir -p "$script_dir/config"
-check_errors
+if [ ! -e "$script_dir/config" ]; then
+ mkdir -p "$script_dir/config"
+ check_errors
+fi
 
 chown $user:$group "$script_dir/config"
 check_errors
