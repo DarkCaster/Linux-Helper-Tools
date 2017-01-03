@@ -1,0 +1,12 @@
+[Unit]
+Description=Auto mount and umount encfs directories
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=__start
+ExecStop=__stop
+
+[Install]
+WantedBy=desktop.target
+
