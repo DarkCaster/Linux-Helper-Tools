@@ -22,7 +22,8 @@ check_running () {
 
 for target in /tmp/istgt-user-$thisuser-private-*
 do
- pid=`cat "$target/dnsmasq.pid" 2>/dev/null`
+ pid=`cat "$target/istgt.pid" 2>/dev/null`
+ test -z "$pid" && pid="0"
  if [ "`check_running $pid`" = "y" ]; then
   log "Skipping running iscsi at $target"
  else

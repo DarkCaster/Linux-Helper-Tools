@@ -25,6 +25,7 @@ check_running () {
 for target in /tmp/dnsmasq-user-$thisuser-private-*
 do
  pid=`cat "$target/dnsmasq.pid" 2>/dev/null`
+ test -z "$pid" && pid="0"
  if [ "`check_running $pid`" = "y" ]; then
   log "Skipping running dnsmasq at $target"
  else
