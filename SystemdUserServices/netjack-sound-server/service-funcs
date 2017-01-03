@@ -1,0 +1,168 @@
+#!/bin/bash
+#
+
+waittime=5
+
+startproc="$startproc"
+if [ "$startproc" == "" ]; then
+startproc="/sbin/startproc"
+fi
+
+checkproc="$checkproc"
+if [ "$checkproc" == "" ]; then
+checkproc="/sbin/checkproc"
+fi
+
+killproc="$killproc"
+if [ "$killproc" == "" ]; then
+killproc="/sbin/killproc"
+fi
+
+try=0
+
+wait_for_pid () {
+ try=0
+ while test $try -lt $waittime ; do
+ case "$1" in
+  'created')
+   if [ -f "$2" ] ; then
+    try=''
+    break
+   fi
+  ;;
+  'removed')
+   if [ ! -f "$2" ] ; then
+    try=''
+    break
+   fi
+  ;;
+ esac
+ try=`expr $try + 1`
+ sleep 1
+ done
+}
+
+check_pid () {
+ local pid_file="$1"
+ local exec_cmd="$2"
+ if [ -f "$pid_file" ]; then
+  $checkproc -p "$pid_file" "$exec_cmd"
+  if [ "$?" == "0" ]; then
+   echo "r"
+  else
+   echo "s"
+  fi
+ else
+  echo "s"
+ fi
+}
+
+term_pid () {
+ local pid_file="$1"
+ local exec_cmd="$2"
+ local check=`check_pid "$pid_file" "$exec_cmd"`
+ if [ "$check" == "r" ]; then
+  $killproc -TERM -t2 -p "$pid_file" "$exec_cmd"
+  wait_for_pid removed "$pid_file"
+  if [ -n "$try" ]; then
+   echo "r"
+  else
+   echo "s"
+  fi
+ else
+  echo "s"
+ fi
+}
+
+kill_pid () {
+ local pid_file="$1"
+ local exec_cmd="$2"
+ local old_waittime=$waittime
+ waittime=3
+ local check=`check_pid "$pid_file" "$exec_cmd"`
+ if [ "$check" == "r" ]; then
+  $killproc -KILL -t2 -p "$pid_file" "$exec_cmd"
+  wait_for_pid removed "$pid_file"
+  if [ -n "$try" ]; then
+   check=`check_pid "$pid_file" "$exec_cmd"`
+   if [ "$check" == "r" ]; then
+    echo "r"
+   else
+    rm -f "$pid_file"
+    echo "s"
+   fi
+  else
+   echo "s"
+  fi
+ else
+  echo "s"
+ fi
+ waittime=$old_waittime
+}
+
+check_proc () {
+ local exec_cmd="$1"
+ $checkproc -z "$exec_cmd"
+ if [ "$?" = "0" ]; then
+  echo "r"
+ else
+  echo "s"
+ fi
+}
+
+wait_for_proc () {
+ try=0
+ local action="$1"
+ local exec_cmd="$2"
+ while test $try -lt $waittime ; do
+ case "$action" in
+  'started')
+   if [ `check_proc "$exec_cmd"` == "r" ]; then
+    try=''
+    break
+   fi
+  ;;
+  'stopped')
+   if [ `check_proc "$exec_cmd"` == "s" ]; then
+    try=''
+    break
+   fi
+  ;;
+ esac
+ try=`expr $try + 1`
+ sleep 1
+ done
+}
+
+term_proc () {
+ local exec_cmd="$1"
+ local check=`check_proc "$exec_cmd"`
+ if [ "$check" == "r" ]; then
+  $killproc -t2 -TERM "$exec_cmd"
+  wait_for_proc stopped "$exec_cmd"
+  if [ -n "$try" ]; then
+   echo "r"
+  else
+   echo "s"
+  fi
+ else
+  echo "s"
+ fi
+}
+
+kill_proc () {
+ local exec_cmd="$1"
+ local check=`check_proc "$exec_cmd"`
+ if [ "$check" == "r" ]; then
+  $killproc -t2 -KILL "$exec_cmd"
+  wait_for_proc stopped "$exec_cmd"
+  if [ -n "$try" ]; then
+   echo "r"
+  else
+   echo "s"
+  fi
+ else
+  echo "s"
+ fi
+}
+

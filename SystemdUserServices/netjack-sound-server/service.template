@@ -1,0 +1,11 @@
+[Unit]
+Description=NetJack instance for network audio streaming
+
+[Service]
+Type=forking
+ExecStart=__start
+ExecStop=__stop
+
+[Install]
+WantedBy=desktop.target
+
