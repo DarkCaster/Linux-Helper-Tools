@@ -1,0 +1,13 @@
+[Unit]
+Description=User instance of istgt
+
+[Service]
+Type=forking
+ExecStart=__start
+ExecStopPost=__dir/iscsi-post.sh
+TimeoutStopSec=10
+KillSignal=SIGINT
+
+[Install]
+WantedBy=desktop.target
+
