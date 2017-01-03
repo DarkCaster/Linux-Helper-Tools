@@ -5,7 +5,7 @@ Description=User instance of istgt
 Type=forking
 ExecStart=__start
 ExecStopPost=__dir/iscsi-post.sh
-TimeoutStopSec=10
+TimeoutStopSec=30
 KillSignal=SIGINT
 
 [Install]
