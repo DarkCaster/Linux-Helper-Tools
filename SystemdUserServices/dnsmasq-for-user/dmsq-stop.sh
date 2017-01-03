@@ -19,7 +19,7 @@ thisusername=`whoami`
 
 check_running () {
  local pid="$1"
- test "`ps -u $thisusername --no-headers | grep \"dnsmasq\" | awk '{print $1}' | grep $pid | wc -l`" -ge 1 && echo "y" || echo "n"
+ test "`ps -u $thisusername --no-headers | grep \"dnsmasq\" | awk '{print $1}' | grep \"^$pid\$\" | wc -l`" -ge 1 && echo "y" || echo "n"
 }
 
 for target in /tmp/dnsmasq-user-$thisuser-private-*
