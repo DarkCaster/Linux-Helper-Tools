@@ -1,8 +1,6 @@
 #!/bin/sh
 #
 
-extlog=""
-
 log () {
  local msg="$@"
  echo "$msg"
