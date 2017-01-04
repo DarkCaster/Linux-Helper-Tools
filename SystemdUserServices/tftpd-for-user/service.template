@@ -1,0 +1,11 @@
+[Unit]
+Description=User instance of in.tftpd
+
+[Service]
+Type=forking
+ExecStart=__start
+ExecStopPost=__dir/tftp-post.sh
+
+[Install]
+WantedBy=desktop.target
+

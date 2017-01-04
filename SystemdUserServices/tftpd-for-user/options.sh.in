@@ -1,0 +1,6 @@
+#!/bin/sh
+
+address="192.168.0.100"
+port="69"
+root_dir="/usr/lib/empty"
+
