@@ -163,5 +163,37 @@ profiles=
 			install=build_seq.install,
 		},
 	},
+
+	wine_200rc3_mp3_pulse=
+	{
+		src=
+		{
+			-- wget-tarbz2, local
+			type="wget-tarbz",
+			link="https://dl.winehq.org/wine/source/2.0/wine-2.0-rc3.tar.bz2",
+			-- optional
+			sign="https://dl.winehq.org/wine/source/2.0/wine-2.0-rc3.tar.bz2.sign",
+		},
+		build_seq=
+		{
+			prepare=
+			{
+				string.format("\"%s\" \"%s\" \"%s\" \"%s\"", self, "pulseaudio_71", prefix, config),
+				string.format("\"%s\" \"%s\" \"%s\" \"%s\"", self, "libmpg123_pulse", prefix, config),
+				'mkdir "gccld"',
+				'ln -s /usr/lib/libjson-c.so.2 ./gccld/libjson-c.so',
+				'ln -s /usr/lib/libsndfile.so.1 ./gccld/libsndfile.so',
+				'export CXXFLAGS="-O2 -I'.. prefix ..'/include"',
+				'export CPPFLAGS="-I'.. prefix ..'/include"',
+				'export CFLAGS="-O2 -I'.. prefix ..'/include"',
+				'export LDFLAGS="-L$PWD/gccld -L'.. prefix ..'/lib"',
+				'export PKG_CONFIG_PATH="'.. prefix .. '/lib/pkgconfig"',
+				'./tools/make_requests'
+			},
+			configure=custom_configure,
+			make=build_seq.make,
+			install=build_seq.install,
+		},
+	},
 }
 
