@@ -1,0 +1,10 @@
+;example config. each ssh tunnel described in separate section
+
+[example]
+enabled=true
+connect=sshtunnel@127.0.0.1 -p 22
+key=[cfg]/sshtunnel.key
+options=-L 1234:127.0.0.1:5678
+restarts=10
+sleep=5
+
