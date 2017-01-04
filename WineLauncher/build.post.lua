@@ -6,7 +6,7 @@ assert(type(build) == "table", "build profile is incorrect")
 assert(type(build.src) == "table", "src value is missing or invalid")
 assert(type(build.src.link) == "string", "src_link value is missing or invalid")
 assert(type(build.src.sign) == "nil" or type(build.src.sign) == "string", "src.sign value is missing or invalid")
-assert(build.src.type == "wget-tarbz" or build.src.type == "local", "src_get value is incorrect")
+assert(build.src.type == "wget-tarbz" or build.src.type == "wget-tarxz" or build.src.type == "local", "src_get value is incorrect")
 
 assert(type(build.build_seq) == "table", "build_seq value is missing or invalid")
 assert(type(build.build_seq.prepare) == "table", "build_seq.prepare value is missing or invalid")

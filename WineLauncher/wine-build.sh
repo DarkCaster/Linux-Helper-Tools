@@ -48,6 +48,17 @@ case "${cfg[build.src.type]}" in
   bzip2 -d -c ./source.tar.bz2 | tar -x --strip-components=1 -C "source"
   check_errors
  ;;
+ "wget-tarxz")
+  echo "downloading source from ${cfg[build.src.link]}"
+  wget -O ./source.tar.xz "${cfg[build.src.link]}"
+  check_errors
+  #TODO: check signature
+  mkdir "source"
+  check_errors
+  echo "extracting source archive"
+  xz -c -d ./source.tar.xz | tar -x --strip-components=1 -C "source"
+  check_errors
+ ;;
  "local")
   mkdir "source"
   check_errors
