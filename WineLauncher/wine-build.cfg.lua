@@ -24,9 +24,9 @@ profiles=
 				'mkdir "gccld"',
 				'ln -s /usr/lib/libjson-c.so.2 ./gccld/libjson-c.so',
 				'ln -s /usr/lib/libsndfile.so.1 ./gccld/libsndfile.so',
-				'export CXXFLAGS="-O2 -m32 -Wl,--no-warn-search-mismatch -I'.. prefix ..'/include"',
+				'export CXXFLAGS="-m32 -O2 -Wl,--no-warn-search-mismatch -I'.. prefix ..'/include"',
 				'export CPPFLAGS="-m32 -Wl,--no-warn-search-mismatch -I'.. prefix ..'/include"',
-				'export CFLAGS="-O2 -m32 -Wl,--no-warn-search-mismatch -I'.. prefix ..'/include"',
+				'export CFLAGS="-m32 -O2 -Wl,--no-warn-search-mismatch -I'.. prefix ..'/include"',
 				'export LDFLAGS="-m32 -L$PWD/gccld -L/usr/lib -L/lib -L'.. prefix ..'/lib"',
 				'export LIBS="-m32 -L$PWD/gccld -L/usr/lib -L/lib -L'.. prefix ..'/lib"',
 				'export LIBJSON_LIBS="-m32 -L$PWD/gccld -L/usr/lib -ljson-c"',
@@ -65,6 +65,36 @@ profiles=
 		},
 		build_seq={ prepare={ 'export CXXFLAGS="-m32"', 'export CPPFLAGS="-m32"', 'export CFLAGS="-m32"', 'export LDFLAGS="-m32"' }, make=build_seq.make, install=build_seq.install,
 			configure={ "./configure --with-audio=alsa --with-default-audio=alsa --with-cpu=i586_dither --enable-shared --disable-static " .. prefix_addon, 'echo "configure complete"' },
+		},
+	},
+
+	libmpg123_pulse=
+	{
+		src=
+		{
+			-- wget-tarbz2, local
+			type="wget-tarbz",
+			link="https://www.mpg123.de/download/mpg123-1.23.8.tar.bz2",
+			-- optional
+			sign="https://www.mpg123.de/download/mpg123-1.23.8.tar.bz2.sig",
+		},
+		build_seq=
+		{
+			prepare=
+			{
+				'mkdir "gccld"',
+				'ln -s /usr/lib/libjson-c.so.2 ./gccld/libjson-c.so',
+				'ln -s /usr/lib/libsndfile.so.1 ./gccld/libsndfile.so',
+				'export CXXFLAGS="-m32 -O2"',
+				'export CPPFLAGS="-m32"',
+				'export CFLAGS="-m32 -O2"',
+				'export LDFLAGS="-m32 -L$PWD/gccld -L'.. prefix ..'/lib -L/usr/lib -L/lib"',
+				'export PKG_CONFIG_PATH="'.. prefix .. '/lib/pkgconfig"',
+			},
+			configure=
+			{ "./configure --with-audio=pulse --with-default-audio=pulse --with-cpu=i586_dither --enable-shared --disable-static " .. prefix_addon, 'echo "configure complete"' },
+			make=build_seq.make,
+			install=build_seq.install,
 		},
 	},
 
