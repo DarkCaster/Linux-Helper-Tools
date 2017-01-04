@@ -1,0 +1,13 @@
+[Unit]
+Description=User instance of samba
+
+[Service]
+Type=forking
+ExecStart=__start
+ExecStopPost=__dir/samba-post.sh
+PIDFile=__pid
+TimeoutStopSec=30
+
+[Install]
+WantedBy=desktop.target
+

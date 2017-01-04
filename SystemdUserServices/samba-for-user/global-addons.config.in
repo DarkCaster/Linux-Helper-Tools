@@ -1,0 +1,9 @@
+acl allow execute always = True
+security = USER
+#bind interfaces only = yes
+#interfaces = eno1
+guest account = user
+workgroup = WORKGROUP
+tls enabled = no
+map to guest = Bad User
+smb ports = 445 139

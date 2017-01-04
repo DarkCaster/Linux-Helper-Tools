@@ -1,0 +1,11 @@
+[Shared]
+path = "/mnt/data/Shared"
+guest ok = Yes
+guest only = Yes
+writeable = Yes
+
+[Programs]
+path = "/mnt/data/Programs"
+guest ok = Yes
+guest only = Yes
+writeable = No
