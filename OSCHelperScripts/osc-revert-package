@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+#
+
+#input start basedir
+prj="$1"
+package="$2"
+rev="$3"
+
+echo "project: $prj package: $package revision: $rev"
+sleep 10
+
+osc sr -r $rev $prj $package $prj -m "revert to $rev"
+exit 0
+
+### >> created request id <number>
+### osc sr accept <number>
+### osc up
+

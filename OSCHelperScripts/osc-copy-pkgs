@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#
+
+#input start basedir
+sourcepr="$1"
+targetpr="$2"
+
+echo "source project is $sourcepr"
+echo "target project is $targetpr"
+
+sleep 10
+
+while read line
+do
+  echo "processing package: $line"
+  osc copypac -e $sourcepr $line $targetpr
+done <<< "$(osc ls $sourcepr)"
+
+cd "$olddir"
