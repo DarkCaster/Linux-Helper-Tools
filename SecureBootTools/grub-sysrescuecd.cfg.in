@@ -5,9 +5,3 @@ menuentry "SystemRescueCd" {
 	initrdefi /srcd/initram.igz
 }
 
-menuentry "SystemRescueCd AltKernel" {
-	set gfxpayload=keep
-	linuxefi /srcd/altker64.signed isoloop=/srcd/srcd.iso libata.noacpi=1
-	initrdefi /srcd/initram.igz
-}
-
