@@ -13,7 +13,7 @@ cd "$tmpdir/libvpx_build"
 check_error
 
 #--enable-unit-tests
-"$libvpxdir/configure" --prefix="//" --libdir="//lib" --disable-docs --disable-vp8 --enable-vp9 --enable-vp9-highbitdepth --enable-postproc --enable-vp9-postproc --enable-coefficient-range-checking --disable-pic --disable-shared --enable-static --disable-multithread --enable-multi-res-encoding --enable-vp9-temporal-denoising --enable-webm-io
+"$libvpxdir/configure" --prefix="//" --libdir="//lib" --disable-docs --disable-vp8 --enable-vp9 --enable-vp9-highbitdepth --enable-postproc --enable-vp9-postproc --enable-coefficient-range-checking --enable-pic --disable-shared --enable-static --disable-multithread --enable-multi-res-encoding --enable-vp9-temporal-denoising --enable-webm-io
 check_error
 
 make
@@ -31,4 +31,3 @@ check_error
 clean_pkg libvpx
 echo "===libvpx BUILD FINISHED==="
 echo " "
-

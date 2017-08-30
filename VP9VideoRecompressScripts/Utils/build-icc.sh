@@ -1,6 +1,6 @@
 #!/bin/bash
 
-checkout="2fac50fa0ee099c632d97a941a9871e7cecbe720"
+checkout="fed52670a24dee745c1ef38304938d9e5d7ecf25"
 
 mkd="mktemp -d"
 tmpdir="$($mkd)"
