@@ -14,6 +14,15 @@ do_exit () {
 
 thisuser=`id -u`
 thisusername=`whoami`
+authbind=""
+
+if [ "zzz$thisuser" != "zzz0" ]; then
+  authbind="`which authbind 2>/dev/null`"
+  if [ "zzz$authbind" = "zzz" ]; then
+    log "authbind binary is required to run samba server for regular user account!"
+    do_exit 10
+  fi
+fi
 
 smbd=""
 smbd_test="`which smbd 2>/dev/null`"
@@ -173,7 +182,11 @@ else
   cat "$config_auto" "$shares_in" > "$config_final"
 fi
 
-log "Starting samba daemon"
-"$smbd" --configfile="$config_final" --log-basename="$workdir/logs"
-
+if [ "zzz$authbind" = "zzz" ]; then
+  log "Starting samba daemon"
+  "$smbd" --configfile="$config_final" --log-basename="$workdir/logs"
+else
+  log "Starting samba daemon with authbind"
+  "$authbind" --deep "$smbd" --configfile="$config_final" --log-basename="$workdir/logs"
+fi
 do_exit 0
