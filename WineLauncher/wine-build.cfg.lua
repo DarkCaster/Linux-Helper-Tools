@@ -195,5 +195,18 @@ profiles=
 			install=build_seq.install,
 		},
 	},
+
+	wine_202=
+	{
+		src=
+		{
+			-- wget-tarbz2, local
+			type="wget-tarxz",
+			link="https://dl.winehq.org/wine/source/2.0/wine-2.0.2.tar.xz",
+			-- optional
+			sign="https://dl.winehq.org/wine/source/2.0/wine-2.0.2.tar.xz.sign",
+		},
+		build_seq={ prepare=build_seq.prepare, make=build_seq.make, install=build_seq.install, configure=custom_configure },
+	},
 }
 
