@@ -1,0 +1,14 @@
+#!/bin/bash
+
+bash_lua_helper=""
+
+for hint in "$@"
+do
+  #debug
+  #echo "probing $hint"
+  [[ -f $hint/lua-helper.bash.in ]] && bash_lua_helper="$hint/lua-helper.bash.in" && break
+done
+
+[[ -z $bash_lua_helper ]] && debug "lua-helper.bash.in not found!" && exit 1
+
+bash_lua_helper=`realpath "$bash_lua_helper"`

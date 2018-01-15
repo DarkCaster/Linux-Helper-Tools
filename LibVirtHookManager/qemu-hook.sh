@@ -39,5 +39,16 @@ hooks_dir="$link_dir"
 
 #try hook-config
 hook_cfg="$link_dir/$uuid.cfg.lua"
+[[ ! -L $hook_cfg ]] && debug "hook-config for uuid=$uuid is not installed, exiting" && exit 0
+hook_cfg=`readlink "$hook_cfg"`
+[[ ! -e $hook_cfg ]] && debug "hook-config for uuid=$uuid is a dangling symlink, exiting" && exit 0
+hook_cfg_uid=`realpath -s "$hook_cfg" | md5sum -t | cut -f1 -d" "`
 
-[[ ! -e $hook_cfg ]] && debug "hook-config for uuid=$uuid is not installed, exiting" && exit 0
+tmp_dir="$TMPDIR"
+[[ -z $tmp_dir || ! -d $tmp_dir ]] && tmp_dir="/tmp"
+tmp_dir=`realpath -m "$tmp_dir/qemu-hooks-$hook_cfg_uid"`
+mkdir -p "$tmp_dir" || exit 10
+
+. "$script_dir/find-lua-helper.bash.in" "$script_dir/BashLuaHelper" "$script_dir/../BashLuaHelper"
+
+. "$bash_lua_helper" "$hook_cfg" -e hooks -b "$script_dir/hook-config.pre.lua" -a "$script_dir/hook-config.post.lua" -o "$uuid" -o "$hook_uid" -o "$script_dir" -o "$tmp_dir"
