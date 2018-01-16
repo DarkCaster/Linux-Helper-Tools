@@ -58,3 +58,19 @@ logfile="$tmp_dir/debug.log"
 . "$bash_lua_helper" "$hook_cfg" -e hooks -b "$script_dir/hook-config.pre.lua" -a "$script_dir/hook-config.post.lua" -o "$uuid" -o "$hook_cfg_uid" -o "$script_dir" -o "$tmp_dir"
 
 [[ "${#cfg[@]}" = 0 ]] && debug "can't find config storage variable populated by bash_lua_helper. bash_lua_helper failed!" && exit 1
+
+hook_min=`get_lua_table_start hooks`
+hook_max=`get_lua_table_end hooks`
+for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))
+do
+  hook_start="$script_dir/${cfg[hooks.$hook_cnt.type]}_start.sh.in"
+  hook_stop="$script_dir/${cfg[hooks.$hook_cnt.type]}_stop.sh.in"
+  if [[ $op = ${cfg[hooks.$hook_cnt.op_start]} ]]; then
+    [[ ! -f $hook_start ]] && debug "hook start script not found at $hook_start" && exit 1
+    . "$hook_start"
+  fi
+  if [[ $op = ${cfg[hooks.$hook_cnt.op_stop]} ]]; then
+    [[ ! -f $hook_stop ]] && debug "hook stop script not found at $hook_stop" && exit 1
+    . "$hook_stop"
+  fi
+done

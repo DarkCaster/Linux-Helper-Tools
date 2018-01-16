@@ -1,7 +1,8 @@
 -- table with hook operations
 stunnel_test = {
   type="stunnel",
-  op="prepare",
+  op_start="prepare",
+  op_stop="release",
   client=true,
   syslog=false,
   debug=6,
