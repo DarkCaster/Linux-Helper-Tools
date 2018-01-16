@@ -7,8 +7,11 @@ sub="$3"
 # silently exit on unsupported operations
 [[ $op = attach || $op = reconnect || $op = restore || $op = migrate ]] && exit 0
 
+logfile=""
+
 debug () {
   echo "[QEMU-HOOK] $@"
+  [[ ! -z $logfile ]] && echo "[QEMU-HOOK] $@" >> "$logfile"
   true
 }
 
@@ -48,7 +51,10 @@ tmp_dir="$TMPDIR"
 [[ -z $tmp_dir || ! -d $tmp_dir ]] && tmp_dir="/tmp"
 tmp_dir=`realpath -m "$tmp_dir/qemu-hooks-$hook_cfg_uid"`
 mkdir -p "$tmp_dir" || exit 10
+logfile="$tmp_dir/debug.log"
 
 . "$script_dir/find-lua-helper.bash.in" "$script_dir/BashLuaHelper" "$script_dir/../BashLuaHelper"
 
-. "$bash_lua_helper" "$hook_cfg" -e hooks -b "$script_dir/hook-config.pre.lua" -a "$script_dir/hook-config.post.lua" -o "$uuid" -o "$hook_uid" -o "$script_dir" -o "$tmp_dir"
+. "$bash_lua_helper" "$hook_cfg" -e hooks -b "$script_dir/hook-config.pre.lua" -a "$script_dir/hook-config.post.lua" -o "$uuid" -o "$hook_cfg_uid" -o "$script_dir" -o "$tmp_dir"
+
+[[ "${#cfg[@]}" = 0 ]] && debug "can't find config storage variable populated by bash_lua_helper. bash_lua_helper failed!" && exit 1
