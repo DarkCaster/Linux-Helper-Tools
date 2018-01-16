@@ -1,11 +1,12 @@
 -- deps table verification
 assert(type(deps)=="table", "deps config param is not a table!")
+assert(type(hooks)=="nil", "config file must not include 'hooks' global parameter or table!")
 
 loader.asserts={}
 loader.asserts.result=nil
 
 function loader.asserts.stunnel(target)
- return "stunne profile assert failed"
+ --return "stunnel hook verification not implemented"
 end
 
 for dindex,dfield in pairs(deps) do
@@ -29,5 +30,9 @@ for dindex,dfield in pairs(deps) do
     if loader.asserts.result~=nil then
       error("hook table deps[".. dindex .."].hooks[".. index .."] verification failed with error: "..loader.asserts.result)
     end
+  end
+  if dfield.uuid==loader.config.uuid then
+    hooks=dfield.hooks
+    break
   end
 end
