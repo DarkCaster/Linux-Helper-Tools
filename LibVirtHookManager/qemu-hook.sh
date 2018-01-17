@@ -7,23 +7,25 @@ sub="$3"
 # silently exit on unsupported operations
 [[ $op = attach || $op = reconnect || $op = restore || $op = migrate ]] && exit 0
 
-logfile=""
+logfile="/tmp/qemu-hook-debug.log"
 
 debug () {
-  echo "[QEMU-HOOK] $@"
+  1>&2 echo "[QEMU-HOOK] $@"
   [[ ! -z $logfile ]] && echo "[QEMU-HOOK] $@" >> "$logfile"
   true
 }
+
+debug "qemu-hook.sh invoked with: obj=$obj op=$op sub=$sub extra_arg=$4"
 
 while read line
 do
   [[ $line =~ "<uuid>"([0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+)"</uuid>" ]] && \
     uuid=`echo ${BASH_REMATCH[1]} | tr '[:upper:]' '[:lower:]'` && break
-done < "${4:-/dev/stdin}"
+done
 
 [[ -z $uuid ]] && debug "no valid domain UUID was decoded from provided XML file" && exit 0
 
-debug "working with $uuid"
+debug "processing hooks for domain uuid: $uuid"
 
 #detection of actual script location, and\or link location
 link_dir="$( cd "$( dirname "$0" )" && pwd )"
@@ -67,10 +69,12 @@ do
   hook_stop="$script_dir/${cfg[hooks.$hook_cnt.type]}_stop.sh.in"
   if [[ $op = ${cfg[hooks.$hook_cnt.op_start]} ]]; then
     [[ ! -f $hook_start ]] && debug "hook start script not found at $hook_start" && exit 1
+    debug "running $hook_start for domain $uuid"
     . "$hook_start"
   fi
   if [[ $op = ${cfg[hooks.$hook_cnt.op_stop]} ]]; then
     [[ ! -f $hook_stop ]] && debug "hook stop script not found at $hook_stop" && exit 1
+    debug "running $hook_stop for domain $uuid"
     . "$hook_stop"
   fi
 done
