@@ -15,8 +15,6 @@ debug () {
   true
 }
 
-debug "qemu-hook.sh invoked with: obj=$obj op=$op sub=$sub extra_arg=$4"
-
 while read line
 do
   [[ $line =~ "<uuid>"([0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+"-"[0-9a-fA-F]+)"</uuid>" ]] && \
@@ -25,7 +23,7 @@ done
 
 [[ -z $uuid ]] && debug "no valid domain UUID was decoded from provided XML file" && exit 0
 
-debug "processing hooks for domain uuid: $uuid"
+debug "processing hooks for domain uuid: $uuid, op=$op sub=$sub"
 
 #detection of actual script location, and\or link location
 link_dir="$( cd "$( dirname "$0" )" && pwd )"
