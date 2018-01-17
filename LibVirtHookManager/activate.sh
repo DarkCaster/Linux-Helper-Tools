@@ -14,7 +14,7 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 mkdir -p "$target/hooks"
 ln -s "$script_dir/qemu-hook.sh" "$target/hooks/qemu"
 [[ ! -z "$cfg_dir" ]] && ln -s "$target/hooks/hook_manager" "$cfg_dir"
-[[ -z "$cfg_dir" ]] && cfg_dir="$target/hooks/qemu"
+[[ -z "$cfg_dir" ]] && cfg_dir="$target/hooks"
 
 # write config dir location
 2>/dev/null echo "$cfg_dir" > "/etc/qemu-hook-cfgdir" && exit 0 || true
