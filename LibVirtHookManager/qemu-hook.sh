@@ -61,6 +61,8 @@ logfile="$tmp_dir/debug.log"
 
 [[ "${#cfg[@]}" = 0 ]] && debug "can't find config storage variable populated by bash_lua_helper. bash_lua_helper failed!" && exit 1
 
+[[ ${cfg[hooks]} = none ]] && debug "can't find valid hooks sequence for domain uuid: $uuid" && exit 0
+
 hook_min=`get_lua_table_start hooks`
 hook_max=`get_lua_table_end hooks`
 for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))

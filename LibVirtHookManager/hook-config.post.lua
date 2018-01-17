@@ -44,3 +44,5 @@ for dindex,dfield in pairs(deps) do
     break
   end
 end
+
+if hooks==nil then hooks="none" end
