@@ -111,8 +111,8 @@ hook_min=`get_lua_table_start hooks`
 hook_max=`get_lua_table_end hooks`
 for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))
 do
-  hook_start="$script_dir/${cfg[hooks.$hook_cnt.type]}-start.sh.in"
-  hook_stop="$script_dir/${cfg[hooks.$hook_cnt.type]}-stop.sh.in"
+  hook_start="$script_dir/${cfg[hooks.$hook_cnt.type]}-start.bash.in"
+  hook_stop="$script_dir/${cfg[hooks.$hook_cnt.type]}-stop.bash.in"
   if [[ $op = ${cfg[hooks.$hook_cnt.op_start]} ]]; then
     [[ ! -f $hook_start ]] && debug "hook start script not found at $hook_start" && exit 1
     debug "running $hook_start for domain $uuid"
