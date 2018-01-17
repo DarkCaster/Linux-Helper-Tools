@@ -66,6 +66,44 @@ logfile="$tmp_dir/debug.log"
 
 [[ ${cfg[hooks]} = none ]] && debug "can't find valid hooks sequence for domain uuid: $uuid" && exit 0
 
+wait_for_pid_created () {
+  local pid_file="$1"
+  local timeout="$2"
+  [[ -z $timeout ]] && timeout="${cfg[global_params.timeout]}"
+  local timepass="0"
+  local step="0.1"
+  while [[ `echo "$timepass<=$timeout" | bc -q` = 1 ]]
+  do
+    [[ -f $pid_file ]] && break
+    [[ `echo "$timepass>=1.0" | bc -q` = 1 ]] && step="0.25"
+    [[ `echo "$timepass>=3.0" | bc -q` = 1 ]] && step="0.5"
+    [[ `echo "$timepass>=7.0" | bc -q` = 1 ]] && step="1"
+    sleep $step
+    timepass=`echo "$timepass+$step" | bc -q`
+  done
+  [[ `echo "$timepass>$timeout" | bc -q` = 1 ]] && return 1
+  return 0
+}
+
+wait_for_pid_removed () {
+  local pid_file="$1"
+  local timeout="$2"
+  [[ -z $timeout ]] && timeout="${cfg[global_params.timeout]}"
+  local timepass="0"
+  local step="0.1"
+  while [[ `echo "$timepass<=$timeout" | bc -q` = 1 ]]
+  do
+    [[ ! -f $pid_file ]] && break
+    [[ `echo "$timepass>=1.0" | bc -q` = 1 ]] && step="0.25"
+    [[ `echo "$timepass>=3.0" | bc -q` = 1 ]] && step="0.5"
+    [[ `echo "$timepass>=7.0" | bc -q` = 1 ]] && step="1"
+    sleep $step
+    timepass=`echo "$timepass+$step" | bc -q`
+  done
+  [[ `echo "$timepass>$timeout" | bc -q` = 1 ]] && return 1
+  return 0
+}
+
 hook_min=`get_lua_table_start hooks`
 hook_max=`get_lua_table_end hooks`
 for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))
