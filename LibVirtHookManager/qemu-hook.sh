@@ -104,6 +104,9 @@ wait_for_pid_removed () {
   return 0
 }
 
+#exit after any error
+set -e
+
 hook_min=`get_lua_table_start hooks`
 hook_max=`get_lua_table_end hooks`
 for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))
