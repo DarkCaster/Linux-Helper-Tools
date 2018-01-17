@@ -47,6 +47,10 @@ hook_cfg=`readlink "$hook_cfg"`
 [[ ! -e $hook_cfg ]] && debug "hook-config for uuid=$uuid is a dangling symlink, exiting" && exit 0
 hook_cfg_uid=`realpath -s "$hook_cfg" | md5sum -t | cut -f1 -d" "`
 
+#activate laodables
+
+. "$script_dir/loadables-helper.bash.in"
+
 tmp_dir="$TMPDIR"
 [[ -z $tmp_dir || ! -d $tmp_dir ]] && tmp_dir="/tmp"
 tmp_dir=`realpath -m "$tmp_dir/qemu-hooks-$hook_cfg_uid"`
