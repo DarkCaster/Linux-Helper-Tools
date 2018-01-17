@@ -20,6 +20,9 @@ for dindex,dfield in pairs(deps) do
   assert(type(dindex)=="number", "deps[".. dindex .."] is incorrect (must be an indexed element)!")
   assert(type(dfield)=="table", "deps[".. dindex .."] value is incorrect (must be a table)!")
   assert(type(dfield.uuid)=="string", "deps[".. dindex .."].uuid value is incorrect (must be a string)!")
+  dfield.uuid=string.lower(dfield.uuid)
+  assert(string.len(dfield.uuid)==36,"deps[".. dindex .."].uuid value is incorrect (must be valid UUID)!" )
+  assert(string.find(dfield.uuid,"^[0-9a-f]+%-[0-9a-f]+%-[0-9a-f]+%-[0-9a-f]+%-[0-9a-f]+$")~=nil,"deps[".. dindex .."].uuid value is incorrect (must be valid UUID)!")
   assert(type(dfield.hooks)=="table", "deps[".. dindex .."].hooks value is incorrect (must be a table)!")
   for index,field in pairs(dfield.hooks) do
     assert(type(index)=="number", "deps[".. dindex .."].hooks[".. index .."] is incorrect (must be an indexed element)!")
