@@ -14,6 +14,12 @@ stunnel_test = {
   verify=3,
 }
 
+global_params = {
+  timeout=10,
+  user=1000,
+  group=100,
+}
+
 deps = {
   {
     uuid="e9ce7ae0-272a-44b5-b4b6-eca4b738127b",

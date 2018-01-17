@@ -1,9 +1,26 @@
 -- deps table verification
 assert(type(deps)=="table", "deps config param is not a table!")
 assert(type(hooks)=="nil", "config file must not include 'hooks' global parameter or table!")
+assert(type(global_params)=="table" or type(global_params)=="nil", "global_params config param is incorrect!")
+if global_params==nil then global_params={} end
 
 loader.asserts={}
 loader.asserts.result=nil
+
+-- check global_params
+
+function loader.asserts.check_globals_num(name, default)
+  assert(type(global_params[name])=="number" or type(global_params[name])=="nil", "global_params.".. name .." value is incorrect!")
+  if global_params[name]==nil then global_params[name]=default end
+end
+
+loader.asserts.check_globals_num("timeout", 10)
+loader.asserts.check_globals_num("user", 0)
+loader.asserts.check_globals_num("group", 0)
+
+print(global_params.timeout)
+print(global_params.user)
+print(global_params.group)
 
 function loader.asserts.stunnel(target)
  --return "stunnel hook verification not implemented"
