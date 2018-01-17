@@ -59,7 +59,7 @@ logfile="$tmp_dir/debug.log"
 
 . "$script_dir/find-lua-helper.bash.in" "$script_dir/BashLuaHelper" "$script_dir/../BashLuaHelper"
 
-. "$bash_lua_helper" "$hook_cfg" -e hooks -b "$script_dir/hook-config.pre.lua" -a "$script_dir/hook-config.post.lua" -o "$uuid" -o "$hook_cfg_uid" -o "$script_dir" -o "$tmp_dir"
+. "$bash_lua_helper" "$hook_cfg" -e global_params -e hooks -b "$script_dir/hook-config.pre.lua" -a "$script_dir/hook-config.post.lua" -o "$uuid" -o "$hook_cfg_uid" -o "$script_dir" -o "$tmp_dir"
 
 [[ "${#cfg[@]}" = 0 ]] && debug "can't find config storage variable populated by bash_lua_helper. bash_lua_helper failed!" && exit 1
 
