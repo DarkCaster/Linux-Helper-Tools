@@ -20,6 +20,8 @@ vde_example = {
   id=2,
   op_start="prepare",
   op_stop="release",
+  ctrldir=loader.path.combine(loader.config.tmp_dir,"vde.example.ctrldir"),
+  pid=loader.path.combine(loader.config.tmp_dir,"vde.example.pid"),
 }
 
 global_params = {
