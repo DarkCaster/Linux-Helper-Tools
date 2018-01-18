@@ -5,5 +5,5 @@ find_command kill
 if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
   vdepid=`cat "${cfg[hooks.$hook_cnt.pid]}" 2>/dev/null`
   kill -TERM "$vdepid"
-  wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}"
+  wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} remove confirmed"
 fi

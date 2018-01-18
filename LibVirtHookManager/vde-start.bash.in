@@ -4,5 +4,5 @@ find_command vde_switch
 
 if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
   sudo -b -H -u $req_username -g $req_groupname -- nohup vde_switch -s "${cfg[hooks.$hook_cnt.ctrldir]}" -p "${cfg[hooks.$hook_cnt.pid]}" --mode 600 --dirmode 700 >"${cfg[hooks.$hook_cnt.log]}" 2>&1
-  wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}"
+  wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} presence confirmed"
 fi
