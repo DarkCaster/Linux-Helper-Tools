@@ -9,3 +9,5 @@ find_command () {
 }
 
 find_command bc
+find_command touch
+find_command ls
