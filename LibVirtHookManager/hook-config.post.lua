@@ -37,7 +37,10 @@ function loader.asserts.stunnel(target)
 end
 
 function loader.asserts.vde(target)
- --return "vde hook verification not implemented"
+ if type(target.ctrldir)~="nil" and type(target.ctrldir)~="string" then return "ctrldir field is incorrect!" end
+ if type(target.ctrldir)~="string" then target.ctrldir=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id) end
+ if type(target.pid)~="nil" and type(target.pid)~="string" then return "pid field is incorrect!" end
+ if type(target.pid)~="string" then target.pid=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".pid") end
 end
 
 function loader.asserts.check_ops(target, name)
