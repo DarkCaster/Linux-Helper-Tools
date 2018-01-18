@@ -137,7 +137,7 @@ do
   hook_stop="$script_dir/${cfg[hooks.$hook_cnt.type]}-stop.bash.in"
   if [[ $op = ${cfg[hooks.$hook_cnt.op_start]} ]]; then
     # check hook with this ID is not already activated by other domain
-    if check_hook_dep "${cfg[hooks.$hook_cnt.id]}" then;
+    if check_hook_dep "${cfg[hooks.$hook_cnt.id]}"; then
       # launch hook start-script only if not already activated by other domain
       [[ ! -f $hook_start ]] && debug "hook start script not found at $hook_start" && exit 1
       debug "running $hook_start for domain $uuid"
@@ -150,7 +150,7 @@ do
     # launch remove_dep function that will state hook with this ID has been released by current domain
     remove_hook_dep "${cfg[hooks.$hook_cnt.id]}"
     # check, that we have no references on this hook
-    if check_hook_dep "${cfg[hooks.$hook_cnt.id]}" then;
+    if check_hook_dep "${cfg[hooks.$hook_cnt.id]}"; then
       # launch hook stop-script if activated only by this domain
       [[ ! -f $hook_stop ]] && debug "hook stop script not found at $hook_stop" && exit 1
       debug "running $hook_stop for domain $uuid"
