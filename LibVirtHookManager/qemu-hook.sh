@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# TODO: global script locking
-# TODO: check_dep, add_dep, remove_dep functions
-
 obj="$1"
 op="$2"
 sub="$3"
@@ -69,6 +66,35 @@ logfile="$tmp_dir/debug.log"
 
 [[ ${cfg[hooks]} = none ]] && debug "can't find valid hooks sequence for domain uuid: $uuid" && exit 0
 
+#exit after any error
+set -e
+
+qemu_hook_lock_entered="false"
+
+qemu_hook_lock_enter() {
+  local nowait="$1"
+  if mkdir "$tmp_dir/qemu-hook.sh.lock" 2>/dev/null; then
+    qemu_hook_lock_entered="true"
+    return 0
+  else
+    [[ ! -z $nowait ]] && return 1
+    debug "awaiting lock release"
+    while ! qemu_hook_lock_enter "nowait"; do
+      sleep 0.25
+    done
+    qemu_hook_lock_entered="true"
+    return 0
+  fi
+}
+
+qemu_hook_lock_exit() {
+  if [[ $qemu_hook_lock_entered = true ]]; then
+    rmdir "$tmp_dir/qemu-hook.sh.lock" 2>/dev/null || true
+    qemu_hook_lock_entered="false"
+  fi
+  return 0
+}
+
 wait_for_pid_created () {
   local pid_file="$1"
   local timeout="$2"
@@ -126,8 +152,9 @@ check_hook_dep () {
   return 1
 }
 
-#exit after any error
-set -e
+qemu_hook_lock_enter
+
+trap qemu_hook_lock_exit EXIT INT QUIT TERM
 
 hook_min=`get_lua_table_start hooks`
 hook_max=`get_lua_table_end hooks`
