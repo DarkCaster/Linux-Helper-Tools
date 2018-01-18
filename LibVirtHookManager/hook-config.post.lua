@@ -18,12 +18,26 @@ loader.asserts.check_globals_num("timeout", 10)
 loader.asserts.check_globals_num("user", 0)
 loader.asserts.check_globals_num("group", 0)
 
-print(global_params.timeout)
-print(global_params.user)
-print(global_params.group)
+loader.asserts.ids={}
+loader.asserts.locally_checked_profiles={}
+loader.asserts.globally_checked_profiles={}
+
+function loader.asserts.add_to_checked_profiles(storage, target)
+  for _,el in pairs(storage) do
+    if el==target then
+      return false
+    end
+  end
+  table.insert(storage,target)
+  return true
+end
 
 function loader.asserts.stunnel(target)
  --return "stunnel hook verification not implemented"
+end
+
+function loader.asserts.vde(target)
+ --return "vde hook verification not implemented"
 end
 
 function loader.asserts.check_ops(target, name)
@@ -41,24 +55,35 @@ for dindex,dfield in pairs(deps) do
   assert(string.len(dfield.uuid)==36,"deps[".. dindex .."].uuid value is incorrect (must be valid UUID)!" )
   assert(string.find(dfield.uuid,"^[0-9a-f]+%-[0-9a-f]+%-[0-9a-f]+%-[0-9a-f]+%-[0-9a-f]+$")~=nil,"deps[".. dindex .."].uuid value is incorrect (must be valid UUID)!")
   assert(type(dfield.hooks)=="table", "deps[".. dindex .."].hooks value is incorrect (must be a table)!")
+  loader.asserts.locally_checked_profiles={}
   for index,field in pairs(dfield.hooks) do
     assert(type(index)=="number", "deps[".. dindex .."].hooks[".. index .."] is incorrect (must be an indexed element)!")
     assert(type(field)=="table", "deps[".. dindex .."].hooks[".. index .."] value is incorrect (must be a table)!")
-    assert(type(field.type)=="string", "deps[".. dindex .."].hooks[".. index .."].type value is incorrect (must be a string)!")
-    loader.asserts.check_ops(field.op_start,"deps[".. dindex .."].hooks[".. index .."].op_start")
-    loader.asserts.check_ops(field.op_stop,"deps[".. dindex .."].hooks[".. index .."].op_stop")
-    if field.type=="stunnel" then
-      loader.asserts.result=loader.asserts.stunnel(field)
+    if loader.asserts.add_to_checked_profiles(loader.asserts.locally_checked_profiles, field) then
+      if loader.asserts.add_to_checked_profiles(loader.asserts.globally_checked_profiles, field) then
+        assert(type(field.id)=="number", "deps[".. dindex .."].hooks[".. index .."].id value is incorrect (must be a number)!")
+        assert(type(loader.asserts.ids[field.id])=="nil", "deps[".. dindex .."].hooks[".. index .."].id must be unique!")
+        loader.asserts.ids[field.id]=field.id
+        assert(type(field.type)=="string", "deps[".. dindex .."].hooks[".. index .."].type value is incorrect (must be a string)!")
+        loader.asserts.check_ops(field.op_start,"deps[".. dindex .."].hooks[".. index .."].op_start")
+        loader.asserts.check_ops(field.op_stop,"deps[".. dindex .."].hooks[".. index .."].op_stop")
+        if field.type=="stunnel" then
+          loader.asserts.result=loader.asserts.stunnel(field)
+        elseif field.type=="vde" then
+          loader.asserts.result=loader.asserts.vde(field)
+        else
+          error("unsupported hook type: ".. field.type)
+        end
+        if loader.asserts.result~=nil then
+          error("hook table deps[".. dindex .."].hooks[".. index .."] verification failed with error: "..loader.asserts.result)
+        end
+      end
     else
-      error("unsupported hook type: ".. field.type)
-    end
-    if loader.asserts.result~=nil then
-      error("hook table deps[".. dindex .."].hooks[".. index .."] verification failed with error: "..loader.asserts.result)
+      error("deps[".. dindex .."].hooks[".. index .."] must be provided only once per hooks table")
     end
   end
   if dfield.uuid==loader.config.uuid then
     hooks=dfield.hooks
-    break
   end
 end
 

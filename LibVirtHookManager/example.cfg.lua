@@ -1,6 +1,7 @@
 -- table with hook operations
 stunnel_test = {
   type="stunnel",
+  id=1,
   op_start="prepare",
   op_stop="release",
   client=true,
@@ -14,6 +15,13 @@ stunnel_test = {
   verify=3,
 }
 
+vde_example = {
+  type="vde",
+  id=2,
+  op_start="prepare",
+  op_stop="release",
+}
+
 global_params = {
   timeout=10,
   user=1000,
@@ -23,6 +31,10 @@ global_params = {
 deps = {
   {
     uuid="e9ce7ae0-272a-44b5-b4b6-eca4b738127b",
-    hooks = { stunnel_test, },
+    hooks = { vde_example },
+  },
+  {
+    uuid="f53e968b-d763-4973-bb59-352cd02be824",
+    hooks = { stunnel_test, vde_example  },
   },
 }
