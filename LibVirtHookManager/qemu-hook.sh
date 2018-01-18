@@ -69,6 +69,19 @@ logfile="$tmp_dir/debug.log"
 #exit after any error
 set -e
 
+cur_user=`id -u`
+cur_username=`id -un`
+cur_group=`id -g`
+cur_groupname=`id -gn`
+
+req_user=`getent passwd "${cfg[global_params.user]}" | head -n1 | cut -f3 -d":"`
+req_username=`getent passwd "${cfg[global_params.user]}" | head -n1 | cut -f1 -d":"`
+req_group=`getent group "${cfg[global_params.group]}" | head -n1 | cut -f3 -d":"`
+req_groupname=`getent group "${cfg[global_params.group]}" | head -n1 | cut -f1 -d":"`
+
+[[ -z $req_groupname || -z $req_group ]] && debug "failed to detect required group id or name" && exit 1
+[[ -z $req_username || -z $req_user ]] && debug "failed to detect required user id or name" && exit 1
+
 qemu_hook_lock_entered="false"
 
 qemu_hook_lock_enter() {

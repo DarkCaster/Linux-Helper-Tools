@@ -11,3 +11,6 @@ find_command () {
 find_command bc
 find_command touch
 find_command ls
+find_command getent
+find_command head
+find_command cut
