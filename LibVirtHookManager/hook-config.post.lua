@@ -41,6 +41,8 @@ function loader.asserts.vde(target)
  if type(target.ctrldir)~="string" then target.ctrldir=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id) end
  if type(target.pid)~="nil" and type(target.pid)~="string" then return "pid field is incorrect!" end
  if type(target.pid)~="string" then target.pid=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".pid") end
+ if type(target.log)~="nil" and type(target.log)~="string" then return "log field is incorrect!" end
+ if type(target.log)~="string" then target.log=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".log") end
 end
 
 function loader.asserts.check_ops(target, name)
