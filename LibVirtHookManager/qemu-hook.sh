@@ -52,10 +52,13 @@ hook_cfg_uid=`realpath -s "$hook_cfg" | md5sum -t | cut -f1 -d" "`
 #check for some required commands
 . "$script_dir/find-commands.bash.in"
 
-tmp_dir="$TMPDIR"
-[[ -z $tmp_dir || ! -d $tmp_dir ]] && tmp_dir="/tmp"
-tmp_dir=`realpath -m "$tmp_dir/qemu-hooks-$hook_cfg_uid"`
-mkdir -p "$tmp_dir" || exit 10
+tmp_base_dir="$TMPDIR"
+[[ -z $tmp_base_dir || ! -d $tmp_base_dir ]] && tmp_base_dir="/tmp"
+tmp_dir=`realpath -m "$tmp_base_dir/qemu-hooks-$hook_cfg_uid"`
+if [[ ! -d "$tmp_dir" ]]; then
+  mkdir -p "$tmp_dir" || exit 10
+  tmp_dir_created="yes"
+fi
 logfile="$tmp_dir/debug.log"
 
 . "$script_dir/find-lua-helper.bash.in" "$script_dir/BashLuaHelper" "$script_dir/../BashLuaHelper"
@@ -169,8 +172,23 @@ qemu_hook_lock_enter
 
 trap qemu_hook_lock_exit EXIT INT QUIT TERM
 
+# add access to tmp_dir to requested user
+if [[ $tmp_dir_created = yes ]]; then
+  setfacl -dm "u:$req_user:rwx" "$tmp_dir"
+  setfacl -dm "g:$req_group:rwx" "$tmp_dir"
+fi
+
+# create symlinks to TMPDIR, to simplify access to temp-directory from outside world (knowing only domain uuid)
 hook_min=`get_lua_table_start hooks`
 hook_max=`get_lua_table_end hooks`
+for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))
+do
+  if [[ ! -L $tmp_base_dir/qemu-hooks-$uuid || `readlink "$tmp_base_dir/qemu-hooks-$uuid"` != "$tmp_dir" ]]; then
+    rm -f "$tmp_base_dir/qemu-hooks-$uuid"
+    ln -s "$tmp_dir" "$tmp_base_dir/qemu-hooks-$uuid"
+  fi
+done
+
 for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))
 do
   hook_start="$script_dir/${cfg[hooks.$hook_cnt.type]}-start.bash.in"

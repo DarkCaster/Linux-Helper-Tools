@@ -14,3 +14,4 @@ find_command ls
 find_command getent
 find_command head
 find_command cut
+find_command setfacl
