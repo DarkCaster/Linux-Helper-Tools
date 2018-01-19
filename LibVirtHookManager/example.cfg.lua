@@ -20,9 +20,13 @@ vde_example = {
   id=2,
   op_start="prepare",
   op_stop="release",
+  -- ctrldir, pidfile and logging, will be placed at tmp_dir location if following parameters is missing
   ctrldir=loader.path.combine(loader.slash,"tmp","vde.example.ctrldir"),
   pid=loader.path.combine(loader.slash,"tmp","vde.example.pid"),
   log=loader.path.combine(loader.slash,"tmp","vde.example.log"),
+  -- tap device conenction (optional), empty string or missing value will disable tap device creation and connection
+  tap="vde_example",
+  netns="vde_example", -- move tap device to separate netns if set
 }
 
 global_params = {
