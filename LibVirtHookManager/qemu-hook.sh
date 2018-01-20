@@ -174,7 +174,9 @@ trap qemu_hook_lock_exit EXIT INT QUIT TERM
 
 # add access to tmp_dir to requested user
 if [[ $tmp_dir_created = yes ]]; then
+  setfacl -m "u:$req_user:rwx" "$tmp_dir"
   setfacl -dm "u:$req_user:rwx" "$tmp_dir"
+  setfacl -m "g:$req_group:rwx" "$tmp_dir"
   setfacl -dm "g:$req_group:rwx" "$tmp_dir"
 fi
 
