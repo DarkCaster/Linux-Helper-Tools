@@ -5,7 +5,7 @@ find_command () {
   [[ -z $target ]] && debug "invoking find_command without command argument!" && exit 20
   [[ `type -t "$target"` = builtin ]] && local result="$target" || local result=`which $target 2> /dev/null || true`
   [[ -z $result ]] && debug "$target command is not found" && exit 30
-  declare -r "$target"="$result"
+  eval "$target=\"$result\""
 }
 
 find_command bc
