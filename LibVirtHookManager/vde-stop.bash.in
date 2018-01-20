@@ -4,8 +4,8 @@ find_command kill
 find_command vde_switch
 
 if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
-  debug "check vde_switch pidfile"
-  check_pid "${cfg[hooks.$hook_cnt.pid]}" "$vde_switch"
+  debug "checking vde_switch pidfile"
+  if check_pid "${cfg[hooks.$hook_cnt.pid]}" "$vde_switch"; then
   kill -TERM `2>/dev/null cat "${cfg[hooks.$hook_cnt.pid]}"`
   wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" "$vde_switch" && debug "vde_switch stop confirmed"
   if [[ ! -z ${cfg[hooks.$hook_cnt.tap]} ]]; then
@@ -20,5 +20,6 @@ if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
       debug "removing ${cfg[hooks.$hook_cnt.tap]} interface"
       tunctl -d "${cfg[hooks.$hook_cnt.tap]}"
     fi
+  fi
   fi
 fi
