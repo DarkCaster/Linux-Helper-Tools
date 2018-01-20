@@ -37,12 +37,18 @@ function loader.asserts.stunnel(target)
 end
 
 function loader.asserts.vde(target)
- if type(target.ctrldir)~="nil" and type(target.ctrldir)~="string" then return "ctrldir field is incorrect!" end
- if type(target.ctrldir)~="string" then target.ctrldir=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id) end
- if type(target.pid)~="nil" and type(target.pid)~="string" then return "pid field is incorrect!" end
- if type(target.pid)~="string" then target.pid=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".pid") end
- if type(target.log)~="nil" and type(target.log)~="string" then return "log field is incorrect!" end
- if type(target.log)~="string" then target.log=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".log") end
+  if type(target.ctrldir)~="nil" and type(target.ctrldir)~="string" then return "ctrldir field is incorrect!" end
+  if type(target.ctrldir)~="string" then target.ctrldir=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id) end
+  if type(target.pid)~="nil" and type(target.pid)~="string" then return "pid field is incorrect!" end
+  if type(target.pid)~="string" then target.pid=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".pid") end
+  if type(target.log)~="nil" and type(target.log)~="string" then return "log field is incorrect!" end
+  if type(target.log)~="string" then target.log=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".log") end
+  if type(target.tap)~="nil" and type(target.tap)~="string" then return "tap field is incorrect!" end
+  if type(target.tap)~="string" then target.tap="" end
+  if type(target.netns)~="nil" and type(target.netns)~="string" then return "netns field is incorrect!" end
+  if type(target.netns)~="string" then target.netns="" end
+  if type(target.netns_cleanup)~="nil" and type(target.netns_cleanup)~="boolean" then return "netns_cleanup field is incorrect!" end
+  if type(target.netns_cleanup)~="boolean" then target.netns_cleanup=true end
 end
 
 function loader.asserts.check_ops(target, name)
