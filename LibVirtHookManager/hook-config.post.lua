@@ -33,6 +33,12 @@ function loader.asserts.add_to_checked_profiles(storage, target)
 end
 
 function loader.asserts.netns_dhclient(target)
+  if type(target.leases)~="nil" and type(target.leases)~="string" then return "leases field is incorrect!" end
+  if type(target.leases)~="string" then target.leases=loader.path.combine(loader.config.tmp_dir,"ndhc.".. target.id ..".leases") end
+  if type(target.pid)~="nil" and type(target.pid)~="string" then return "pid field is incorrect!" end
+  if type(target.pid)~="string" then target.pid=loader.path.combine(loader.config.tmp_dir,"ndhc.".. target.id ..".pid") end
+  if type(target.log)~="nil" and type(target.log)~="string" then return "log field is incorrect!" end
+  if type(target.log)~="string" then target.log=loader.path.combine(loader.config.tmp_dir,"ndhc.".. target.id ..".log") end
 end
 
 function loader.asserts.stunnel(target)
