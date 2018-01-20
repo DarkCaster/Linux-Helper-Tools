@@ -20,19 +20,14 @@ vde_example = {
   id=2,
   op_start="prepare",
   op_stop="release",
-  -- ctrldir, pidfile and logging, will be placed at tmp_dir location if following parameters is missing
-  -- by default, ctrldir avaliable at /tmp/qemu-hooks-<domain uuid>/vde.<id>,
-  -- log at /tmp/qemu-hooks-<domain uuid>/vde.<id>.log,
-  -- pid at /tmp/qemu-hooks-<domain uuid>/vde.<id>.pid,
-
-  -- ctrldir=loader.path.combine(loader.slash,"tmp","vde.example.ctrldir"),
-  -- pid=loader.path.combine(loader.slash,"tmp","vde.example.pid"),
-  -- log=loader.path.combine(loader.slash,"tmp","vde.example.log"),
-
-  -- tap device conenction (optional), empty string or missing value will disable tap device creation and connection
-  tap="vde_example",
-  netns="vde_example", -- move tap device to separate netns if set
-  netns_cleanup=true,
+  -- ctrldir, pidfile and logging, will be set to default location below, if missing
+  ctrldir=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"vde.2"),
+  pid=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"vde.2.pid"),
+  log=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"vde.2.log"),
+  -- other optional parameters
+  tap="vde_example", -- create tap device and connect vde_switch to it
+  netns="vde_example", -- create separate netns and move tap device to separate netns
+  netns_cleanup=true, -- true, if missing - will remove netns on exit
 }
 
 global_params = {
