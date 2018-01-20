@@ -1,11 +1,13 @@
 #!/bin/bash
 
 find_command kill
+find_command vde_switch
 
 if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
-  vdepid=`cat "${cfg[hooks.$hook_cnt.pid]}" 2>/dev/null`
-  kill -TERM "$vdepid"
-  wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} remove confirmed"
+  debug "check vde_switch pidfile"
+  check_pid "${cfg[hooks.$hook_cnt.pid]}" "$vde_switch"
+  kill -TERM `2>/dev/null cat "${cfg[hooks.$hook_cnt.pid]}"`
+  wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" "$vde_switch" && debug "vde_switch stop confirmed"
   if [[ ! -z ${cfg[hooks.$hook_cnt.tap]} ]]; then
     if [[ ! -z ${cfg[hooks.$hook_cnt.netns]} ]]; then
       debug "removing ${cfg[hooks.$hook_cnt.tap]} interface from netns ${cfg[hooks.$hook_cnt.netns]}"
