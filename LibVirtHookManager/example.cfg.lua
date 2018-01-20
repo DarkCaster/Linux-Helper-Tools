@@ -32,6 +32,7 @@ vde_example = {
   -- tap device conenction (optional), empty string or missing value will disable tap device creation and connection
   tap="vde_example",
   netns="vde_example", -- move tap device to separate netns if set
+  netns_cleanup=true,
 }
 
 global_params = {
