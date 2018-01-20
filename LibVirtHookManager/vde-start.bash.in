@@ -9,6 +9,7 @@ if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
     debug "creating ${cfg[hooks.$hook_cnt.tap]} interface"
     tunctl -u "$req_user" -g "$req_group" -p -t "${cfg[hooks.$hook_cnt.tap]}"
     sudo -b -H -u $req_username -g $req_groupname -- nohup vde_switch -t "${cfg[hooks.$hook_cnt.tap]}" -s "${cfg[hooks.$hook_cnt.ctrldir]}" -p "${cfg[hooks.$hook_cnt.pid]}" --mode 660 --dirmode 770 >"${cfg[hooks.$hook_cnt.log]}" 2>&1
+    wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} presence confirmed"
     if [[ ! -z ${cfg[hooks.$hook_cnt.netns]} ]]; then
       debug "creating netns ${cfg[hooks.$hook_cnt.netns]}"
       2>/dev/null ip netns add "${cfg[hooks.$hook_cnt.netns]}" || true
@@ -17,6 +18,6 @@ if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
     fi
   else
     sudo -b -H -u $req_username -g $req_groupname -- nohup vde_switch -s "${cfg[hooks.$hook_cnt.ctrldir]}" -p "${cfg[hooks.$hook_cnt.pid]}" --mode 600 --dirmode 700 >"${cfg[hooks.$hook_cnt.log]}" 2>&1
+    wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} presence confirmed"
   fi
-  wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} presence confirmed"
 fi
