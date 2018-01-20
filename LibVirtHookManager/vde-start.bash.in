@@ -22,4 +22,5 @@ if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
   fi
 else
   debug "pid file ${cfg[hooks.$hook_cnt.pid]} already present, cannot proceed!"
+  false
 fi

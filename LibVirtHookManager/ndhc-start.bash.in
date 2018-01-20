@@ -5,8 +5,9 @@ find_command ip
 
 if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
   debug "starting dhclient"
-  ip netns exec "${cfg[hooks.$hook_cnt.netns]}" nohup dhclient -4 -lf "${cfg[hooks.$hook_cnt.leases]}" -pf "${cfg[hooks.$hook_cnt.pid]}" -v >"${cfg[hooks.$hook_cnt.log]}" 2>&1
+  ip netns exec "${cfg[hooks.$hook_cnt.netns]}" nohup dhclient -4 -lf "${cfg[hooks.$hook_cnt.leases]}" -pf "${cfg[hooks.$hook_cnt.pid]}" -v >"${cfg[hooks.$hook_cnt.log]}" 2>&1 &
   wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} presence confirmed"
 else
   debug "pid file ${cfg[hooks.$hook_cnt.pid]} already present, cannot proceed!"
+  false
 fi
