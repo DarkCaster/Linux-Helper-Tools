@@ -32,8 +32,10 @@ function loader.asserts.add_to_checked_profiles(storage, target)
   return true
 end
 
+function loader.asserts.netns_dhclient(target)
+end
+
 function loader.asserts.stunnel(target)
- --return "stunnel hook verification not implemented"
 end
 
 function loader.asserts.vde(target)
@@ -82,6 +84,8 @@ for dindex,dfield in pairs(deps) do
           loader.asserts.result=loader.asserts.stunnel(field)
         elseif field.type=="vde" then
           loader.asserts.result=loader.asserts.vde(field)
+        elseif field.type=="ndhc" then
+          loader.asserts.result=loader.asserts.netns_dhclient(field)
         else
           error("unsupported hook type: ".. field.type)
         end

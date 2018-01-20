@@ -30,6 +30,18 @@ vde_example = {
   netns_cleanup=true, -- true, if missing - will remove netns on exit
 }
 
+dhclient_example = {
+  type="ndhc", -- dhclient in netns
+  id=3,
+  op_start="prepare",
+  op_stop="release",
+  netns="vde_example", -- netns name, where service will be launched
+  -- leases, pidfile and logging, will be set to default location below, if missing
+  pid=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.pid"),
+  leases=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.leases"),
+  log=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.log"),
+}
+
 global_params = {
   timeout=10,
   user=1000,
@@ -39,7 +51,7 @@ global_params = {
 deps = {
   {
     uuid="e9ce7ae0-272a-44b5-b4b6-eca4b738127b",
-    hooks = { vde_example },
+    hooks = { vde_example, dhclient_example },
   },
   {
     uuid="f53e968b-d763-4973-bb59-352cd02be824",
