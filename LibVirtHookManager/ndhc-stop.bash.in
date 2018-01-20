@@ -1,0 +1,9 @@
+#!/bin/bash
+
+find_command kill
+
+if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
+  dhcpid=`cat "${cfg[hooks.$hook_cnt.pid]}" 2>/dev/null`
+  kill -TERM "$dhcpid"
+  wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} remove confirmed"
+fi
