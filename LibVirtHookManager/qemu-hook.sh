@@ -10,8 +10,9 @@ sub="$3"
 logfile="/tmp/qemu-hook-debug.log"
 
 debug () {
-  1>&2 echo "[QEMU-HOOK] $@"
-  [[ ! -z $logfile ]] && echo "[QEMU-HOOK] $@" >> "$logfile"
+  local mark=`date "+%Y-%m-%d %H:%M:%S"`
+  1>&2 echo "[DEBUG] $@"
+  [[ ! -z $logfile ]] && echo "[$mark] $@" >> "$logfile"
   true
 }
 
@@ -206,7 +207,6 @@ done
 for ((hook_cnt=hook_min;hook_cnt<hook_max;++hook_cnt))
 do
   hook_start="$script_dir/${cfg[hooks.$hook_cnt.type]}-start.bash.in"
-  hook_stop="$script_dir/${cfg[hooks.$hook_cnt.type]}-stop.bash.in"
   if [[ $op = ${cfg[hooks.$hook_cnt.op_start]} ]]; then
     # check hook with this ID is not already activated by other domain
     if check_hook_dep "${cfg[hooks.$hook_cnt.id]}"; then
@@ -218,6 +218,11 @@ do
     # launch add_dep function that will state hook with this ID as activated by current domain
     add_hook_dep "${cfg[hooks.$hook_cnt.id]}"
   fi
+done
+
+for ((hook_cnt=hook_max-1;hook_cnt>=hook_min;--hook_cnt))
+do
+  hook_stop="$script_dir/${cfg[hooks.$hook_cnt.type]}-stop.bash.in"
   if [[ $op = ${cfg[hooks.$hook_cnt.op_stop]} ]]; then
     # launch remove_dep function that will state hook with this ID has been released by current domain
     remove_hook_dep "${cfg[hooks.$hook_cnt.id]}"
