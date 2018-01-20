@@ -6,4 +6,17 @@ if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
   vdepid=`cat "${cfg[hooks.$hook_cnt.pid]}" 2>/dev/null`
   kill -TERM "$vdepid"
   wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" && debug "pid file ${cfg[hooks.$hook_cnt.pid]} remove confirmed"
+  if [[ ! -z ${cfg[hooks.$hook_cnt.tap]} ]]; then
+    if [[ ! -z ${cfg[hooks.$hook_cnt.netns]} ]]; then
+      debug "removing ${cfg[hooks.$hook_cnt.tap]} interface from netns ${cfg[hooks.$hook_cnt.netns]}"
+      ip netns exec ${cfg[hooks.$hook_cnt.netns]} tunctl -d ${cfg[hooks.$hook_cnt.tap]}
+      if [[ ${cfg[hooks.$hook_cnt.netns_cleanup]} = true ]]; then
+        debug "removing netns ${cfg[hooks.$hook_cnt.netns]}"
+        ip netns del "${cfg[hooks.$hook_cnt.netns]}"
+      fi
+    else
+      debug "removing ${cfg[hooks.$hook_cnt.tap]} interface"
+      tunctl -d ${cfg[hooks.$hook_cnt.tap]}
+    fi
+  fi
 fi
