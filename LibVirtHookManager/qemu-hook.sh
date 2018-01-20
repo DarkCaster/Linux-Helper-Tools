@@ -111,15 +111,26 @@ qemu_hook_lock_exit() {
   return 0
 }
 
+check_pid () {
+  local pid_file="$1"
+  local bin_path="$2"
+  [[ ! -f $pid_file ]] && return 1
+  local pid=`cat "$pid_file"`
+  [[ ! -d /proc/$pid ]] && return 1
+  [[ ! -z $bin_path && `( 2>/dev/null cat "/proc/$pid/cmdline" || true ) | cut -f1 -d ''` != $bin_path ]] && return 1
+  return 0
+}
+
 wait_for_pid_created () {
   local pid_file="$1"
-  local timeout="$2"
+  local bin_path="$2"
+  local timeout="$3"
   [[ -z $timeout ]] && timeout="${cfg[global_params.timeout]}"
   local timepass="0"
   local step="0.1"
   while [[ `echo "$timepass<=$timeout" | bc -q` = 1 ]]
   do
-    [[ -f $pid_file ]] && break
+    check_pid "$pid_file" "$bin_path" && break
     [[ `echo "$timepass>=1.0" | bc -q` = 1 ]] && step="0.25"
     [[ `echo "$timepass>=3.0" | bc -q` = 1 ]] && step="0.5"
     [[ `echo "$timepass>=7.0" | bc -q` = 1 ]] && step="1"
@@ -132,13 +143,14 @@ wait_for_pid_created () {
 
 wait_for_pid_removed () {
   local pid_file="$1"
-  local timeout="$2"
+  local bin_path="$2"
+  local timeout="$3"
   [[ -z $timeout ]] && timeout="${cfg[global_params.timeout]}"
   local timepass="0"
   local step="0.1"
   while [[ `echo "$timepass<=$timeout" | bc -q` = 1 ]]
   do
-    [[ ! -f $pid_file ]] && break
+    check_pid "$pid_file" "$bin_path" || break
     [[ `echo "$timepass>=1.0" | bc -q` = 1 ]] && step="0.25"
     [[ `echo "$timepass>=3.0" | bc -q` = 1 ]] && step="0.5"
     [[ `echo "$timepass>=7.0" | bc -q` = 1 ]] && step="1"
