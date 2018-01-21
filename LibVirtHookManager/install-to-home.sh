@@ -14,6 +14,10 @@ target="$1"
 curdir="$( cd "$( dirname "$0" )" && pwd )"
 
 set -e
+
+#install bash-lua-helper
+"$curdir/../BashLuaHelper/install.sh" "$target/BashLuaHelper"
+
 mkdir -p "$target"
 cp "$curdir"/*{.sh,.lua,.in} "$target"
 
