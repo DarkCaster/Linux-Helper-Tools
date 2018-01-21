@@ -43,6 +43,25 @@ dhclient_example = {
   setup_local=true, -- perform setup of "lo" network interface inside selected netns
 }
 
+network_setup_example = {
+  type="nsetup", -- setup some network parameter for selected netns
+  id=4,
+  op_start="prepare",
+  op_stop="release",
+  netns="vde_example", -- netns name, where setup will be performed
+  -- various setup parameters, optional
+  resolv_conf="search lan\nnameserver 192.168.1.1",
+  hosts="127.0.0.1 localhost\
+::1 localhost ipv6-localhost ipv6-loopback\
+fe00::0 ipv6-localnet\
+ff00::0 ipv6-mcastprefix\
+ff02::1 ipv6-allnodes\
+ff02::2 ipv6-allrouters\
+ff02::3 ipv6-allhosts\
+127.0.0.2 example.lan example",
+  hostname="example.lan",
+}
+
 global_params = {
   timeout=10,
   user=1000,
@@ -52,7 +71,7 @@ global_params = {
 deps = {
   {
     uuid="e9ce7ae0-272a-44b5-b4b6-eca4b738127b",
-    hooks = { vde_example, dhclient_example },
+    hooks = { vde_example, network_setup_example, dhclient_example },
   },
   {
     uuid="f53e968b-d763-4973-bb59-352cd02be824",

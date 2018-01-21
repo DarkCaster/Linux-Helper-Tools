@@ -44,6 +44,16 @@ function loader.asserts.netns_dhclient(target)
   if type(target.setup_local)~="boolean" then target.setup_local=true end
 end
 
+function loader.asserts.nsetup(target)
+  if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
+  if type(target.resolv_conf)~="string" and type(target.resolv_conf)~="nil" then return "resolv_conf field is incorrect!" end
+  if type(target.resolv_conf)=="nil" then target.set_resolv_conf=false else target.set_resolv_conf=true end
+  if type(target.hosts)~="string" and type(target.hosts)~="nil" then return "hosts field is incorrect!" end
+  if type(target.hosts)=="nil" then target.set_hosts=false else target.set_hosts=true end
+  if type(target.hostname)~="string" and type(target.hostname)~="nil" then return "hostname field is incorrect!" end
+  if type(target.hostname)=="nil" then target.set_hostname=false else target.set_hostname=true end
+end
+
 function loader.asserts.stunnel(target)
 end
 
@@ -95,6 +105,8 @@ for dindex,dfield in pairs(deps) do
           loader.asserts.result=loader.asserts.vde(field)
         elseif field.type=="ndhc" then
           loader.asserts.result=loader.asserts.netns_dhclient(field)
+        elseif field.type=="nsetup" then
+          loader.asserts.result=loader.asserts.nsetup(field)
         else
           error("unsupported hook type: ".. field.type)
         end
