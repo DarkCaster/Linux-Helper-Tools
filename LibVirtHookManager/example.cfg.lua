@@ -27,7 +27,7 @@ vde_example = {
   -- other optional parameters
   tap="vde_example", -- create tap device and connect vde_switch to it
   netns="vde_example", -- create separate netns and move tap device to separate netns
-  netns_cleanup=true, -- true, if missing - will remove netns on exit
+  netns_cleanup=true, -- will remove netns on exit, true by default
 }
 
 dhclient_example = {
@@ -40,6 +40,8 @@ dhclient_example = {
   pid=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.pid"),
   leases=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.leases"),
   log=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.log"),
+  setup_local=true, -- perform setup of "lo" network interface inside selected netns
+  setup_files=true, -- perform setup of resolv.conf and other files for selected netns, if missing
 }
 
 global_params = {
