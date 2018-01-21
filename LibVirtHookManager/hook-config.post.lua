@@ -42,8 +42,6 @@ function loader.asserts.netns_dhclient(target)
   if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
   if type(target.setup_local)~="nil" and type(target.setup_local)~="boolean" then return "setup_local field is incorrect!" end
   if type(target.setup_local)~="boolean" then target.setup_local=true end
-  if type(target.setup_files)~="nil" and type(target.setup_files)~="boolean" then return "setup_files field is incorrect!" end
-  if type(target.setup_files)~="boolean" then target.setup_files=true end
 end
 
 function loader.asserts.stunnel(target)
