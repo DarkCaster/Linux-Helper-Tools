@@ -6,10 +6,10 @@ debug "creating network config files at /etc/netns/${cfg[hooks.$hook_cnt.netns]}
 mkdir -p "/etc/netns/${cfg[hooks.$hook_cnt.netns]}"
 
 [[ ${cfg[hooks.$hook_cnt.set_resolv_conf]} = true ]] &&\
-  echo "${cfg[hooks.$hook_cnt.resolv_conf]}" >> "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/resolv.conf"
+  echo "${cfg[hooks.$hook_cnt.resolv_conf]}" > "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/resolv.conf"
 
 [[ ${cfg[hooks.$hook_cnt.set_hosts]} = true ]] &&\
-  echo "${cfg[hooks.$hook_cnt.hosts]}" >> "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/hosts"
+  echo "${cfg[hooks.$hook_cnt.hosts]}" > "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/hosts"
 
 [[ ${cfg[hooks.$hook_cnt.set_hostname]} = true ]] &&\
-  echo "${cfg[hooks.$hook_cnt.hostname]}" >> "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/hostname"
+  echo "${cfg[hooks.$hook_cnt.hostname]}" > "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/hostname"
