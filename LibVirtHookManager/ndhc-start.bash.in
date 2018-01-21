@@ -2,8 +2,21 @@
 
 find_command ip
 find_command dhclient
+find_command ifconfig
 
 if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
+  if [[ ${cfg[hooks.$hook_cnt.setup_local]} = true ]]; then
+    debug "setting up local network-interface"
+    ip netns exec "${cfg[hooks.$hook_cnt.netns]}" ifconfig lo 127.0.0.1/8
+  fi
+  if [[ ${cfg[hooks.$hook_cnt.setup_resolvconf]} = true && ! -d /etc/netns/${cfg[hooks.$hook_cnt.netns]} ]]; then
+    debug "creating new network config files at /etc/netns/${cfg[hooks.$hook_cnt.netns]}"
+    mkdir -p "/etc/netns/${cfg[hooks.$hook_cnt.netns]}"
+    touch "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/resolv.conf"
+    touch "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/hosts"
+    touch "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/hostname"
+    touch "/etc/netns/${cfg[hooks.$hook_cnt.netns]}/host.conf"
+  fi
   debug "starting dhclient"
   ip netns exec "${cfg[hooks.$hook_cnt.netns]}" nohup "$dhclient" -4 -d -v -lf "${cfg[hooks.$hook_cnt.leases]}" -pf "${cfg[hooks.$hook_cnt.pid]}" >"${cfg[hooks.$hook_cnt.log]}" 2>&1 &
   wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" "$dhclient" && debug "dhclient startup confirmed"
