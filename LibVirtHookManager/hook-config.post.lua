@@ -42,6 +42,8 @@ function loader.asserts.netns_dhclient(target)
   if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
   if type(target.setup_local)~="nil" and type(target.setup_local)~="boolean" then return "setup_local field is incorrect!" end
   if type(target.setup_local)~="boolean" then target.setup_local=true end
+  if type(target.cmdline)~="nil" and type(target.cmdline)~="table" then return "cmdline field is incorrect!" end
+  if type(target.cmdline)~="table" then target.cmdline={} end
 end
 
 function loader.asserts.nsetup(target)

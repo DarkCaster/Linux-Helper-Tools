@@ -10,7 +10,7 @@ if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
     ip netns exec "${cfg[hooks.$hook_cnt.netns]}" ifconfig lo 127.0.0.1/8
   fi
   debug "starting dhclient"
-  ip netns exec "${cfg[hooks.$hook_cnt.netns]}" nohup "$dhclient" -4 -d -v -lf "${cfg[hooks.$hook_cnt.leases]}" -pf "${cfg[hooks.$hook_cnt.pid]}" >"${cfg[hooks.$hook_cnt.log]}" 2>&1 &
+  ip netns exec "${cfg[hooks.$hook_cnt.netns]}" nohup "$dhclient" -d -v -lf "${cfg[hooks.$hook_cnt.leases]}" -pf "${cfg[hooks.$hook_cnt.pid]}" >"${cfg[hooks.$hook_cnt.log]}" 2>&1 &
   wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" "$dhclient" && debug "dhclient startup confirmed"
 else
   debug "pid file ${cfg[hooks.$hook_cnt.pid]} already present, cannot proceed!"

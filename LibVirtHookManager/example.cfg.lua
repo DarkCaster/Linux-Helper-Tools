@@ -36,6 +36,8 @@ dhclient_example = {
   op_start="prepare",
   op_stop="release",
   netns="vde_example", -- netns name, where service will be launched
+  -- extra cmdline switches,
+  cmdline={"-4"},
   -- leases, pidfile and logging, will be set to default location below, if missing
   pid=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.pid"),
   leases=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"ndhc.3.leases"),
