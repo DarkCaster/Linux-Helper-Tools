@@ -1,0 +1,3 @@
+## install this file to /etc/sudoers.d to allow unattended execution of netns-runner
+
+%users ALL= NOPASSWD: __prefix__/netns-exec.sh *

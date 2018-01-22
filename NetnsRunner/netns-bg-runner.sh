@@ -6,7 +6,7 @@
 cur_username=`id -un`
 
 namespace="$1"
-[ -z "$namespace" ] && echo "usage: netns-runner.sh <namespace> <command> [parameters]"
+[ -z "$namespace" ] && echo "usage: netns-bg-runner.sh <namespace> <command> [parameters]"
 shift 1
 
 [ "$#" = "0" ] && exit 0
@@ -33,4 +33,4 @@ echo "unset USERNAME" >> "$tmp_script"
 echo "rm \"$tmp_script\"" >> "$tmp_script"
 echo "\"\$@\"" >> "$tmp_script"
 
-sudo -- __prefix__/netns-exec.sh fg "$namespace" "$tmp_script" "$@"
+sudo -- __prefix__/netns-exec.sh bg "$namespace" "$tmp_script" "$@"
