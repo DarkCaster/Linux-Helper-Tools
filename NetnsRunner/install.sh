@@ -11,7 +11,8 @@ target="$1"
 curdir="$( cd "$( dirname "$0" )" && pwd )"
 
 cp "$curdir"/netns-*.sh "$target/bin"
-cp "$curdir/netns-runner.sudoers" /etc/sudoers.d/
+[[ -f /etc/sudoers.d/netns-runner ]] && rm "/etc/sudoers.d/netns-runner"
+cp "$curdir/netns-runner.sudoers" "/etc/sudoers.d/netns-runner"
 
 "$curdir/update_shebang.sh" "$target/bin/netns-runner.sh"
 "$curdir/update_shebang.sh" "$target/bin/netns-bg-runner.sh"
@@ -20,9 +21,9 @@ cp "$curdir/netns-runner.sudoers" /etc/sudoers.d/
 sed -i "s|__prefix__|""$target/bin""|g" "$target/bin/netns-runner.sh"
 sed -i "s|__prefix__|""$target/bin""|g" "$target/bin/netns-bg-runner.sh"
 sed -i "s|__prefix__|""$target/bin""|g" "$target/bin/netns-exec.sh"
-sed -i "s|__prefix__|""$target/bin""|g" "/etc/sudoers.d/netns-runner.sudoers"
+sed -i "s|__prefix__|""$target/bin""|g" "/etc/sudoers.d/netns-runner"
 
 chmod 755 "$target/bin/netns-runner.sh"
 chmod 755 "$target/bin/netns-bg-runner.sh"
 chmod 700 "$target/bin/netns-exec.sh"
-chmod 600 "/etc/sudoers.d/netns-runner.sudoers"
+chmod 440 "/etc/sudoers.d/netns-runner"
