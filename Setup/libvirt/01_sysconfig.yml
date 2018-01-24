@@ -1,0 +1,77 @@
+---
+- hosts: suse
+  remote_user: root
+  vars:
+    basedir: "{{ lookup('file', 'basedir.cfg') }}"
+# use as {{ basedir }}
+  tasks:
+# stop service
+    - name: "stop libvirt-guests.service"
+      service: enabled=yes state=stopped name=libvirt-guests
+    - name: "stop libvirtd.service"
+      service: enabled=yes state=stopped name=libvirtd
+# remove hooks package: check zypper module!
+    - name: "remove hooks package"
+      shell: "zypper remove -y libvirt-daemon-hooks || true"
+# set default sysconfig params
+    - name: "/etc/sysconfig/libvirt-guests SHUTDOWN_TIMEOUT"
+      lineinfile:
+        dest=/etc/sysconfig/libvirt-guests
+        line="SHUTDOWN_TIMEOUT="60""
+        regexp="^#?SHUTDOWN_TIMEOUT"
+        state=present
+    - name: "/etc/sysconfig/libvirt-guests PARALLEL_SHUTDOWN"
+      lineinfile:
+        dest=/etc/sysconfig/libvirt-guests
+        line="PARALLEL_SHUTDOWN="5""
+        regexp="^#?PARALLEL_SHUTDOWN"
+        state=present
+    - name: "/etc/sysconfig/libvirt-guests ON_SHUTDOWN"
+      lineinfile:
+        dest=/etc/sysconfig/libvirt-guests
+        line="ON_SHUTDOWN="shutdown""
+        regexp="^#?ON_SHUTDOWN"
+        state=present
+    - name: "/etc/sysconfig/libvirt-guests ON_BOOT"
+      lineinfile:
+        dest=/etc/sysconfig/libvirt-guests
+        line="ON_BOOT="ignore""
+        regexp="^#?ON_BOOT"
+        state=present
+    - name: "/etc/sysconfig/SuSEfirewall2 FW_ROUTE"
+      lineinfile:
+        dest=/etc/sysconfig/SuSEfirewall2
+        line="FW_ROUTE="yes""
+        regexp="^#?FW_ROUTE"
+        state=present
+    - name: "/etc/sysconfig/SuSEfirewall2 FW_ZONE_DEFAULT"
+      lineinfile:
+        dest=/etc/sysconfig/SuSEfirewall2
+        line="FW_ZONE_DEFAULT="no""
+        regexp="^#?FW_ZONE_DEFAULT"
+        state=present
+# set symlinks to config directories
+    - name: "removing original config directories"
+      shell: "[ -h \"/etc/libvirt/{{ item.path }}\" ] || rm -rf \"/etc/libvirt/{{ item.path }}\""
+      with_items:
+        - { path: 'storage' }
+        - { path: 'secrets' }
+        - { path: 'qemu' }
+        - { path: 'hooks' }
+
+    - name: "/etc/libvirt symlinks"
+      file:
+        src: "{{ basedir }}/{{ item.path }}"
+        dest: "/etc/libvirt/{{ item.path }}"
+        state: link
+        force: yes
+      with_items:
+        - { path: 'libvirt-admin.conf' }
+        - { path: 'libvirt.conf' }
+        - { path: 'libvirtd.conf' }
+        - { path: 'lxc.conf' }
+        - { path: 'qemu.conf' }
+        - { path: 'storage' }
+        - { path: 'secrets' }
+        - { path: 'qemu' }
+        - { path: 'hooks' }

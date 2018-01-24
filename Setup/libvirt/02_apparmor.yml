@@ -1,0 +1,22 @@
+---
+- hosts: suse
+  remote_user: root
+  vars:
+    basedir: "{{ lookup('file', 'basedir.cfg') }}"
+    hookmgr: "{{ lookup('file', 'hookmgrdir.cfg') }}"
+# use as {{ basedir }}
+  tasks:
+    - name: "/etc/apparmor.d/usr.sbin.libvirtd allow executing in basedir"
+      lineinfile:
+        dest: /etc/apparmor.d/usr.sbin.libvirtd
+        line: "  \"{{ basedir }}/qemu\" rUx,"
+        state: present
+        insertafter: '^\s*/etc/xen/scripts/\*\*\s*rmix,\s*$'
+    - name: "/etc/apparmor.d/usr.sbin.libvirtd allow executing in hookmgrdir"
+      lineinfile:
+        dest: /etc/apparmor.d/usr.sbin.libvirtd
+        line: "  \"{{ hookmgr }}/qemu-hook.sh\" rUx,"
+        state: present
+        insertafter: '^\s*/etc/xen/scripts/\*\*\s*rmix,\s*$'
+    - name: "reload apparmor.service"
+      service: state=reloaded name=apparmor
