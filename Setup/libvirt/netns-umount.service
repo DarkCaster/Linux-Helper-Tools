@@ -1,0 +1,15 @@
+[Unit]
+Description=Create empty netns on startup, remove it on shutdown
+Wants=run-netns.mount
+Before=libvirtd.service libvirt-guests.service
+After=run-netns.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+TimeoutStopSec=30
+ExecStart=/bin/true
+ExecStop=/usr/local/bin/netns-umount.sh
+
+[Install]
+WantedBy=multi-user.target
