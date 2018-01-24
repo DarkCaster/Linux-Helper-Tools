@@ -1,0 +1,10 @@
+---
+- name: install ssh key
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: install ssh key
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', 'ssh_key.pub') }}"
