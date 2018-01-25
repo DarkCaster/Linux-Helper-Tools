@@ -15,10 +15,11 @@ curdir="$( cd "$( dirname "$0" )" && pwd )"
 
 set -e
 
+mkdir -p "$target"
+
 #install bash-lua-helper
 "$curdir/../BashLuaHelper/install.sh" "$target/BashLuaHelper"
 
-mkdir -p "$target"
 cp "$curdir"/*{.sh,.lua,.in} "$target"
 
 rm -f "$HOME/bin/libvirt-hook-manager"
