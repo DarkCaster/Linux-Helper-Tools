@@ -19,7 +19,7 @@ fi
 
 mkdir -p "$target/hooks"
 ln -s "$script_dir/qemu-hook.sh" "$target/hooks/qemu"
-[[ ! -z "$cfg_dir" ]] && ln -s "$target/hooks/hook_manager" "$cfg_dir"
+[[ ! -z "$cfg_dir" ]] && cfg_dir=`realpath -s "$cfg_dir"` && ln -s "$cfg_dir" "$target/hooks/hook_manager"
 [[ -z "$cfg_dir" ]] && cfg_dir="$target/hooks"
 
 # write config dir location
