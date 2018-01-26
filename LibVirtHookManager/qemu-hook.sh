@@ -42,7 +42,7 @@ hooks_dir="$link_dir"
 [[ -d "$link_dir/hook_manager" ]] && hooks_dir="$link_dir/hook_manager"
 
 #try hook-config
-hook_cfg="$link_dir/$uuid.cfg.lua"
+hook_cfg="$hooks_dir/$uuid.cfg.lua"
 [[ ! -L $hook_cfg ]] && debug "hook-config for uuid=$uuid is not installed, exiting" && exit 0
 hook_cfg=`readlink "$hook_cfg"`
 [[ ! -e $hook_cfg ]] && debug "hook-config for uuid=$uuid is a dangling symlink, exiting" && exit 0
