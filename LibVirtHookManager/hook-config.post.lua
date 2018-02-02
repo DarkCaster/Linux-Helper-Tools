@@ -68,6 +68,14 @@ function loader.asserts.vde(target)
   if type(target.log)~="string" then target.log=loader.path.combine(loader.config.tmp_dir,"vde.".. target.id ..".log") end
   if type(target.tap)~="nil" and type(target.tap)~="string" then return "tap field is incorrect!" end
   if type(target.tap)~="string" then target.tap="" end
+  if type(target.tap_macaddr)~="nil" and type(target.tap_macaddr)~="string" then return "tap_macaddr field is incorrect!" end
+  if type(target.tap_macaddr)=="string" then
+    -- verify macaddr format
+    target.tap_macaddr=string.upper(target.tap_macaddr)
+    if target.tap_macaddr~=string.match(target.tap_macaddr,"[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]:[0-9A-F][0-9A-F]") then
+      return "tap_macaddr field is not a valid mac-address"
+    end
+  end
   if type(target.netns)~="nil" and type(target.netns)~="string" then return "netns field is incorrect!" end
   if type(target.netns)~="string" then target.netns="" end
   if type(target.netns_cleanup)~="nil" and type(target.netns_cleanup)~="boolean" then return "netns_cleanup field is incorrect!" end

@@ -26,6 +26,7 @@ vde_example = {
   log=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"vde.2.log"),
   -- other optional parameters
   tap="vde_example", -- create tap device and connect vde_switch to it
+  tap_macaddr="00:16:3E:9E:05:6F",
   netns="vde_example", -- create separate netns and move tap device to separate netns
   netns_cleanup=true, -- will remove netns on exit, true by default
 }
