@@ -65,6 +65,22 @@ ff02::3 ipv6-allhosts\
   hostname="example.lan",
 }
 
+netns_miredo_example = {
+  type="nmiredo", -- start miredo client service in selected netns
+  id=5,
+  op_start="prepare",
+  op_stop="release",
+  netns="vde_example", -- netns name, where setup will be performed
+  -- various setup parameters, optional, will be set to provided defaults if missing:
+  interface_name="teredo",
+  server_address="teredo.remlab.net",
+  user="nobody",
+  --mtu=1280,
+  -- pidfile and logfile location, will be set to provided default values if missing
+  pid=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"nmiredo.5.pid"),
+  log=loader.path.combine(loader.slash,"tmp","qemu-hooks-".. loader.config.uuid,"nmiredo.5.log"),
+}
+
 global_params = {
   timeout=10,
   user=1000,
@@ -74,7 +90,7 @@ global_params = {
 deps = {
   {
     uuid="e9ce7ae0-272a-44b5-b4b6-eca4b738127b",
-    hooks = { vde_example, network_setup_example, dhclient_example },
+    hooks = { vde_example, network_setup_example, dhclient_example, netns_miredo_example },
   },
   {
     uuid="f53e968b-d763-4973-bb59-352cd02be824",

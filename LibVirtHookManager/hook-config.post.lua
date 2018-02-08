@@ -46,6 +46,22 @@ function loader.asserts.netns_dhclient(target)
   if type(target.cmdline)~="table" then target.cmdline={} end
 end
 
+function loader.asserts.netns_miredo(target)
+  if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
+  if type(target.pid)~="nil" and type(target.pid)~="string" then return "pid field is incorrect!" end
+  if type(target.pid)~="string" then target.pid=loader.path.combine(loader.config.tmp_dir,"nmiredo.".. target.id ..".pid") end
+  if type(target.log)~="nil" and type(target.log)~="string" then return "log field is incorrect!" end
+  if type(target.log)~="string" then target.log=loader.path.combine(loader.config.tmp_dir,"nmiredo.".. target.id ..".log") end
+  target.config=loader.path.combine(loader.config.tmp_dir,"nmiredo.".. target.id ..".config")
+  if type(target.interface_name)~="nil" and type(target.interface_name)~="string" then return "interface_name field is incorrect!" end
+  if type(target.interface_name)~="string" then target.interface_name="teredo" end
+  if type(target.server_address)~="nil" and type(target.server_address)~="string" then return "server_address field is incorrect!" end
+  if type(target.server_address)~="string" then target.server_address="teredo.remlab.net" end
+  if type(target.user)~="nil" and type(target.user)~="string" then return "user field is incorrect!" end
+  if type(target.user)~="string" then target.user="nobody" end
+  if type(target.mtu)~="nil" and type(target.mtu)~="number" then return "number field is incorrect!" end
+end
+
 function loader.asserts.nsetup(target)
   if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
   if type(target.resolv_conf)~="string" and type(target.resolv_conf)~="nil" then return "resolv_conf field is incorrect!" end
@@ -117,6 +133,8 @@ for dindex,dfield in pairs(deps) do
           loader.asserts.result=loader.asserts.netns_dhclient(field)
         elseif field.type=="nsetup" then
           loader.asserts.result=loader.asserts.nsetup(field)
+        elseif field.type=="nmiredo" then
+          loader.asserts.result=loader.asserts.netns_miredo(field)
         else
           error("unsupported hook type: ".. field.type)
         end
