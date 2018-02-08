@@ -50,6 +50,7 @@ function loader.asserts.netns_miredo(target)
   if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
   if type(target.pid)~="nil" and type(target.pid)~="string" then return "pid field is incorrect!" end
   if type(target.pid)~="string" then target.pid=loader.path.combine(loader.config.tmp_dir,"nmiredo.".. target.id ..".pid") end
+  target.pid2=loader.path.combine(loader.config.tmp_dir,"nmiredo.".. target.id ..".pid2")
   if type(target.log)~="nil" and type(target.log)~="string" then return "log field is incorrect!" end
   if type(target.log)~="string" then target.log=loader.path.combine(loader.config.tmp_dir,"nmiredo.".. target.id ..".log") end
   target.config=loader.path.combine(loader.config.tmp_dir,"nmiredo.".. target.id ..".config")

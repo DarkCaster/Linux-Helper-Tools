@@ -8,7 +8,9 @@ if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
   if check_pid "${cfg[hooks.$hook_cnt.pid]}" "$miredo"; then
     debug "terminating miredo"
     kill -TERM `2>/dev/null cat "${cfg[hooks.$hook_cnt.pid]}"`
+    wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid2]}" "$miredo" && debug "miredo(internal pid) stop confirmed"
     wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" "$miredo" && debug "miredo stop confirmed"
   fi
+  rm -f "${cfg[hooks.$hook_cnt.pid2]}" || true
   rm -f "${cfg[hooks.$hook_cnt.pid]}" || true
 fi

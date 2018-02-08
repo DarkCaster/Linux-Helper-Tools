@@ -14,7 +14,8 @@ if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
   echo "ServerAddress ${cfg[hooks.$hook_cnt.server_address]}" >> "${cfg[hooks.$hook_cnt.config]}"
   # run miredo in selected netns and separate uts namespace
   debug "starting miredo"
-  ip netns exec "${cfg[hooks.$hook_cnt.netns]}" "$nohup" "$unshare" -u "$miredo" -f -p "${cfg[hooks.$hook_cnt.pid]}" -u "${cfg[hooks.$hook_cnt.user]}" -c "${cfg[hooks.$hook_cnt.config]}" >"${cfg[hooks.$hook_cnt.log]}" 2>&1 &
+  ip netns exec "${cfg[hooks.$hook_cnt.netns]}" "$nohup" "$unshare" -u "$miredo" -f -p "${cfg[hooks.$hook_cnt.pid2]}" -u "${cfg[hooks.$hook_cnt.user]}" -c "${cfg[hooks.$hook_cnt.config]}" >"${cfg[hooks.$hook_cnt.log]}" 2>&1 &
+  echo "$!" > "${cfg[hooks.$hook_cnt.pid]}"
   wait_for_pid_created "${cfg[hooks.$hook_cnt.pid]}" "$miredo" && debug "miredo startup confirmed"
 else
   debug "pid file ${cfg[hooks.$hook_cnt.pid]} already present, cannot proceed!"
