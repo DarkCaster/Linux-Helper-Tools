@@ -1,0 +1,13 @@
+#!/bin/bash
+
+find_command miredo
+find_command unshare
+find_command nohup
+
+if [[ ! -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
+  # create config file
+  # run miredo in selected netns and separate uts namespace
+else
+  debug "pid file ${cfg[hooks.$hook_cnt.pid]} already present, cannot proceed!"
+  false
+fi

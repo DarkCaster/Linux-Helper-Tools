@@ -1,0 +1,8 @@
+#!/bin/bash
+
+find_command kill
+find_command miredo
+
+if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
+
+fi
