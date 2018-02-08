@@ -22,7 +22,7 @@ namespace=`echo "$1" | grep "^[0-9a-z_]*$"`
 [ ! -f "/var/run/netns/$namespace" ] && echo "selected network namespace $namespace is not available" && exit 1
 shift 1
 
-if [ "$upid" == "0" ]; then
+if [ "$upid" = "0" ]; then
   ip netns exec "$namespace" sudo $mode -u "$user" -g "$group" -- "$@"
 else
   nsenter -t "$upid" -u ip netns exec "$namespace" sudo $mode -u "$user" -g "$group" -- "$@"

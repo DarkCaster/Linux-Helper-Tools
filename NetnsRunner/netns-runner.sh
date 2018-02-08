@@ -23,16 +23,16 @@ bg="fg"
 
 while true
 do
-  if [ "$1" == "-b" ]; then
+  if [ "$1" = "-b" ]; then
     bg="bg"
-  elif [ "$1" == "-up" ]; then
+  elif [ "$1" = "-up" ]; then
     shift 1
     upid="$1"
     if ! is_number "$upid"; then
       echo "provided pid $upid is not a number"
       exit 1
     fi
-  elif [ "$1" == "-upf" ]; then
+  elif [ "$1" = "-upf" ]; then
     shift 1
     upid=`2>/dev/null cat "$1" | head -n1`
     [ -z "$upid" ] && echo "failed to read pid from $1 file" && exit 1
