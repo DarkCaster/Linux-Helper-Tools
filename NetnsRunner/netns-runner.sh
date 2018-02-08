@@ -1,14 +1,54 @@
 #!/bin/bash
 
-# TODO: convert to plain sh use
+# TODO: convert to plain sh syntax
 # (for now, bash is used because it's easy to export and reimport env with it)
 
 cur_username=`id -un`
 
-namespace="$1"
-[ -z "$namespace" ] && echo "usage: netns-runner.sh <namespace> <command> [parameters]"
-shift 1
+show_usage () {
+  echo "usage: netns-runner.sh [-b;-up <pid>;-upf <pid file>] <namespace> <command> [parameters]"
+  echo "options:"
+  echo "  -b - run command in background"
+  echo "  -up <pid> - clone UTS namespace from process with selected PID"
+  echo "  -upf <pid file> - clone UTS namespace from process with PID read from selected pid file"
+  exit 1
+}
 
+is_number () {
+  local num="$1"
+  [ ! -z "${num##*[!0-9]*}" ] && return 0 || return 1
+}
+
+bg="fg"
+
+while true
+do
+  if [ "$1" == "-b" ]; then
+    bg="bg"
+  elif [ "$1" == "-up" ]; then
+    shift 1
+    upid="$1"
+    if ! is_number "$upid"; then
+      echo "provided pid $upid is not a number"
+      exit 1
+    fi
+  elif [ "$1" == "-upf" ]; then
+    shift 1
+    upid=`2>/dev/null cat "$1" | head -n1`
+    [ -z "$upid" ] && echo "failed to read pid from $1 file" && exit 1
+    if ! is_number "$upid"; then
+      echo "provided pid $upid is not a number"
+      exit 1
+    fi
+  else
+    namespace="$1"
+    shift 1
+    break
+  fi
+  shift 1
+done
+
+[ -z "$namespace" ] && echo "namespace is empty!" && show_usage
 [ "$#" = "0" ] && exit 0
 
 tmp_base_dir="$TMPDIR"
