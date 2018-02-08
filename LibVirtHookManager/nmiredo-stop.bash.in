@@ -4,5 +4,11 @@ find_command kill
 find_command miredo
 
 if [[ -f ${cfg[hooks.$hook_cnt.pid]} ]]; then
-
+  debug "checking miredo pidfile"
+  if check_pid "${cfg[hooks.$hook_cnt.pid]}" "$miredo"; then
+    debug "terminating miredo"
+    kill -TERM `2>/dev/null cat "${cfg[hooks.$hook_cnt.pid]}"`
+    wait_for_pid_removed "${cfg[hooks.$hook_cnt.pid]}" "$miredo" && debug "miredo stop confirmed"
+  fi
+  rm -f "${cfg[hooks.$hook_cnt.pid]}" || true
 fi
