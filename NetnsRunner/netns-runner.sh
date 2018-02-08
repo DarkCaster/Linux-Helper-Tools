@@ -48,6 +48,7 @@ do
   shift 1
 done
 
+[ -z "$upid" ] && upid="0"
 [ -z "$namespace" ] && echo "namespace is empty!" && show_usage
 [ "$#" = "0" ] && exit 0
 
@@ -73,4 +74,4 @@ echo "unset USERNAME" >> "$tmp_script"
 echo "rm \"$tmp_script\"" >> "$tmp_script"
 echo "\"\$@\"" >> "$tmp_script"
 
-sudo -- __prefix__/netns-exec.sh fg "$namespace" "$tmp_script" "$@"
+sudo -- __prefix__/netns-exec.sh "$bg" "$upid" "$namespace" "$tmp_script" "$@"
