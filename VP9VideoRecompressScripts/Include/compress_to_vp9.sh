@@ -28,7 +28,7 @@ nnedi_weights="$9"
 thisuser=`id -u`
 
 test "z$temp_dir" = "z" && temp_dir=`mktemp -d -t vp9-compressor-$thisuser-XXXXXX` || temp_dir=`mktemp -p "$temp_dir" -d -t vp9-compressor-$thisuser-XXXXXX`
-test "z$temp_dir" = "z" && exit 1 
+test "z$temp_dir" = "z" && exit 1
 
 audio_opts=""
 
@@ -128,84 +128,44 @@ fi
 
 
 #profile 0 - use ffmpeg to copy all streams, optionally recompress audio
-if [ "z$vprofile" = "z0" ]; then
+if [[ "$vprofile" = "0" ]]; then
  use_vpxenc="false"
  video_base_opts="-threads 1"
 fi
 
-if [ "z$vprofile" = "z1i" ] || [ "z$vprofile" = "z2i" ]; then
- use_vpxenc="false"
- video_base_opts="-c:v libvpx-vp9 -b:v 3000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
- video_op_opts="-speed 1"
- test "z$vprofile" = "z1i" && use_tp="true"
- video_fp_opts="-speed 1"
- video_sp_opts="-speed 1 -auto-alt-ref 1 -lag-in-frames 16"
+if [[ "$vprofile" = "f1" || "$vprofile" = "f2" || "$vprofile" = "f3" || "$vprofile" = "f4" || "$vprofile" = "f5" || "$vprofile" = "f6" ]]; then
+  use_tp="true"
+  use_vpxenc="false"
+  video_op_opts="-speed 1"
+  video_fp_opts="-speed 1"
+  video_sp_opts="-speed 1 -auto-alt-ref 1 -lag-in-frames 16"
+  [[ "$vprofile" = "f1" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 10000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
+  [[ "$vprofile" = "f2" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 7500k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
+  [[ "$vprofile" = "f3" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 5000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
+  [[ "$vprofile" = "f4" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 3000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
+  [[ "$vprofile" = "f5" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 2000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
+  [[ "$vprofile" = "f6" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 1000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
 fi
 
-if [ "z$vprofile" = "z3i" ] || [ "z$vprofile" = "z4i" ]; then
- use_vpxenc="false"
- video_base_opts="-c:v libvpx-vp9 -b:v 2000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
- video_op_opts="-speed 1"
- test "z$vprofile" = "z3i" && use_tp="true"
- video_fp_opts="-speed 1"
- video_sp_opts="-speed 1 -auto-alt-ref 1 -lag-in-frames 16"
-fi
+if [[ "$vprofile" = "cq1" || "$vprofile" = "cq2" || "$vprofile" = "cq3" || "$vprofile" = "cq4" || "$vprofile" = "cq5" || "$vprofile" = "cq6" || "$vprofile" = "1" || "$vprofile" = "2" || "$vprofile" = "3" || "$vprofile" = "4" || "$vprofile" = "5" || "$vprofile" = "6" ]]; then
+  use_tp="true"
+  video_op_opts="--good --cpu-used=1"
+  video_fp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=25 --arnr-maxframes=15 --arnr-strength=3 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
+  video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=25 --arnr-maxframes=15 --arnr-strength=3 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
 
-if [ "z$vprofile" = "z5i" ] || [ "z$vprofile" = "z6i" ]; then
- use_vpxenc="false"
- video_base_opts="-c:v libvpx-vp9 -b:v 1000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
- video_op_opts="-speed 1"
- test "z$vprofile" = "z5i" && use_tp="true"
- video_fp_opts="-speed 1"
- video_sp_opts="-speed 1 -auto-alt-ref 1 -lag-in-frames 16"
-fi
+  [[ "$vprofile" = "cq1" ]] && video_base_opts="--codec=vp9 --end-usage=cq --cq-level=1 --target-bitrate=10000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "cq2" ]] && video_base_opts="--codec=vp9 --end-usage=cq --cq-level=8 --target-bitrate=7500 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "cq3" ]] && video_base_opts="--codec=vp9 --end-usage=cq --cq-level=16 --target-bitrate=5000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "cq4" ]] && video_base_opts="--codec=vp9 --end-usage=cq --cq-level=22 --target-bitrate=3000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "cq5" ]] && video_base_opts="--codec=vp9 --end-usage=cq --cq-level=33 --target-bitrate=2000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "cq6" ]] && video_base_opts="--codec=vp9 --end-usage=cq --cq-level=44 --target-bitrate=1000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
 
-if [ "z$vprofile" = "z1q" ] || [ "z$vprofile" = "z2q" ]; then
- video_base_opts="--codec=vp9 --end-usage=q --cq-level=22 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --min-q=0 --max-q=60 --static-thresh=0 --drop-frame=0 --kf-min-dist=0 --kf-max-dist=720"
- video_op_opts="--good --cpu-used=1"
- test "z$vprofile" = "z1q" && use_tp="true"
- video_fp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
- video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
-fi
-
-if [ "z$vprofile" = "z3q" ] || [ "z$vprofile" = "z4q" ]; then
- video_base_opts="--codec=vp9 --end-usage=q --cq-level=33 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --min-q=0 --max-q=60 --static-thresh=0 --drop-frame=0 --kf-min-dist=0 --kf-max-dist=720"
- video_op_opts="--good --cpu-used=1"
- test "z$vprofile" = "z3q" && use_tp="true"
- video_fp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
- video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
-fi
-
-if [ "z$vprofile" = "z5q" ] || [ "z$vprofile" = "z6q" ]; then
- video_base_opts="--codec=vp9 --end-usage=q --cq-level=44 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --min-q=0 --max-q=60 --static-thresh=0 --drop-frame=0 --kf-min-dist=0 --kf-max-dist=720"
- video_op_opts="--good --cpu-used=1"
- test "z$vprofile" = "z5q" && use_tp="true"
- video_fp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
- video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
-fi
-
-if [ "z$vprofile" = "z1" ] || [ "z$vprofile" = "z2" ]; then
- video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=3000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --min-q=0 --max-q=60 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=720"
- video_op_opts="--good --cpu-used=1"
- test "z$vprofile" = "z1" && use_tp="true"
- video_fp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
- video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
-fi
-
-if [ "z$vprofile" = "z3" ] || [ "z$vprofile" = "z4" ]; then
- video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=2000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --min-q=0 --max-q=60 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=720"
- video_op_opts="--good --cpu-used=1"
- test "z$vprofile" = "z3" && use_tp="true"
- video_fp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
- video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
-fi
-
-if [ "z$vprofile" = "z5" ] || [ "z$vprofile" = "z6" ]; then
- video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=1000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --min-q=0 --max-q=60 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=720"
- video_op_opts="--good --cpu-used=1"
- test "z$vprofile" = "z5" && use_tp="true"
- video_fp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
- video_sp_opts="--good --cpu-used=1 --auto-alt-ref=1 --lag-in-frames=16 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
+  [[ "$vprofile" = "1" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=10000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "2" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=7500 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "3" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=5000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "4" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=3000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "5" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=2000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "6" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=1000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
 fi
 
 usefilters="no"
@@ -424,4 +384,3 @@ check_errors
 #remove temporary dir
 rm -rf "$temp_dir"
 check_errors
-
