@@ -40,39 +40,56 @@ denoise_opts=""
 deinterlace_opts=""
 crop_opts=""
 
+#ffmpeg extra filter options
+filter_extra=""
+
 use_vpxenc="true"
 use_tp="false"
+use_mkvmerge="false"
 
 #bitdepth options
 ffbitopts=""
 ffpixopts=""
 vpxbitopts=""
 
-#custom bitdepth and pix format
-if [ "z$bitdepth" != "z" ]; then
+# custom bitdepth and pix format
+if [[ ! -z $bitdepth ]]; then
  ffbitopts="-strict -1"
  ffpixopts="-pix_fmt $bitdepth"
  #TODO: vpx profile selection, now binded to profile 0 for any custom pix format
  vpxbitopts="--profile=0"
 fi
 
-#custom bitdepth and pix format
-if [ "z$bitdepth" = "zyuv420p" ]; then
+# force convert source to yuv420p 8-bit format before passing it to vpxenc
+if [[ "$bitdepth" = "yuv420p" ]]; then
  ffbitopts=""
  ffpixopts="-pix_fmt yuv420p"
  vpxbitopts="--profile=0"
 fi
 
-if [ "z$bitdepth" = "z10" ]; then
+# simple 10 bit profile, for use with non-hdr 8-bit source, pix_fmt will be autodetected
+if [[ "$bitdepth" = "10" ]]; then
  ffbitopts="-strict -1"
  ffpixopts="-pix_fmt +"
  vpxbitopts="--profile=2 --bit-depth=10"
 fi
 
-if [ "z$bitdepth" = "z12" ]; then
+# simple 12 bit profile, for use with non-hdr 8-bit source, pix_fmt will be autodetected
+if [[ "$bitdepth" = "12" ]]; then
  ffbitopts="-strict -1"
  ffpixopts="-pix_fmt +"
  vpxbitopts="--profile=2 --bit-depth=12"
+fi
+
+# profile for HDR 10-bit source (use ffprobe to query): yuv420p10le(tv, bt2020nc/bt2020/smpte2084)
+# pix_fmt passed to vpxenc will be set to yuv420p10le
+if [[ "$bitdepth" = "yuv420p10le_tv_bt2020nc_bt2020_smpte2084" ]]; then
+ ffbitopts="-strict -1"
+ ffpixopts="-pix_fmt yuv420p10le"
+ vpxbitopts="--profile=2 --bit-depth=10 --color-space=bt2020"
+ # needed to set remaining color meta headers that was not set by vpxenc
+ mkvmergeopts="--colour-transfer-characteristics 0:16 --colour-primaries 0:9" #https://mkvtoolnix.download/doc/mkvmerge.html
+ use_mkvmerge="true" # mkvmerge -o test.mkv  video.webm
 fi
 
 #default bitdepth and pix format
@@ -130,21 +147,20 @@ fi
 #profile 0 - use ffmpeg to copy all streams, optionally recompress audio
 if [[ "$vprofile" = "0" ]]; then
  use_vpxenc="false"
- video_base_opts="-threads 1"
 fi
 
-if [[ "$vprofile" = "f1" || "$vprofile" = "f2" || "$vprofile" = "f3" || "$vprofile" = "f4" || "$vprofile" = "f5" || "$vprofile" = "f6" ]]; then
+if [[ "$vprofile" = "fast1" || "$vprofile" = "fast2" || "$vprofile" = "fast3" || "$vprofile" = "fast4" || "$vprofile" = "fast5" || "$vprofile" = "fast6" ]]; then
   use_tp="true"
-  use_vpxenc="false"
-  video_op_opts="-speed 1"
-  video_fp_opts="-speed 1"
-  video_sp_opts="-speed 1 -auto-alt-ref 1 -lag-in-frames 16"
-  [[ "$vprofile" = "f1" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 10000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
-  [[ "$vprofile" = "f2" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 7500k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
-  [[ "$vprofile" = "f3" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 5000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
-  [[ "$vprofile" = "f4" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 3000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
-  [[ "$vprofile" = "f5" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 2000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
-  [[ "$vprofile" = "f6" ]] && video_base_opts="-c:v libvpx-vp9 -b:v 1000k -qmin 0 -qmax 60 -threads 1 -tile-columns 0 -tile-rows 0 -frame-parallel 0 -aq-mode 1 -g 720"
+  video_op_opts="--good --cpu-used=2"
+  video_fp_opts="--good --cpu-used=2 --auto-alt-ref=1 --lag-in-frames=25 --arnr-maxframes=15 --arnr-strength=3 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
+  video_sp_opts="--good --cpu-used=2 --auto-alt-ref=1 --lag-in-frames=25 --arnr-maxframes=15 --arnr-strength=3 --minsection-pct=5 --maxsection-pct=800 --bias-pct=50"
+
+  [[ "$vprofile" = "fast1" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=10000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "fast2" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=7500 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "fast3" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=5000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "fast4" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=3000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "fast5" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=2000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
+  [[ "$vprofile" = "fast6" ]] && video_base_opts="--codec=vp9 --end-usage=vbr --target-bitrate=1000 --buf-initial-sz=10000 --buf-optimal-sz=12000 --buf-sz=16000 --threads=1 --aq-mode=1 --tile-rows=0 --tile-columns=0 --frame-parallel=0 --static-thresh=0 --drop-frame=0 --resize-allowed=0 --kf-min-dist=0 --kf-max-dist=1440"
 fi
 
 if [[ "$vprofile" = "cq1" || "$vprofile" = "cq2" || "$vprofile" = "cq3" || "$vprofile" = "cq4" || "$vprofile" = "cq5" || "$vprofile" = "cq6" || "$vprofile" = "1" || "$vprofile" = "2" || "$vprofile" = "3" || "$vprofile" = "4" || "$vprofile" = "5" || "$vprofile" = "6" ]]; then
@@ -240,9 +256,10 @@ test "z$crop" != "z"      && crop_opts="$crop"
 test "z$crop" = "z0"      && crop_opts=""
 test "z$crop" = "zfhd4x3" && crop_opts="crop=1440:1080:240:0"
 test "z$crop" = "zfhd4x3ext" && crop_opts="crop=1520:1080:200:0"
-
+test "z$crop" = "zresize_fhd" && crop_opts="scale=1920:-1" && filter_extra="-sws_flags spline"
 test "z$crop" = "z"       && crop_opts=""
-test "z$vprofile" = "z0"  && crop_opts=""
+
+test "z$vprofile" = "z0"  && crop_opts="" && filter_extra=""
 
 test ! -z "$crop_opts" && usefilters="yes"
 
@@ -285,6 +302,7 @@ echo "video_fp_opts=$video_fp_opts" >> "$temp_dir/ffmpeg.log"
 echo "video_sp_opts=$video_sp_opts" >> "$temp_dir/ffmpeg.log"
 echo "video_op_opts=$video_op_opts" >> "$temp_dir/ffmpeg.log"
 echo "filters=$filters" >> "$temp_dir/ffmpeg.log"
+echo "filter_extra=$filter_extra" >> "$temp_dir/ffmpeg.log"
 echo "audio_opts=$audio_opts" >> "$temp_dir/ffmpeg.log"
 echo "ffbitopts=$ffbitopts" >> "$temp_dir/ffmpeg.log"
 echo "ffpixopts=$ffpixopts" >> "$temp_dir/ffmpeg.log"
@@ -298,54 +316,55 @@ video_src_bak=""
 if [ "z$use_tempfile" = "zyes" ]; then
  #create preprocessed video file
  echo "****ffmpeg preprocess output****" >> "$temp_dir/ffmpeg.log"
- </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v ljpeg -f matroska -strict -1 "$temp_dir/temp_source.mkv"
+ </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters $filter_extra -c:v ljpeg -f matroska -strict -1 "$temp_dir/temp_source.mkv"
  check_errors
  #clean filters string, because we applying filters on preprocessing
  filters=""
+ filter_extra=""
  #redirect video source to preprocessed temporary file
  video_src_bak="$video_src"
  video_src="$temp_dir/temp_source.mkv"
 fi
 
-if [ "z$use_vpxenc" != "ztrue" ]; then
- if [ "z$use_tp" = "ztrue" ]; then
-  #process without vpxenc, two pass encode
-  echo "****ffmpeg 1-st pass output****" >> "$temp_dir/ffmpeg.log"
-  </dev/null ffmpeg -i "$video_src" -map 0:v -map_chapters -1 $filters $video_base_opts $video_fp_opts -pass 1 -passlogfile passlog -f $format "$temp_dir/firstpass.tmp" >> "$temp_dir/ffmpeg.log" 2>&1
-  check_errors
-  echo "****ffmpeg 2-nd pass output****" >> "$temp_dir/ffmpeg.log"
-  </dev/null ffmpeg -i "$video_src" -map 0 $filters -c copy $video_base_opts $video_sp_opts -pass 2 -passlogfile passlog $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
-  check_errors
- else
-  #process without vpxenc, simple single pass encode
+if [[ "$use_vpxenc" != "true" ]]; then
+  #process without vpxenc, just copy video stream
   echo "*********ffmpeg output*********" >> "$temp_dir/ffmpeg.log"
-  </dev/null ffmpeg -i "$video_src" -map 0 $filters -c copy $video_base_opts $video_op_opts $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
+  </dev/null ffmpeg -i "$video_src" -map 0 -c copy --threads 1 $audio_opts -f $format "$temp_dir/video.result" >> "$temp_dir/ffmpeg.log" 2>&1
   check_errors
- fi
 else
- if [ "z$use_tp" = "ztrue" ]; then
+ if [[ "$use_tp" = "true" ]]; then
 
   #process with vpxenc, two pass encode, first pass
   echo "****ffmpeg 1-st pass output****" >> "$temp_dir/ffmpeg.log"
   echo "****vpxenc 1-st pass output****" >> "$temp_dir/vpxenc.log"
-  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=1 --fpf=passlog.log $video_base_opts $video_fp_opts -o "$temp_dir/video-firstpass.webm" -
+  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters $filter_extra -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=1 --fpf=passlog.log $video_base_opts $video_fp_opts -o "$temp_dir/video-firstpass.webm" -
   codes=`echo ${PIPESTATUS[@]}`
   test "$codes" != "0 0" && echo "ffmpeg or vpxenc failed at first pass with exit codes=$codes. see it's stuff at $temp_dir" && exit 1
 
   #second pass
   echo "****ffmpeg 2-nd pass output****" >> "$temp_dir/ffmpeg.log"
   echo "****vpxenc 2-nd pass output****" >> "$temp_dir/vpxenc.log"
-  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=2 --fpf=passlog.log $video_base_opts $video_sp_opts -o "$temp_dir/video.webm" -
+  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters $filter_extra -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=2 --pass=2 --fpf=passlog.log $video_base_opts $video_sp_opts -o "$temp_dir/video.webm" -
   codes=`echo ${PIPESTATUS[@]}`
   test "$codes" != "0 0" && echo "ffmpeg or vpxenc failed at second pass with exit codes=$codes. see it's stuff at $temp_dir" && exit 1
 
  else
+
   #process with vpxenc, one pass encode
   echo "*********ffmpeg output*********" >> "$temp_dir/ffmpeg.log"
   echo "*********vpxenc output*********" >> "$temp_dir/vpxenc.log"
-  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=1 $video_base_opts $video_op_opts -o "$temp_dir/video.webm" -
+  </dev/null 2>>"$temp_dir/ffmpeg.log" ffmpeg -loglevel info -i "$video_src" -threads 1 -map 0:v -map_chapters -1 $filters $filter_extra -c:v wrapped_avframe $ffpixopts -f yuv4mpegpipe $ffbitopts - | 2>>"$temp_dir/vpxenc.log" "$vpxenc" $vpxbitopts --passes=1 $video_base_opts $video_op_opts -o "$temp_dir/video.webm" -
   codes=`echo ${PIPESTATUS[@]}`
   test "$codes" != "0 0" && echo "ffmpeg or vpxenc failed with exit codes=$codes. see it's stuff at $temp_dir" && exit 1
+
+ fi
+
+ if [[ "$use_mkvmerge" = "true" ]]; then
+  echo "*********mkvmerge extra pass output*********" >> "$temp_dir/ffmpeg.log"
+  </dev/null mkvmerge -w -o "$temp_dir/video2.webm" $mkvmergeopts "$temp_dir/video.webm" >> "$temp_dir/ffmpeg.log" 2>&1
+  check_errors
+  mv "$temp_dir/video2.webm" "$temp_dir/video.webm"
+  check_errors
  fi
 
  if [ "z$video_only" = "zyes" ]; then
