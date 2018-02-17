@@ -6,8 +6,8 @@
 #binaries from opensuse 42.2 repo. MokManager cannot be started directly from shim with this version.
 #but it can be started from grub (which should be signed with the same certificate)
 shim_url="https://download.opensuse.org/distribution/leap/42.3/repo/oss/suse/x86_64/shim-0.9-17.10.x86_64.rpm"
-grub_url1="https://download.opensuse.org/distribution/leap/42.3/repo/oss/suse/x86_64/grub2-x86_64-efi-2.02-2.6.x86_64.rpm"
-grub_url2="https://download.opensuse.org/distribution/leap/42.3/repo/oss/suse/x86_64/grub2-2.02-2.6.x86_64.rpm"
+grub_url1="https://download.opensuse.org/update/leap/42.3/oss/x86_64/grub2-x86_64-efi-2.02-4.1.x86_64.rpm"
+grub_url2="https://download.opensuse.org/update/leap/42.3/oss/x86_64/grub2-2.02-4.1.x86_64.rpm"
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
