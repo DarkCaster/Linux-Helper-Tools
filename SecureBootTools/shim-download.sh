@@ -9,7 +9,6 @@ shim_url="https://download.opensuse.org/distribution/leap/42.3/repo/oss/suse/x86
 grub_url1="https://download.opensuse.org/distribution/leap/42.3/repo/oss/suse/x86_64/grub2-x86_64-efi-2.02-2.6.x86_64.rpm"
 grub_url2="https://download.opensuse.org/distribution/leap/42.3/repo/oss/suse/x86_64/grub2-2.02-2.6.x86_64.rpm"
 
-#script_dir=`dirname "$0"`
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 set -e

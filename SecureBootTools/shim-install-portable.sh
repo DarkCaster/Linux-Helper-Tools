@@ -12,7 +12,6 @@ efi_arch="x64"
 #override grub efi arch suffix
 grub_override_arch="y"
 
-#script_dir=`dirname "$0"`
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 set -e

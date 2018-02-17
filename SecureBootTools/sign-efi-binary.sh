@@ -8,7 +8,6 @@ output="$2"
 shred_bin=`which shred 2>/dev/null`
 [[ -z "$shred_bin" ]] && echo "shred utility is missing, cannot continue" && exit 1
 
-#script_dir=`dirname "$0"`
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 show_usage () {
