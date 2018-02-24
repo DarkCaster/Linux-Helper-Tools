@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -eE
+
+script_dir="$( cd "$( dirname "$0" )" && pwd )"
+
+# read sysconfig
+. /etc/sysconfig/xpra-dm || . "$script_dir/sysconfig.xpra_x11"
+
+teardown() {
+  echo "*** xpra_lxdm: teardown ***"
+  2>/dev/null umount /etc/lxdm/lxdm.conf || true
+  rm -f "$WORKDIR/dm.pid"
+  trap '' ERR EXIT TERM INT HUP
+  echo "*** xpra_lxdm: teardown complete ***"
+}
+
+trap 'teardown' ERR EXIT TERM INT HUP
+
+# bind-mount custom lxdm config
+echo "mouning $WORKDIR/lxdm.conf to /etc/lxdm/lxdm.conf"
+mount -o bind,ro "$WORKDIR/lxdm.conf" /etc/lxdm/lxdm.conf
+
+# TODO: remove old .Xauthority file ?
+
+# run lxdm
+echo "running lxdm"
+lxdm &
+
+# write lxdm pidfile
+echo "writing $WORKDIR/dm.pid"
+lpid="$!"
+echo "$lpid" > "$WORKDIR/dm.pid.new"
+mv "$WORKDIR/dm.pid.new" "$WORKDIR/dm.pid"
+
+# wait for lxdm completion
+echo "awaiting lxdm process completion"
+wait "$lpid"
+
+echo "lxdm process terminated"
+exit 0

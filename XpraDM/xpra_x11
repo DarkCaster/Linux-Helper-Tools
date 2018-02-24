@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -e
+
+# read sysconfig
+. /etc/sysconfig/xpra-dm
+
+# forward X11 startup params to temporary file
+printf "%s\0" "$@" > "$WORKDIR/xvfb_startup_params"
+
+sudo=()
+[[ ! -z $RUNAS ]] && sudo=(sudo -H -u "$RUNAS")
+
+>"$LOGDIR/xpra_x11.log" 2>&1 \
+"${sudo[@]}" \
+xpra start-desktop \
+--xvfb=/usr/bin/xpra_xvfb \
+--socket-dir="$WORKDIR/sockets" \
+--socket-dirs="$WORKDIR/sockets" \
+--pidfile="$WORKDIR/xpra.pid" \
+--log-dir="$LOGDIR" \
+--log-file=xpra.log \
+--daemon=yes \
+--systemd-run=no \
+--html=off \
+--file-transfer=no \
+--exit-with-client=no \
+--remote-logging=no \
+--dbus-proxy=no \
+--dbus-launch= \
+--bandwidth-limit=0 \
+--notifications=no \
+--system-tray=no \
+--global-menus=no \
+--xsettings=no \
+--mmap=no \
+$XPRACMDLINE
+
+timer="$TIMEOUT"
+pids_found="false"
+while [[ $timer -gt 0 ]]
+do
+  [[ -f "$WORKDIR/xpra.pid" ]] && pids_found="true" && break
+  sleep 1
+  timer=$((timer-1))
+done
+
+sleep 1
+
+xprapid=`2>/dev/null cat "$WORKDIR/xpra.pid" || true`
+
+[[ $pids_found != true || -z $xprapid ]] && echo "failed to startup xpra" >> "$LOGDIR/xpra_x11.log" && exit 1
+
+while [[ -d /proc/$xprapid ]]
+do
+  sleep 2
+done

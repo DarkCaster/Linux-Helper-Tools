@@ -1,0 +1,19 @@
+xpra_dm_start_proc () {
+  xdm_reload_files
+  return $?
+}
+
+xpra_dm_vars() {
+    case $1 in
+        xpra_dm)
+            DISPLAYMANAGER=/usr/bin/xpra_dm
+            XDMOPTIONS=-d
+            STARTPROC=xpra_dm_start_proc
+            RELOADPROC=xpra_dm_start_proc
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+    return 0
+}

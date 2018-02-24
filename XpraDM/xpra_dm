@@ -1,0 +1,131 @@
+#!/bin/bash
+
+set -eE
+
+script_dir="$( cd "$( dirname "$0" )" && pwd )"
+
+dmmode="$1"
+[[ $dmmode == "-d" ]] && dmmode="yes" || dmmode="no"
+
+# read sysconfig
+. /etc/sysconfig/xpra-dm || . "$script_dir/sysconfig.xpra_x11"
+
+echo_error() {
+  (>&2 echo "$@")
+}
+
+# create work directories
+mkdir -p "$WORKDIR"
+mkdir -p "$LOGDIR"
+
+# grant access to user that will be used to run xpra
+if [[ ! -z $RUNAS ]]; then
+  setfacl -m "u:$RUNAS:rwx" "$WORKDIR"
+  setfacl -dm "u:$RUNAS:rwx" "$WORKDIR"
+  setfacl -m "u:$RUNAS:rwx" "$LOGDIR"
+  setfacl -dm "u:$RUNAS:rwx" "$LOGDIR"
+fi
+
+2>/dev/null mkdir "$WORKDIR/xpra_dm.lock" || exit 100
+
+selfpid="$$"
+dmpid=""
+xprapid=""
+xvfbpid=""
+
+# remove old .Xauthority file, if exist
+rm -f "$WORKDIR/.Xauthority"
+
+# remove old pidfiles
+rm -f "$WORKDIR/dm.pid"
+rm -f "$WORKDIR/xpra.pid"
+rm -f "$WORKDIR/xvfb.pid"
+
+# remove old logfiles
+rm -f "$LOGDIR/xpra_x11.log"
+rm -f "$LOGDIR/xpra.log"
+rm -f "$LOGDIR/xorg_startup.log"
+rm -f "$LOGDIR/xorg.log"
+
+teardown () {
+  echo_error "*** teardown ***"
+  [[ ! -z $dmpid && -d /proc/$dmpid ]] && echo_error "terminating display manager" && ( kill -SIGTERM $dmpid || true )
+  [[ ! -z $xprapid && -d /proc/$xprapid ]] && echo_error "terminating xpra" && ( kill -SIGTERM $xprapid || true )
+  [[ ! -z $xvfbpid && -d /proc/$xvfbpid ]] && echo_error "terminating xorg" && ( kill -SIGTERM $xvfbpid || true )
+  [[ $dmmode == yes ]] && rm -f "/var/run/displaymanager.pid"
+  # TODO: wait for processes completion
+  echo_error "*** teardown complete ***"
+  trap '' ERR EXIT TERM HUP INT
+  2>/dev/null rmdir "$WORKDIR/xpra_dm.lock" || true
+}
+
+trap 'teardown' ERR EXIT TERM HUP INT
+
+# generate displaymanager config, and start it
+if [[ $DISPLAYMANAGER = lxdm ]]; then
+  [[ ! -f /etc/lxdm/lxdm.conf ]] && echo_error "/etc/lxdm/lxdm.conf is missing!" && exit 1
+  # generate new config
+  rm -f "$WORKDIR/lxdm.conf"
+  srv_section="false"
+  srv_set="false"
+  echo -n "" > "$WORKDIR/lxdm.conf"
+  set_srv() {
+    srv_section="true"
+    [[ $srv_set == true ]] && return 0
+    echo "[server]" >> "$WORKDIR/lxdm.conf"
+    echo "arg=$script_dir/xpra_x11" >> "$WORKDIR/lxdm.conf"
+    srv_set="true"
+  }
+  while IFS= read -r line || [[ -n "$line" ]]
+  do
+    [[ $line =~ ^"#".*$ ]] && continue
+    [[ $line =~ ^\s*$ ]] && continue
+    if [[ $line =~ ^"[server]"$ ]]; then
+      set_srv
+      continue
+    fi
+    [[ $line =~ ^"[".*"]"$ ]] && srv_section="false"
+    [[ $srv_section = true ]] && continue
+    echo "$line" >> "$WORKDIR/lxdm.conf"
+  done < /etc/lxdm/lxdm.conf
+  set_srv # if it was not set before
+  # TODO unset some env variables, that may brake user-session
+  echo "altering env variables"
+  # start lxdm
+  echo "starting lxdm"
+  unshare -m --propagation unchanged xpra_lxdm &
+else
+  echo_error "displaymanager $DISPLAYMANAGER is not supported now!"
+  exit 1
+fi
+
+# wait for pid files to appear
+timer="$TIMEOUT"
+pids_found="false"
+while [[ $timer -gt 0 ]]
+do
+  [[ -f $WORKDIR/dm.pid && -f $WORKDIR/xpra.pid && -f $WORKDIR/xvfb.pid ]] && pids_found="true" && break
+  sleep 1
+  timer=$((timer-1))
+done
+
+sleep 1
+
+dmpid=`2>/dev/null cat "$WORKDIR/dm.pid" || true`
+xprapid=`2>/dev/null cat "$WORKDIR/xpra.pid" || true`
+xvfbpid=`2>/dev/null cat "$WORKDIR/xvfb.pid" || true`
+
+[[ $pids_found != true || -z $dmpid || -z $xprapid || -z $xvfbpid ]] && echo_error "startup failed" && exit 1
+
+if [[ $dmmode == yes ]]; then
+  echo "$selfpid" >> /var/run/displaymanager.pid.new
+  mv "/var/run/displaymanager.pid.new" "/var/run/displaymanager.pid"
+fi
+
+# wait while all components is running
+while [[ -d /proc/$dmpid && -d /proc/$xprapid && -d /proc/$xvfbpid ]]
+do
+  sleep 3
+done
+
+echo_error "xpra_dm terminating child processes"

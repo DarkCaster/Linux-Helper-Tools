@@ -1,0 +1,73 @@
+## Path:	Desktop/XPRA DM
+## Description:	settings for configuring display manager running on top of xpra
+
+## Type:	string(lxdm)
+## Default:	"lxdm"
+#
+# Here you can set the display manager (lxdm/sddm/etc), that will be started
+# inside xpra-powered X11 server. Only lxdm supported for now!
+#
+DISPLAYMANAGER="lxdm"
+
+## Type:	string(path to work directory)
+## Default:	"/var/run/xpra_x11"
+#
+# Main workdir, where all temporary stuff will be created.
+# Usually, there is no need to change it.
+#
+WORKDIR="/var/run/xpra_x11"
+
+## Type:	string(path to log directory)
+## Default:	"/var/log/xpra_x11"
+#
+# Directory, where xpra and xvfb logfiles will be placed.
+# Usually, there is no need to change it.
+#
+LOGDIR="/var/log/xpra_x11"
+
+## Type: integer(0:60)
+## Default:	"30"
+#
+# Timeout in seconds for awaiting startup\shutdown.
+#
+TIMEOUT="30"
+
+## Type:        yesno
+## Default:     yes
+#
+# If set to yes, use main Xorg X11 server with dummy video driver.
+# If set to no, use Xvfb server.
+#
+USEXORG="yes"
+
+## Type:	string(command line params)
+## Default:	"--bind-tcp=0.0.0.0:7777 --clipboard-direction=to-server --mdns=no --pings=yes --compressors=lz4,lzo,zlib --pulseaudio=no --speaker=disabled --microphone=disabled --bell=no"
+#
+# User-defined command line options for xpra start-desktop command
+# Sound forwarding features may not work.
+# Full clipboard sync may not work or xpra may hang.
+# Using --clipboard-direction=to-server switch may help.
+#
+XPRACMDLINE="--bind-tcp=0.0.0.0:7777 --clipboard-direction=to-server --mdns=no --pings=yes --compressors=lz4,lzo,zlib --pulseaudio=no --speaker=disabled --microphone=disabled --bell=no"
+
+## Type:	string(command line params)
+## Default:	"-depth 24"
+#
+# User-defined extra command line options for Xorg instance
+#
+XORGCMDLINE="-depth 24"
+
+## Type:	string(command line params)
+## Default:	"-screen 0 1920x1080x24"
+#
+# User-defined extra command line options for Xvfb instance
+#
+XVFBCMDLINE="-screen 0 1920x1080x24"
+
+## Type:	string(username)
+## Default:	"xpra_x11"
+#
+# Run xpra and xserver as selected non root user. Empty string to run as root.
+# If you experience problems with audio\video forwarding you may try to run xpra as root.
+#
+RUNAS="xpra_x11"

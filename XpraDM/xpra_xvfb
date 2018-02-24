@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -e
+
+# read sysconfig
+. /etc/sysconfig/xpra-dm
+
+teardown() {
+  rm -f "$WORKDIR/xvfb.pid"
+  trap '' ERR EXIT TERM INT HUP
+}
+
+trap 'teardown' ERR EXIT TERM INT HUP
+
+cmdline=()
+cmdline_cnt=0
+
+add_cmd() {
+  cmdline[$cmdline_cnt]="$1"
+  cmdline_cnt=$((cmdline_cnt+1))
+}
+
+display=":0"
+remove_next="false"
+
+while read -d $'\0' line ; do
+  [[ $remove_next == true ]] && remove_next=false && continue
+  case "$line" in
+    -nolisten)
+      remove_next=true
+      ;;
+    vt[0-9]*)
+      ;;
+    :[0-9]*)
+      [[ "$line" =~ ":"([0-9]*) ]] && display=":${BASH_REMATCH[1]}"
+      ;;
+    *)
+      add_cmd "$line"
+      ;;
+  esac
+done < "$WORKDIR/xvfb_startup_params"
+
+rm "$WORKDIR/xvfb_startup_params"
+
+if [[ $USEXORG == yes ]]; then
+  >"$LOGDIR/xorg_startup.log" 2>&1 /usr/bin/Xorg $display -logfile "$LOGDIR/xorg.log" -noreset -novtswitch -nolisten tcp +extension GLX +extension RANDR +extension RENDER -configdir "$WORKDIR/xorg.conf.d" -config "/etc/xpra/xorg.conf" "${cmdline[@]}" "$@" $XORGCMDLINE &
+else
+  >"$LOGDIR/xorg_startup.log" 2>&1 /usr/bin/Xvfb $display -noreset -nolisten tcp +extension GLX +extension RANDR +extension RENDER "${cmdline[@]}" "$@" $XVFBCMDLINE &
+fi
+
+# write xvfb pidfile
+xpid="$!"
+echo "$xpid" > "$WORKDIR/xvfb.pid.new"
+mv "$WORKDIR/xvfb.pid.new" "$WORKDIR/xvfb.pid"
+
+# wait for Xvfb completion
+wait "$xpid"
+
+exit 0
