@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# simple script to probe and enable some of bash loadables
+
+bash_version=`echo "$BASH_VERSION" | cut -f1-2 -d"."`
+loadables_dir=""
+
+#find loadables_dir
+for target in "/lib64/bash/$bash_version" "/usr/lib64/bash/$bash_version" "/lib/bash/$bash_version" "/usr/lib/bash/$bash_version"
+do
+  [[ -d $target ]] && loadables_dir="$target" && break
+done
+
+if [[ ! -z $loadables_dir ]]; then
+  for loadable in "cut" "sleep" "mkdir" "rmdir" "ln" "id"
+  do
+    2>/dev/null enable -f "$loadables_dir/$loadable.so" "$loadable" && \
+      debug "enabled bash loadable: $loadable"
+  done
+fi
+
+unset loadables_dir
+unset bash_version
