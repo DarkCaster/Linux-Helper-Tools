@@ -1,0 +1,4 @@
+#!/bin/bash
+
+debug "starting domain ${cfg[actions.$act_cnt.name]} for libvirt URI ${cfg[global_params.uri]}"
+virsh -c "${cfg[global_params.uri]}" start "${cfg[actions.$act_cnt.name]}"
