@@ -1,0 +1,15 @@
+#!/bin/bash
+
+[[ ${cfg[actions.$act_cnt.tray]} = true ]] && xpra_tray="yes" || xpra_tray="no"
+
+xcmd=()
+xcmd_min=`get_lua_table_start actions.$act_cnt.cmdline`
+xcmd_max=`get_lua_table_end actions.$act_cnt.cmdline`
+for ((xcmd_cnt=xcmd_min;xcmd_cnt<xcmd_max;++xcmd_cnt))
+do
+  xcmd[$((xcmd_cnt-1))]="${cfg[actions.$act_cnt.cmdline.$xcmd_cnt]}"
+done
+
+debug "starting xpra_client with commandline: ${cfg[actions.$act_cnt.target]} --tray=$xpra_tray ${xcmd[@]}"
+
+xpra attach "${cfg[actions.$act_cnt.target]}" --tray=$xpra_tray "${xcmd[@]}"
