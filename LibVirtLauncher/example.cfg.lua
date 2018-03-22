@@ -9,6 +9,9 @@ start_domain_1={
 
 connect_xpra_client={
   type="xpra_client",
+  target="tcp://127.0.0.1:7777",
+  tray=true,
+  cmdline={"--pings=no","--notifications=no","--compressors=lz4","--encoding=rgb","--speed=100"},
 }
 
 connect_rdp_client={

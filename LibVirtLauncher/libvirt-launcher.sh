@@ -78,7 +78,7 @@ lock_exit() {
 trap lock_exit EXIT INT QUIT TERM
 
 # enter lock
-lock_enter
+lock_enter nowait
 
 act_min=`get_lua_table_start actions`
 act_max=`get_lua_table_end actions`

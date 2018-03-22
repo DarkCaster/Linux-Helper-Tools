@@ -22,6 +22,14 @@ function loader.asserts.domstart(target)
 end
 
 function loader.asserts.xpra_client(target)
+  if type(target.target)~="string" then return "target field is missing or incorrect!" end
+  if type(target.tray)~="boolean" then return "tray field is missing or incorrect!" end
+  if type(target.cmdline)~="table" and type(target.cmdline)~="nil" then return "cmdline field must be a table!" end
+  if type(target.cmdline)=="nil" then target.cmdline={} end
+  for dindex,dfield in pairs(target.cmdline) do
+    if type(dindex)~="number" then return "cmdline[".. dindex .."] is incorrect (must be an indexed element)!" end
+    if type(dfield)~="string" then return "cmdline[".. dindex .."] must be a string!" end
+  end
 end
 
 function loader.asserts.rdp_client(target)
