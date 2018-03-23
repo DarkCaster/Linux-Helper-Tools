@@ -24,7 +24,7 @@ example={
   desktop_file={
     name="Example VM",
     comment="Start example VM and connect xpra viewer to it when ready",
-    icon="test",
+    icon=loader.path.combine(loader.workdir,"test.png"),
   },
   start_domain_1,
   connect_xpra_client,
