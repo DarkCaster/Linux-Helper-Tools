@@ -21,7 +21,11 @@ connect_rdp_client={
 
 -- example actions profile
 example={
-  desktop_file={}, -- desktop file definitions, TODO.
+  desktop_file={
+    name="Example VM",
+    comment="Start example VM and connect xpra viewer to it when ready",
+    icon="test",
+  },
   start_domain_1,
   connect_xpra_client,
 }

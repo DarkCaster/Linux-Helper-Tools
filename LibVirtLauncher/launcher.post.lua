@@ -26,6 +26,7 @@ function loader.asserts.xpra_client(target)
   if type(target.tray)~="boolean" then return "tray field is missing or incorrect!" end
   if type(target.cmdline)~="table" and type(target.cmdline)~="nil" then return "cmdline field must be a table!" end
   if type(target.cmdline)=="nil" then target.cmdline={} end
+  if type(target.conn_timeout)~="number" then return "conn_timeout field is missing or incorrect!" end
   for dindex,dfield in pairs(target.cmdline) do
     if type(dindex)~="number" then return "cmdline[".. dindex .."] is incorrect (must be an indexed element)!" end
     if type(dfield)~="string" then return "cmdline[".. dindex .."] must be a string!" end
@@ -39,7 +40,9 @@ assert(type(actions)=="table", "selected actions profile is incorrect (it must b
 
 for dindex,dfield in pairs(actions) do
   if dindex=="desktop_file" then
-    -- verify desktop file definitions
+    assert(type(dfield.name)=="string", loader.config.profile..".".. dindex .. ".name value is incorrect (must be a string)!")
+    assert(type(dfield.comment)=="string", loader.config.profile..".".. dindex .. ".comment value is incorrect (must be a string)!")
+    assert(type(dfield.icon)=="string", loader.config.profile..".".. dindex .. ".icon value is incorrect (must be a string)!")
   else
     assert(type(dindex)=="number", loader.config.profile.."[".. dindex .."] is incorrect (must be an indexed element)!")
     assert(type(dfield)=="table", loader.config.profile.."[".. dindex .."] value is incorrect (must be a table)!")
