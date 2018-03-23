@@ -10,6 +10,24 @@ do
   xcmd[$((xcmd_cnt-1))]="${cfg[actions.$act_cnt.cmdline.$xcmd_cnt]}"
 done
 
+if [[ ${cfg[actions.$act_cnt.target]} =~ ^"tcp://"(.*)":"(.*)$ ]]; then
+  xaddress="${BASH_REMATCH[1]}"
+  xport="${BASH_REMATCH[2]}"
+  debug "awaiting for tcp connection to be available at $xaddress:$xport"
+  xstart_time=`date +'%s'`
+  xdone="false"
+  while [[ $((`date +'%s'`-xstart_time)) -lt ${cfg[actions.$act_cnt.conn_timeout]} && $xdone = false ]]
+  do
+    if 2>/dev/null nc -z "$xaddress" "$xport"; then
+      debug "tcp connection at $xaddress:$xport is working"
+      xdone="true"
+      break
+    fi
+    sleep 1;
+  done
+  [[ $xdone = false ]] && "failed to await for working tcp connection at $xaddress:$xport" && exit 10
+fi
+
 debug "starting xpra_client with commandline: ${cfg[actions.$act_cnt.target]} --tray=$xpra_tray ${xcmd[@]}"
 
 xpra attach "${cfg[actions.$act_cnt.target]}" --tray=$xpra_tray "${xcmd[@]}"
