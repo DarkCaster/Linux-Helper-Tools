@@ -75,7 +75,7 @@ lock_exit() {
   return 0
 }
 
-trap lock_exit EXIT INT QUIT TERM
+trap lock_exit EXIT
 
 # enter lock
 lock_enter nowait
