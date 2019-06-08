@@ -14,6 +14,11 @@ do_exit () {
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
+if systemctl is-active --quiet alsa-state.service; then
+ log "alsa-state.service is running, will not attempt to restore volumes"
+ do_exit 0
+fi
+
 log "Saving alsa mixer settings"
 /usr/sbin/alsactl -f "$script_dir/mixer.state" store
 

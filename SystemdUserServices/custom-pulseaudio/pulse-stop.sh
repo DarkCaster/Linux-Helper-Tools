@@ -16,10 +16,11 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
 pgrep=`which pgrep 2> /dev/null`
 if [ "$pgrep" = "" ]; then
-  echo "pgrep utility not found!"
+  log "pgrep utility not found!"
+  do_exit 1
 fi
-uid=`id -u`
 
+uid=`id -u`
 pgrep="$pgrep -u $uid -f"
 
 waittime=5
