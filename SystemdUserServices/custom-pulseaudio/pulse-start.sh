@@ -14,17 +14,19 @@ do_exit () {
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
-checkproc="$checkproc"
-if [ "$checkproc" == "" ]; then
- checkproc="/sbin/checkproc"
+pgrep=`which pgrep 2> /dev/null`
+if [ "$pgrep" = "" ]; then
+  echo "pgrep utility not found!"
 fi
+uid=`id -u`
+
+pgrep="$pgrep -u $uid -f"
 
 waittime=5
 
 check_proc () {
  local exec_cmd="$1"
- $checkproc -z "$exec_cmd"
- if [ "$?" = "0" ]; then
+ if [ ! -z "`$pgrep "$exec_cmd"`" ]; then
   echo "r"
  else
   echo "s"
@@ -92,5 +94,9 @@ fi
 $pulse -D
 wait_for_proc started "$pulse"
 
-do_exit $?
+if [ `check_proc "$pulse"` = "s" ]; then
+ log "pulseaudio startup failed!"
+ do_exit 1
+fi
 
+do_exit 0
