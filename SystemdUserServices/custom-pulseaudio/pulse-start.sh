@@ -99,4 +99,10 @@ if [ `check_proc "$pulse"` = "s" ]; then
  do_exit 1
 fi
 
+pax11publish=`which pax11publish 2> /dev/null`
+if [ "$pax11publish" != "" ]; then
+  echo "exporting pulseaudio parameters to x11"
+  pax11publish -e
+fi
+
 do_exit 0
