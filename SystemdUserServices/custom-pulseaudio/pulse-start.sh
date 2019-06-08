@@ -64,8 +64,9 @@ wait_for_proc () {
 #set base files and directories names
 pulse=`which pulseaudio 2> /dev/null`
 
-if [ ! -f __HOME/.config/pulse/client.conf ]; then
-  echo "autospawn=no" > __HOME/.config/pulse/client.conf
+if [ ! -f "__HOME/.config/pulse/client.conf" ]; then
+ mkdir -p "__HOME/.config/pulse"
+ echo "autospawn=no" > "__HOME/.config/pulse/client.conf"
 fi
 
 $pulse -k 2>/dev/null
@@ -74,18 +75,18 @@ if ! wait_for_proc stopped "$pulse" ; then
  do_exit 3
 fi
 
-rm -rf __HOME/.config/pulse 2>/dev/null
-if [ -d __HOME/.config/pulse ]; then
+rm -rf "__HOME/.config/pulse" 2>/dev/null
+if [ -d "__HOME/.config/pulse" ]; then
  log "failed to remove pulseaudio config dir"
  do_exit 2
 fi
 
-install -d __HOME/.config/pulse 2>/dev/null
+install -d "__HOME/.config/pulse" 2>/dev/null
 socket=`cat "$script_dir/default.pa" | grep "module-native-protocol-unix" | grep "socket" | cut -d" " -f3 | cut -d"=" -f2`
-echo "autospawn=no" > __HOME/.config/pulse/client.conf
-test "z$socket" = "z" || echo "default-server=unix:$socket" >> __HOME/.config/pulse/client.conf
-install "$script_dir/daemon.conf" __HOME/.config/pulse/daemon.conf
-install "$script_dir/default.pa" __HOME/.config/pulse/default.pa
+echo "autospawn=no" > "__HOME/.config/pulse/client.conf"
+test "z$socket" = "z" || echo "default-server=unix:$socket" >> "__HOME/.config/pulse/client.conf"
+install "$script_dir/daemon.conf" "__HOME/.config/pulse/daemon.conf"
+install "$script_dir/default.pa" "__HOME/.config/pulse/default.pa"
 
 if [ `check_proc "$pulse"` = "r" ]; then
  log "pulseaudio still working and cannot be stopped!"

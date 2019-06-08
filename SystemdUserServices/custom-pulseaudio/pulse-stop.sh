@@ -64,8 +64,9 @@ wait_for_proc () {
 #set base files and directories names
 pulse=`which pulseaudio 2> /dev/null`
 
-if [ ! -f __HOME/.config/pulse/client.conf ]; then
-  echo "autospawn=no" > __HOME/.config/pulse/client.conf
+if [ ! -f "__HOME/.config/pulse/client.conf" ]; then
+ mkdir -p "__HOME/.config/pulse"
+ echo "autospawn=no" > "__HOME/.config/pulse/client.conf"
 fi
 
 $pulse -k 2> /dev/null
@@ -77,8 +78,8 @@ if [ `check_proc "$pulse"` == "r" ]; then
  do_exit 1
 fi
 
-rm __HOME/.config/pulse/daemon.conf
-rm __HOME/.config/pulse/default.pa
+rm "__HOME/.config/pulse/daemon.conf"
+rm "__HOME/.config/pulse/default.pa"
 
 do_exit 0
 
