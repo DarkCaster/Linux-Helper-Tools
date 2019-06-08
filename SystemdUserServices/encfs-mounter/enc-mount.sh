@@ -52,9 +52,9 @@ if [ "z$profile" != "z" ]; then
     test "z$passwd" = "z" && passwd=`$enter`
     #mount
     if [ "z$passwd" != "z" ]; then
-     echo "$passwd" | encfs -S "$encpath" "$decpath" -- -o nonempty -o auto_unmount
+     echo "$passwd" | encfs -S "$encpath" "$decpath" -- -o auto_unmount
     else
-     encfs "$encpath" "$decpath" -- -o nonempty
+     encfs "$encpath" "$decpath" --
     fi
     res="$?"
     test "z$res" != "z0" && $error "Failed to mount $profile" && exit 2
