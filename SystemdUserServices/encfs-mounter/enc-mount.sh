@@ -18,9 +18,16 @@ enter=""
 test "z$DISPLAY" != "z" && zenity=`which zenity 2> /dev/null`
 
 if [ "z$zenity" = "z" ]; then
-info="echo"
-error="echo"
-enter="echo \"\""
+  test "z$DISPLAY" != "z" && zenity=`which yad 2> /dev/null`
+  if [ "z$zenity" != "z" ]; then
+    info="$zenity --title=Notice --button=OK --escape-ok --text"
+    error="$zenity --title=Error --button=OK --escape-ok --text"
+    enter="$zenity --title=Password --entry --hide-text"
+  else
+    info="echo"
+    error="echo"
+    enter="echo \"\""
+  fi
 else
 info="$zenity --title=Notice --info --text"
 error="$zenity --title=Error --error --text"
