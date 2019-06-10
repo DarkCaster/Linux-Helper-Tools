@@ -1,3 +1,5 @@
 [suse]
 localhost ansible_user=root ansible_host=127.0.0.1
 
+[clear]
+localhost ansible_user=root ansible_host=127.0.0.1
