@@ -73,6 +73,11 @@ function loader.asserts.nsetup(target)
   if type(target.hostname)=="nil" then target.set_hostname=false else target.set_hostname=true end
 end
 
+function loader.asserts.nbridge(target)
+  if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
+  if type(target.brname)~="string" then return "brname field is missing or incorrect!" end
+end
+
 function loader.asserts.stunnel(target)
 end
 
@@ -136,6 +141,8 @@ for dindex,dfield in pairs(deps) do
           loader.asserts.result=loader.asserts.nsetup(field)
         elseif field.type=="nmiredo" then
           loader.asserts.result=loader.asserts.netns_miredo(field)
+        elseif field.type=="nbridge" then
+          loader.asserts.result=loader.asserts.nbridge(field)
         else
           error("unsupported hook type: ".. field.type)
         end
