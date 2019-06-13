@@ -1,0 +1,10 @@
+#!/bin/bash
+
+find_command ip
+find_command brctl
+
+debug "creating netns ${cfg[hooks.$hook_cnt.netns]}"
+2>/dev/null "$ip" netns add "${cfg[hooks.$hook_cnt.netns]}" || true
+
+debug "creating bridge for ${cfg[hooks.$hook_cnt.netns]} netns"
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$brctl" addbr "${cfg[hooks.$hook_cnt.brname]}"

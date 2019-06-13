@@ -1,0 +1,7 @@
+#!/bin/bash
+
+find_command ip
+find_command brctl
+
+debug "removing bridge for ${cfg[hooks.$hook_cnt.netns]} netns"
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$brctl" delbr "${cfg[hooks.$hook_cnt.brname]}"
