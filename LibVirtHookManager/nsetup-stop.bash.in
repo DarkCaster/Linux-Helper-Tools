@@ -1,3 +1,8 @@
 #!/bin/bash
 
-true
+find_command ip
+
+if [[ ${cfg[hooks.$hook_cnt.netns_cleanup]} = true ]]; then
+  debug "trying to remove netns ${cfg[hooks.$hook_cnt.netns]}"
+  2>/dev/null "$ip" netns del "${cfg[hooks.$hook_cnt.netns]}" || true
+fi

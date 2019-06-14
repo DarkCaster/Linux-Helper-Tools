@@ -2,6 +2,9 @@
 
 find_command ip
 
+debug "creating netns ${cfg[hooks.$hook_cnt.netns]}"
+2>/dev/null "$ip" netns add "${cfg[hooks.$hook_cnt.netns]}" || true
+
 debug "creating network config files at /etc/netns/${cfg[hooks.$hook_cnt.netns]}"
 mkdir -p "/etc/netns/${cfg[hooks.$hook_cnt.netns]}"
 

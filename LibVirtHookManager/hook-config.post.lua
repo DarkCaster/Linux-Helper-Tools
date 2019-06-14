@@ -65,6 +65,7 @@ end
 
 function loader.asserts.nsetup(target)
   if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
+  if type(target.netns_cleanup)~="nil" and type(target.netns_cleanup)~="boolean" then return "netns_cleanup field is incorrect!" end
   if type(target.resolv_conf)~="string" and type(target.resolv_conf)~="nil" then return "resolv_conf field is incorrect!" end
   if type(target.resolv_conf)=="nil" then target.set_resolv_conf=false else target.set_resolv_conf=true end
   if type(target.hosts)~="string" and type(target.hosts)~="nil" then return "hosts field is incorrect!" end
