@@ -6,18 +6,22 @@ find_command brctl
 debug "creating veth interfaces with names ${cfg[hooks.$hook_cnt.veth1_name]} ${cfg[hooks.$hook_cnt.veth2_name]}"
 "$ip" link add "${cfg[hooks.$hook_cnt.veth1_name]}" type veth peer name "${cfg[hooks.$hook_cnt.veth2_name]}"
 
-[[ ${cfg[hooks.$hook_cnt.set_veth1_macaddr]} = true ]] &&\
-  debug "setting interface ${cfg[hooks.$hook_cnt.veth1_name]} macaddr to ${cfg[hooks.$hook_cnt.veth1_macaddr]}" &&\
+if [[ ${cfg[hooks.$hook_cnt.set_veth1_macaddr]} = true ]]; then
+  debug "setting interface ${cfg[hooks.$hook_cnt.veth1_name]} macaddr to ${cfg[hooks.$hook_cnt.veth1_macaddr]}"
   ip link set "${cfg[hooks.$hook_cnt.veth1_name]}" address "${cfg[hooks.$hook_cnt.veth1_macaddr]}"
+fi
 
-[[ ${cfg[hooks.$hook_cnt.set_veth2_macaddr]} = true ]] &&\
-  debug "setting interface ${cfg[hooks.$hook_cnt.veth2_name]} macaddr to ${cfg[hooks.$hook_cnt.veth2_macaddr]}" &&\
+if [[ ${cfg[hooks.$hook_cnt.set_veth2_macaddr]} = true ]]; then
+  debug "setting interface ${cfg[hooks.$hook_cnt.veth2_name]} macaddr to ${cfg[hooks.$hook_cnt.veth2_macaddr]}"
   ip link set "${cfg[hooks.$hook_cnt.veth2_name]}" address "${cfg[hooks.$hook_cnt.veth2_macaddr]}"
+fi
 
-[[ ${cfg[hooks.$hook_cnt.set_br1_name]} = true ]] &&\
-  debug "moving interface ${cfg[hooks.$hook_cnt.veth1_name]} to bridge ${cfg[hooks.$hook_cnt.br1_name]}" &&\
+if [[ ${cfg[hooks.$hook_cnt.set_br1_name]} = true ]]; then
+  debug "moving interface ${cfg[hooks.$hook_cnt.veth1_name]} to bridge ${cfg[hooks.$hook_cnt.br1_name]}"
   "$brctl" addif "${cfg[hooks.$hook_cnt.br1_name]}" "${cfg[hooks.$hook_cnt.veth1_name]}"
+fi
 
-[[ ${cfg[hooks.$hook_cnt.set_br2_name]} = true ]] &&\
-  debug "moving interface ${cfg[hooks.$hook_cnt.veth2_name]} to bridge ${cfg[hooks.$hook_cnt.br2_name]}" &&\
+if [[ ${cfg[hooks.$hook_cnt.set_br2_name]} = true ]]; then
+  debug "moving interface ${cfg[hooks.$hook_cnt.veth2_name]} to bridge ${cfg[hooks.$hook_cnt.br2_name]}"
   "$brctl" addif "${cfg[hooks.$hook_cnt.br2_name]}" "${cfg[hooks.$hook_cnt.veth2_name]}"
+fi
