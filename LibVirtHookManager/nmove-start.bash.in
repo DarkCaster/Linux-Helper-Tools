@@ -1,0 +1,5 @@
+#!/bin/bash
+
+find_command ip
+find_command brctl
+
