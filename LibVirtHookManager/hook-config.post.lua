@@ -75,7 +75,10 @@ end
 
 function loader.asserts.nbridge(target)
   if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
-  if type(target.brname)~="string" then return "brname field is missing or incorrect!" end
+  if type(target.br_name)~="string" then return "br_name field is missing or incorrect!" end
+  if type(target.netns_cleanup)~="boolean" and type(target.netns_cleanup)~="nil" then return "netns_cleanup field is incorrect!" end
+  if type(target.br_macaddr)~="string" and type(target.br_macaddr)~="nil" then return "br_macaddr field is incorrect!" end
+  if type(target.br_macaddr)=="nil" then target.set_br_macaddr=false else target.set_br_macaddr=true end
 end
 
 function loader.asserts.stunnel(target)
@@ -101,7 +104,6 @@ function loader.asserts.vde(target)
   if type(target.netns)~="nil" and type(target.netns)~="string" then return "netns field is incorrect!" end
   if type(target.netns)~="string" then target.netns="" end
   if type(target.netns_cleanup)~="nil" and type(target.netns_cleanup)~="boolean" then return "netns_cleanup field is incorrect!" end
-  if type(target.netns_cleanup)~="boolean" then target.netns_cleanup=true end
 end
 
 function loader.asserts.check_ops(target, name)

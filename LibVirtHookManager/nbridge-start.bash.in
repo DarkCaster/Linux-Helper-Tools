@@ -6,5 +6,12 @@ find_command brctl
 debug "creating netns ${cfg[hooks.$hook_cnt.netns]}"
 2>/dev/null "$ip" netns add "${cfg[hooks.$hook_cnt.netns]}" || true
 
-debug "creating bridge for ${cfg[hooks.$hook_cnt.netns]} netns"
-"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$brctl" addbr "${cfg[hooks.$hook_cnt.brname]}"
+debug "creating bridge ${cfg[hooks.$hook_cnt.br_name]} for ${cfg[hooks.$hook_cnt.netns]} netns"
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$brctl" addbr "${cfg[hooks.$hook_cnt.br_name]}"
+
+[[ ${cfg[hooks.$hook_cnt.set_br_macaddr]} = true ]] &&\
+  debug "setting macaddr ${cfg[hooks.$hook_cnt.br_macaddr]} to bridge ${cfg[hooks.$hook_cnt.br_name]} at ${cfg[hooks.$hook_cnt.netns]} netns" &&\
+  "$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$ip" link set "${cfg[hooks.$hook_cnt.br_name]}" address "${cfg[hooks.$hook_cnt.br_macaddr]}"
+
+debug "enabling bridge ${cfg[hooks.$hook_cnt.br_name]} for ${cfg[hooks.$hook_cnt.netns]} netns"
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$ip" link set "${cfg[hooks.$hook_cnt.br_name]}" up

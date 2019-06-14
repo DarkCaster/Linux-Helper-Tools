@@ -4,4 +4,10 @@ find_command ip
 find_command brctl
 
 debug "removing bridge for ${cfg[hooks.$hook_cnt.netns]} netns"
-"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$brctl" delbr "${cfg[hooks.$hook_cnt.brname]}"
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$ip" link set "${cfg[hooks.$hook_cnt.br_name]}" down
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$brctl" delbr "${cfg[hooks.$hook_cnt.br_name]}"
+
+if [[ ${cfg[hooks.$hook_cnt.netns_cleanup]} = true ]]; then
+  debug "removing netns ${cfg[hooks.$hook_cnt.netns]}"
+  "$ip" netns del "${cfg[hooks.$hook_cnt.netns]}"
+fi
