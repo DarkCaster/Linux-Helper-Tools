@@ -84,8 +84,6 @@ end
 function loader.asserts.nmove(target)
   if type(target.netns)~="string" then return "netns field is missing or incorrect!" end
   if type(target.if_name)~="string" then return "if_name field is missing or incorrect!" end
-  if type(target.br_name)~="string" and type(target.br_name)~="nil" then return "br_name field is incorrect!" end
-  if type(target.br_name)=="nil" then target.set_br_name=false else target.set_br_name=true end
 end
 
 function loader.asserts.stunnel(target)

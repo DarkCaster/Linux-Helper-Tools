@@ -1,5 +1,6 @@
 #!/bin/bash
 
 find_command ip
-find_command brctl
 
+debug "moving ${cfg[hooks.$hook_cnt.if_name]} interface out of netns ${cfg[hooks.$hook_cnt.netns]}"
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" ip link set "${cfg[hooks.$hook_cnt.if_name]}" netns 1
