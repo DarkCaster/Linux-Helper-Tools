@@ -86,6 +86,19 @@ function loader.asserts.nmove(target)
   if type(target.if_name)~="string" then return "if_name field is missing or incorrect!" end
 end
 
+function loader.asserts.veth(target)
+  if type(target.veth1_name)~="string" then return "veth1_name field is missing or incorrect!" end
+  if type(target.veth2_name)~="string" then return "veth2_name field is missing or incorrect!" end
+  if type(target.veth1_macaddr)~="string" and type(target.veth1_macaddr)~="nil" then return "veth1_macaddr field is incorrect!" end
+  if type(target.veth1_macaddr)=="nil" then target.set_veth1_macaddr=false else target.set_veth1_macaddr=true end
+  if type(target.veth2_macaddr)~="string" and type(target.veth2_macaddr)~="nil" then return "veth2_macaddr field is incorrect!" end
+  if type(target.veth2_macaddr)=="nil" then target.set_veth2_macaddr=false else target.set_veth2_macaddr=true end
+  if type(target.br1_name)~="string" and type(target.br1_name)~="nil" then return "br1_name field is incorrect!" end
+  if type(target.br1_name)=="nil" then target.set_br1_name=false else target.set_br1_name=true end
+  if type(target.br2_name)~="string" and type(target.br2_name)~="nil" then return "br2_name field is incorrect!" end
+  if type(target.br2_name)=="nil" then target.set_br2_name=false else target.set_br2_name=true end
+end
+
 function loader.asserts.stunnel(target)
 end
 
@@ -152,6 +165,8 @@ for dindex,dfield in pairs(deps) do
           loader.asserts.result=loader.asserts.nbridge(field)
         elseif field.type=="nmove" then
           loader.asserts.result=loader.asserts.nmove(field)
+        elseif field.type=="veth" then
+          loader.asserts.result=loader.asserts.veth(field)
         else
           error("unsupported hook type: ".. field.type)
         end

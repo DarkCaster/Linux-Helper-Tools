@@ -1,0 +1,6 @@
+#!/bin/bash
+
+find_command ip
+
+debug "removing veth interfaces with names ${cfg[hooks.$hook_cnt.veth1_name]} ${cfg[hooks.$hook_cnt.veth2_name]}"
+"$ip" link del "${cfg[hooks.$hook_cnt.veth1_name]}" type veth peer name "${cfg[hooks.$hook_cnt.veth2_name]}"
