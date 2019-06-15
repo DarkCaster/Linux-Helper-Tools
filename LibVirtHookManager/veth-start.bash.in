@@ -6,6 +6,12 @@ find_command brctl
 debug "creating veth interfaces with names ${cfg[hooks.$hook_cnt.veth1_name]} ${cfg[hooks.$hook_cnt.veth2_name]}"
 "$ip" link add "${cfg[hooks.$hook_cnt.veth1_name]}" type veth peer name "${cfg[hooks.$hook_cnt.veth2_name]}"
 
+debug "enabling veth device ${cfg[hooks.$hook_cnt.veth1_name]}"
+"$ip" link set "${cfg[hooks.$hook_cnt.veth1_name]}" up
+
+debug "enabling veth device ${cfg[hooks.$hook_cnt.veth2_name]}"
+"$ip" link set "${cfg[hooks.$hook_cnt.veth2_name]}" up
+
 if [[ ${cfg[hooks.$hook_cnt.set_veth1_macaddr]} = true ]]; then
   debug "setting interface ${cfg[hooks.$hook_cnt.veth1_name]} macaddr to ${cfg[hooks.$hook_cnt.veth1_macaddr]}"
   ip link set "${cfg[hooks.$hook_cnt.veth1_name]}" address "${cfg[hooks.$hook_cnt.veth1_macaddr]}"

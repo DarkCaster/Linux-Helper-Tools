@@ -4,3 +4,6 @@ find_command ip
 
 debug "moving ${cfg[hooks.$hook_cnt.if_name]} interface to netns ${cfg[hooks.$hook_cnt.netns]}"
 "$ip" link set "${cfg[hooks.$hook_cnt.if_name]}" netns "${cfg[hooks.$hook_cnt.netns]}"
+
+debug "re-enabling interface ${cfg[hooks.$hook_cnt.if_name]} for ${cfg[hooks.$hook_cnt.netns]} netns"
+"$ip" netns exec "${cfg[hooks.$hook_cnt.netns]}" "$ip" link set "${cfg[hooks.$hook_cnt.if_name]}" up
