@@ -5,6 +5,6 @@ load-module module-null-sink
 load-module module-always-sink
 load-module module-rescue-streams
 load-module module-suspend-on-idle timeout=3
+load-module module-bluetooth-discover
 set-default-sink main_output
 set-default-source main_input
-

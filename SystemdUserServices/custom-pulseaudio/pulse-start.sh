@@ -93,7 +93,7 @@ if [ `check_proc "$pulse"` = "r" ]; then
  do_exit 1
 fi
 
-$pulse -D
+$pulse -D -vvvv --log-target=newfile:/tmp/pulseaudio-$uid.log
 wait_for_proc started "$pulse"
 
 if [ `check_proc "$pulse"` = "s" ]; then
