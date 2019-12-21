@@ -98,6 +98,12 @@ modules_dir=`pulseaudio --dump-conf | grep "^dl-search-path = " | sed "s|^dl-sea
 if [ ! -z "$modules_dir" ]; then
  export PULSE_DLPATH="__BIN/pulse-modules:__HOME/apps/pulse-modules:$modules_dir"
  log "using custom PULSE_DLPATH = $PULSE_DLPATH"
+ if [ -z "$LD_LIBRARY_PATH" ]; then
+  export LD_LIBRARY_PATH="__BIN/pulse-modules:__HOME/apps/pulse-modules"
+ else
+  export LD_LIBRARY_PATH="__BIN/pulse-modules:__HOME/apps/pulse-modules:$LD_LIBRARY_PATH"
+ fi
+ log "using custom LD_LIBRARY_PATH = $LD_LIBRARY_PATH"
 fi
 
 #TODO: configurable pulseaudio logfiles location
