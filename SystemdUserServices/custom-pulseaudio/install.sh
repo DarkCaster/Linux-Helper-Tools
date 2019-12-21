@@ -8,13 +8,16 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 # service scripts
 bin_dir="$HOME/apps/systemd-services/custom-pulseaudio"
 mkdir -p "$bin_dir"
+mkdir -p "$bin_dir/pulse-modules"
 
 cp "$script_dir/pulse-start.sh" "$bin_dir"
 sed -i -e "s|__HOME|$HOME|g" "$bin_dir/pulse-start.sh"
+sed -i -e "s|__BIN|$bin_dir|g" "$bin_dir/pulse-start.sh"
 chmod 755 "$bin_dir/pulse-start.sh"
 
 cp "$script_dir/pulse-stop.sh" "$bin_dir"
 sed -i -e "s|__HOME|$HOME|g" "$bin_dir/pulse-stop.sh"
+sed -i -e "s|__BIN|$bin_dir|g" "$bin_dir/pulse-stop.sh"
 chmod 755 "$bin_dir/pulse-stop.sh"
 
 cp "$script_dir/save-alsa-levels.sh" "$bin_dir"

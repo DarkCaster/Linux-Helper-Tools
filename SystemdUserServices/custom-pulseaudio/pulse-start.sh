@@ -93,7 +93,19 @@ if [ `check_proc "$pulse"` = "r" ]; then
  do_exit 1
 fi
 
-$pulse -D -vvvv --log-target=newfile:/tmp/pulseaudio-$uid.log
+#try to dump pulseaudio default dlpath
+modules_dir=`pulseaudio --dump-conf | grep "^dl-search-path = " | sed "s|^dl-search-path = ||g"`
+if [ ! -z "$modules_dir" ]; then
+ export PULSE_DLPATH="__BIN/pulse-modules:__HOME/apps/pulse-modules:$modules_dir"
+ log "using custom PULSE_DLPATH = $PULSE_DLPATH"
+fi
+
+#TODO: configurable pulseaudio logfiles location
+#remove old pulseaudio logfiles
+rm -fv /tmp/pulse-$uid.log
+rm -fv /tmp/pulse-$uid.log.*
+
+$pulse -D -vvvv --log-target=newfile:/tmp/pulse-$uid.log
 wait_for_proc started "$pulse"
 
 if [ `check_proc "$pulse"` = "s" ]; then
