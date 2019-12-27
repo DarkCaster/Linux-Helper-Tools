@@ -75,11 +75,10 @@ if ! wait_for_proc stopped "$pulse" ; then
  do_exit 3
 fi
 
-rm -rf "__HOME/.config/pulse" 2>/dev/null
-if [ -d "__HOME/.config/pulse" ]; then
- log "failed to remove pulseaudio config dir"
- do_exit 2
-fi
+log "purging config files"
+rm -fv "__HOME/.config/pulse/default.pa"
+rm -fv "__HOME/.config/pulse/daemon.conf"
+rm -fv "__HOME/.config/pulse/client.conf"
 
 install -d "__HOME/.config/pulse" 2>/dev/null
 socket=`cat "$script_dir/default.pa" | grep "module-native-protocol-unix" | grep "socket" | cut -d" " -f3 | cut -d"=" -f2`

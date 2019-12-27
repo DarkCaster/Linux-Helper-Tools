@@ -20,13 +20,8 @@ sed -i -e "s|__HOME|$HOME|g" "$bin_dir/pulse-stop.sh"
 sed -i -e "s|__BIN|$bin_dir|g" "$bin_dir/pulse-stop.sh"
 chmod 755 "$bin_dir/pulse-stop.sh"
 
-cp "$script_dir/save-alsa-levels.sh" "$bin_dir"
-chmod 755 "$bin_dir/save-alsa-levels.sh"
-
-cp "$script_dir/restore-alsa-levels.sh" "$bin_dir"
-chmod 755 "$bin_dir/restore-alsa-levels.sh"
-
-# tune this files for your needs
+# tune this files for your needs: it will be placed at $HOME/apps/systemd-services/custom-pulseaudio directory
+# these config files will overwrite configs in $HOME/.config/pulse on every startup of this custom service
 cp "$script_dir/daemon.conf" "$bin_dir"
 cp "$script_dir/default.pa" "$bin_dir"
 
