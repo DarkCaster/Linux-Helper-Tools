@@ -6,7 +6,10 @@ load-module module-alsa-sink sink_name="main_output" device=hw:1,0 channels=2
 load-module module-alsa-source source_name="main_input" device=hw:1,0 channels=2
 load-module module-rescue-streams
 load-module module-suspend-on-idle timeout=10
-load-module module-bluetooth-discover a2dp_config="sbc_min_bp=60 sbc_max_bp=60 sbc_freq=2 sbc_cmode=2 sbc_alloc=0 sbc_sbands=0 sbc_blen=0"
+### medium-quality 44100 full-stereo mode, fixed 363.8 kbps bitrate
+# load-module module-bluetooth-discover a2dp_config="sbc_min_bp=60 sbc_max_bp=60 sbc_freq=2 sbc_cmode=2 sbc_alloc=0 sbc_sbands=0 sbc_blen=0"
+### medium-quality 44100 dual-stereo mode, fixed 385.9 kbps bitrate
+load-module module-bluetooth-discover a2dp_config="sbc_min_bp=32 sbc_max_bp=32 sbc_freq=2 sbc_cmode=4 sbc_alloc=0 sbc_sbands=0 sbc_blen=0"
 load-module module-switch-on-connect
 set-default-sink main_output
 set-default-source main_input
