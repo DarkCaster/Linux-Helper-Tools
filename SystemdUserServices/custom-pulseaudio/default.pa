@@ -6,11 +6,11 @@ load-module module-alsa-sink sink_name="main_output" device=hw:1,0 channels=2
 load-module module-alsa-source source_name="main_input" device=hw:1,0 channels=2
 load-module module-rescue-streams
 load-module module-suspend-on-idle timeout=10
-### SBC codec parameters for use with custom pulseaudio modules from https://github.com/DarkCaster/Pulseaudio-Modules-BT or https://github.com/EHfive/pulseaudio-modules-bt
+### SBC codec parameters for use with custom pulseaudio modules from https://github.com/DarkCaster/Pulseaudio-Modules-BT
 ### medium-quality 44100 full-stereo mode, fixed 363.8 kbps bitrate
 # load-module module-bluetooth-discover a2dp_config="sbc_min_bp=60 sbc_max_bp=60 sbc_freq=44k sbc_cmode=stereo sbc_alloc=auto sbc_sbands=auto sbc_blen=auto"
-### medium-quality 44100 dual-stereo mode, fixed 385.9 kbps bitrate, lower latency (BT buffer size will be 4096 bytes)
-load-module module-bluetooth-discover a2dp_config="sbc_min_bp=32 sbc_max_bp=32 sbc_freq=44k sbc_cmode=dual sbc_alloc=auto sbc_sbands=auto sbc_blen=auto"
+### medium-quality 44100 dual-stereo mode, fixed 385.9 kbps bitrate, low latency (BT buffer size will be 2048 bytes)
+load-module module-bluetooth-discover buff_mult=1 a2dp_config="sbc_min_bp=32 sbc_max_bp=32 sbc_freq=44k sbc_cmode=dual sbc_alloc=auto sbc_sbands=auto sbc_blen=auto"
 load-module module-switch-on-connect
 set-default-sink main_output
 set-default-source main_input
