@@ -7,10 +7,12 @@ load-module module-alsa-source source_name="main_input" device=hw:1,0 channels=2
 load-module module-rescue-streams
 load-module module-suspend-on-idle timeout=10
 ### SBC codec parameters for use with custom pulseaudio modules from https://github.com/DarkCaster/Pulseaudio-Modules-BT
-### 352.8 kbps, low delay, good for BT adapters with 310 ACL MTU like CSR8510 A10
-load-module module-bluetooth-discover buff_mult=1 a2dp_config="sbc_min_bp=55 sbc_max_bp=55 sbc_freq=44k sbc_cmode=joint_stereo sbc_alloc=auto sbc_sbands=auto sbc_blen=12"
-### 385.9 kbps, low delay - lower quality dual-channel mode
-# load-module module-bluetooth-discover buff_mult=1 a2dp_config="sbc_min_bp=32 sbc_max_bp=32 sbc_freq=44k sbc_cmode=dual sbc_alloc=auto sbc_sbands=auto sbc_blen=auto"
+### following config examples was optimized for use with cheap Redmi Airdots TWS headphones, with BT adapter based on CSR8510 A10 chipset (ACL MTU = 310 bytes)
+### bitpool values selected with respect to bluetooth package splitting in order to minimize fragmenting - only one HCI_ACL + one L2CAP packages used to transfer one payload-package.
+### you can manually dump and analyze bluetooth traffic with wireshark, (example: "hcidump -w file.dump" to dump traffic and "wireshark file.dump" to visualize it)
+### provided examples also minimizes sound lag, and sorted from lower quality to higher
+#load-module module-bluetooth-discover buff_mult=1 a2dp_config="sbc_min_bp=55 sbc_max_bp=55 sbc_freq=44k sbc_cmode=joint_stereo sbc_alloc=auto sbc_sbands=auto sbc_blen=12"
+load-module module-bluetooth-discover buff_mult=1 a2dp_config="sbc_min_bp=34 sbc_max_bp=34 sbc_freq=44k sbc_cmode=dual sbc_alloc=auto sbc_sbands=auto sbc_blen=auto"
 load-module module-switch-on-connect
 set-default-sink main_output
 set-default-source main_input
