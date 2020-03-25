@@ -14,7 +14,7 @@ echo "converting certificate to der format"
 openssl x509 -in public.crt -outform der -out public.der
 
 echo "encrypting private key"
-openssl aes-256-cbc -a -salt -in private.key -out private.key.enc
+openssl aes-256-cbc -a -e -salt -md sha512 -pbkdf2 -iter 100000 -in private.key -out private.key.enc
 
 echo "removing unencrypted key"
 rm private.key
