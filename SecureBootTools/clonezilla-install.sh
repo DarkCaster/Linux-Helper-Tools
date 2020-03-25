@@ -2,8 +2,8 @@
 
 #download clonezilla, extract and sign kernel, deploy prepared configuration to selected efi-partition directory
 
-url="none"
-sha256="836e5fb7853681e5e425b43f77962be1aee1f1aab3690846cb5123832c3f415d"
+url="https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative/20200302-eoan/clonezilla-live-20200302-eoan-amd64.iso/download"
+sha256="a1ef990f22f08de99df0c6e877a68541ff9586676d03ec6e1cccaa6448712d86"
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
