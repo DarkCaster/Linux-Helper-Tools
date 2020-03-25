@@ -29,6 +29,7 @@ if [[ ! -e "clonezilla.iso" ]]; then
  wget "$url" -O clonezilla.iso
 fi
 
+echo "checking image integrity"
 checksum=`sha256sum -b clonezilla.iso | awk '{print $1}'`
 [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 
@@ -37,7 +38,7 @@ rm -f "vmlinuz.signed"
 rm -f "vmlinuz"
 rm -f "initrd.img"
 
-echo "extracting kernels"
+echo "extracting kernel"
 7z e clonezilla.iso live/vmlinuz 1>/dev/null
 7z e clonezilla.iso live/initrd.img 1>/dev/null
 

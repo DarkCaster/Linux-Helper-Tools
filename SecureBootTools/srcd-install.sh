@@ -31,6 +31,7 @@ if [[ ! -e "srcd.iso" ]]; then
  wget "$url" -O srcd.iso
 fi
 
+echo "checking image integrity"
 checksum=`sha256sum -b srcd.iso | awk '{print $1}'`
 [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 
@@ -38,8 +39,10 @@ echo "cleaning up"
 rm -f "vmlinuz.signed"
 rm -f "vmlinuz"
 rm -f "sysresccd.img"
+rm -f "amd_ucode.img"
+rm -f "intel_ucode.img"
 
-echo "extracting kernels"
+echo "extracting kernel"
 7z e srcd.iso sysresccd/boot/x86_64/vmlinuz 1>/dev/null
 7z e srcd.iso sysresccd/boot/x86_64/sysresccd.img 1>/dev/null
 7z e srcd.iso sysresccd/boot/amd_ucode.img 1>/dev/null
