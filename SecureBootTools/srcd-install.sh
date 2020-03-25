@@ -2,7 +2,8 @@
 
 #download sysrescuecd, extract and sign kernel, deploy prepared configuration to selected efi-partition directory
 
-url="https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/5.2.0/systemrescuecd-x86-5.2.0.iso/download"
+url="https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/6.1.1/systemrescuecd-amd64-6.1.1.iso/download"
+sha256="836e5fb7853681e5e425b43f77962be1aee1f1aab3690846cb5123832c3f415d"
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
@@ -26,6 +27,8 @@ cd "${script_dir}/local"
 if [[ ! -e "srcd.iso" ]]; then
  echo "downloading sysrescuecd"
  wget "$url" -O srcd.iso
+ checksum=`sha256sum -b srcd.iso | awk '{print $1}'`
+ [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 fi
 
 echo "cleaning up"
