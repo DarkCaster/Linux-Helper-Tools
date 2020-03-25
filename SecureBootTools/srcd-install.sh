@@ -33,20 +33,20 @@ checksum=`sha256sum -b srcd.iso | awk '{print $1}'`
 [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 
 echo "cleaning up"
-rm -f "rescue64.signed"
-rm -f "rescue64"
-rm -f "altker64.signed"
-rm -f "altker64"
-rm -f "initram.igz"
+rm -f "vmlinuz.signed"
+rm -f "vmlinuz"
+rm -f "sysresccd.img"
 
 echo "extracting kernels"
-7z e srcd.iso isolinux/rescue64 1>/dev/null
-7z e srcd.iso isolinux/initram.igz 1>/dev/null
+7z e srcd.iso sysresccd/boot/x86_64/vmlinuz 1>/dev/null
+7z e srcd.iso sysresccd/boot/x86_64/sysresccd.img 1>/dev/null
+7z e srcd.iso sysresccd/boot/amd_ucode.img 1>/dev/null
+7z e srcd.iso sysresccd/boot/intel_ucode.img 1>/dev/null
 
 cd "${olddir}"
 
-echo "signing rescue64 kernel"
-"${script_dir}/sign-efi-binary.sh" "${script_dir}/local/rescue64" "${script_dir}/local/rescue64.signed"
+echo "signing kernel"
+"${script_dir}/sign-efi-binary.sh" "${script_dir}/local/vmlinuz" "${script_dir}/local/vmlinuz.signed"
 
 #cleanup
 echo "cleaning up old srcd installation at ${efibase}"
@@ -55,7 +55,9 @@ rm -rf "${efibase}/srcd"
 #deploy
 echo "deploying files to ${efibase}"
 mkdir -p "${efibase}/srcd"
-cp "${script_dir}/local/rescue64.signed" "${efibase}/srcd"
-cp "${script_dir}/local/initram.igz" "${efibase}/srcd"
+cp "${script_dir}/local/vmlinuz.signed" "${efibase}/srcd"
+cp "${script_dir}/local/sysresccd.img" "${efibase}/srcd"
+cp "${script_dir}/local/amd_ucode.img" "${efibase}/srcd"
+cp "${script_dir}/local/intel_ucode.img" "${efibase}/srcd"
 cp "${script_dir}/local/srcd.iso" "${efibase}/srcd"
 cp "${script_dir}/grub-sysrescuecd.cfg.in" "${efibase}/srcd/grub.cfg.in"
