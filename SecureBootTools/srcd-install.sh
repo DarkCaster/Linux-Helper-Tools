@@ -10,12 +10,14 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 set -e
 
 show_usage () {
- echo "usage: srcd-install.sh <destination dir (mounted efi partition directory)>"
+ echo "usage: srcd-install.sh <EFI partition label> <destination dir (mounted efi partition directory)>"
  exit 100
 }
 
 #destination dir
-efibase="$@"
+efilabel="$1"
+[[ -z "${efilabel}" ]] && show_usage
+efibase="$2"
 [[ -z "${efibase}" ]] && show_usage
 [[ ! -d "${efibase}" ]] && echo "destination dir is not exist" && exit 1
 
@@ -61,3 +63,4 @@ cp "${script_dir}/local/amd_ucode.img" "${efibase}/srcd"
 cp "${script_dir}/local/intel_ucode.img" "${efibase}/srcd"
 cp "${script_dir}/local/srcd.iso" "${efibase}/srcd"
 cp "${script_dir}/grub-sysrescuecd.cfg.in" "${efibase}/srcd/grub.cfg.in"
+sed -i -e "s|__EFI_LABEL__|${efilabel}|g" "${efibase}/srcd/grub.cfg.in"
