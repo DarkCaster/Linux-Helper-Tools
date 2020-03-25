@@ -27,9 +27,10 @@ cd "${script_dir}/local"
 if [[ ! -e "srcd.iso" ]]; then
  echo "downloading sysrescuecd"
  wget "$url" -O srcd.iso
- checksum=`sha256sum -b srcd.iso | awk '{print $1}'`
- [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 fi
+
+checksum=`sha256sum -b srcd.iso | awk '{print $1}'`
+[[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 
 echo "cleaning up"
 rm -f "rescue64.signed"

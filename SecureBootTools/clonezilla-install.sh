@@ -27,9 +27,10 @@ cd "${script_dir}/local"
 if [[ ! -e "clonezilla.iso" ]]; then
  echo "downloading clonezilla"
  wget "$url" -O clonezilla.iso
- checksum=`sha256sum -b clonezilla.iso | awk '{print $1}'`
- [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 fi
+
+checksum=`sha256sum -b clonezilla.iso | awk '{print $1}'`
+[[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 
 echo "cleaning up"
 rm -f "vmlinuz.signed"
