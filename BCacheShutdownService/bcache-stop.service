@@ -1,0 +1,15 @@
+[Unit]
+Description=Deactivate all bcache devices with active cache
+Before=umount.target
+After=shutdown.target
+DefaultDependencies=no
+
+[Service]
+ExecStart=__bcache_stop_script__
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=120
+TimeoutStopSec=120
+
+[Install]
+WantedBy=umount.target
