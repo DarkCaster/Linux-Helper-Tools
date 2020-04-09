@@ -1,7 +1,6 @@
 
 menuentry "SystemRescueCd" {
 	set gfxpayload=keep
-	linuxefi /srcd/rescue64.signed isoloop=/srcd/srcd.iso libata.noacpi=1
-	initrdefi /srcd/initram.igz
+	linuxefi /srcd/vmlinuz.signed img_label=__EFI_LABEL__ img_loop=/srcd/srcd.iso archisobasedir=sysresccd copytoram
+	initrdefi /srcd/amd_ucode.img /srcd/intel_ucode.img /srcd/sysresccd.img
 }
-
