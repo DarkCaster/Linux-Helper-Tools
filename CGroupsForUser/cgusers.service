@@ -1,0 +1,10 @@
+[Unit]
+Description=Setup use of some cgroups for members of cgusers group
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=__cgcreate -a root:cgusers -t root:cgusers -d 770 -f 660 -s 660 -g memory,cpu:cgusers
+
+[Install]
+WantedBy=multi-user.target
