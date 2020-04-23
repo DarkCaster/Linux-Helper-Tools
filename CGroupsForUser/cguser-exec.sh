@@ -1,19 +1,26 @@
 #!/bin/bash
 
 show_usage() {
-  echo "usage: cguser-exec.sh [options] <command> [parameters]"
+  echo "usage: cguser-exec.sh <options> <command> [parameters]"
   echo "options:"
   echo "  -n <cg name> - run command within already created cgroup"
   echo "     (for now only cpu and memory) inside base 'cgusers' cgroup"
   echo "     any other options are ignored when running in this mode"
   echo "  -t - run command inside newly created temporary cgroup"
   echo "     remove it upon command exit, limits may be applied with other options (todo)"
+  echo "  -c <timeout seconds> - timeout when trying to remove temporary cgroup on exit"
   exit 1
 }
 
 cgctl="memory,cpu"
 createcg="false"
 cgbase="cgusers"
+cgtimeout="0"
+
+is_number() {
+  local num="$1"
+  [ ! -z "${num##*[!0-9]*}" ] && return 0 || return 1
+}
 
 while true; do
   if [ "$1" = "-n" ]; then
@@ -24,6 +31,13 @@ while true; do
     cgname=$(tr </dev/urandom -cd '[:alnum:]' | head -c8)
     cgname="$cgbase/$cgname"
     createcg="true"
+  elif [ "$1" = "-c" ]; then
+    shift 1
+    cgtimeout="$1"
+    if ! is_number "$cgtimeout"; then
+      echo "provided timeout value is not a number"
+      show_usage
+    fi
   else
     command="$1"
     shift 1
@@ -32,6 +46,7 @@ while true; do
   shift 1
 done
 
+[[ -z "$cgname" ]] && echo "you must provide -n or -t option" && show_usage
 [[ -z "$command" ]] && echo "command is missing" && show_usage
 
 if [[ $createcg = true ]]; then
@@ -42,8 +57,20 @@ fi
 cgexec -g $cgctl:$cgname "$command" "$@"
 ec="$?"
 
-if [[ $createcg = true ]]; then
+try_cgdelete() {
+  local cg_ec="0"
   cgdelete -r -g $cgctl:$cgname
+  cg_ec="$?"
+  while [[ $cgtimeout -gt 0 && $cg_ec != 0 ]]; do
+    sleep 1
+    ((cgtimeout -= 1))
+    cgdelete -r -g $cgctl:$cgname
+    cg_ec="$?"
+  done
+}
+
+if [[ $createcg = true ]]; then
+  try_cgdelete
 fi
 
 exit "$ec"
