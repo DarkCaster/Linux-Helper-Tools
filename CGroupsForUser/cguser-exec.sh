@@ -10,7 +10,8 @@ show_usage() {
   echo "     remove it upon command exit, limits may be applied with other options (todo)"
   echo "  -c <timeout seconds> - timeout when trying to remove temporary cgroup on exit"
   echo "  -m <memory limit in bytes, optionally K,M,G suffixes allowed> - memory limit for temporary cgroup"
-  echo "  -ms <memsw limit in bytes, optionally K,M,G suffixes allowed> - memsw limit for temporary cgroup, must be > memory limit"
+  echo "  -msw <memsw limit in bytes, optionally K,M,G suffixes allowed> - memsw limit for temporary cgroup, must be > memory limit"
+  echo "  -ms <soft memory limit in bytes, optionally K,M,G suffixes allowed> - soft memory limit for temporary cgroup, should be < memory limit"
   exit 1
 }
 
@@ -45,6 +46,9 @@ while true; do
     memlimit="$1"
   elif [ "$1" = "-ms" ]; then
     shift 1
+    memsoftlimit="$1"
+  elif [ "$1" = "-msw" ]; then
+    shift 1
     memswlimit="$1"
   else
     command="$1"
@@ -59,8 +63,9 @@ done
 
 if [[ $createcg = true ]]; then
   cgcreate -g $cgctl:$cgname
-  [[ ! -z "$memlimit" ]] && echo "$memlimit" > /sys/fs/cgroup/memory/$cgname/memory.limit_in_bytes
-  [[ ! -z "$memswlimit" ]] && echo "$memswlimit" > /sys/fs/cgroup/memory/$cgname/memory.memsw.limit_in_bytes
+  [[ ! -z "$memlimit" ]] && echo "$memlimit" >/sys/fs/cgroup/memory/$cgname/memory.limit_in_bytes
+  [[ ! -z "$memswlimit" ]] && echo "$memswlimit" >/sys/fs/cgroup/memory/$cgname/memory.memsw.limit_in_bytes
+  [[ ! -z "$memsoftlimit" ]] && echo "$memsoftlimit" >/sys/fs/cgroup/memory/$cgname/memory.soft_limit_in_bytes
 fi
 
 #run command
