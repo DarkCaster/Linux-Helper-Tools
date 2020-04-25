@@ -12,10 +12,11 @@ show_usage() {
   echo "  -m <memory limit in bytes, optionally K,M,G suffixes allowed> - memory limit for temporary cgroup"
   echo "  -msw <memsw limit in bytes, optionally K,M,G suffixes allowed> - memsw limit for temporary cgroup, must be > memory limit"
   echo "  -ms <soft memory limit in bytes, optionally K,M,G suffixes allowed> - soft memory limit for temporary cgroup, should be < memory limit"
+  echo "  -iw <io weight> - io weight for blkio controller, will be applied to blkio.weight or blkio.bfq.weight depending on availability"
   exit 1
 }
 
-cgctl="memory,cpu"
+cgctl="memory,cpu,blkio"
 createcg="false"
 cgbase="cgusers"
 cgtimeout="0"
@@ -50,6 +51,9 @@ while true; do
   elif [ "$1" = "-msw" ]; then
     shift 1
     memswlimit="$1"
+  elif [ "$1" = "-iw" ]; then
+    shift 1
+    ioweight="$1"
   else
     command="$1"
     shift 1
@@ -66,6 +70,10 @@ if [[ $createcg = true ]]; then
   [[ ! -z "$memlimit" ]] && echo "$memlimit" >/sys/fs/cgroup/memory/$cgname/memory.limit_in_bytes
   [[ ! -z "$memswlimit" ]] && echo "$memswlimit" >/sys/fs/cgroup/memory/$cgname/memory.memsw.limit_in_bytes
   [[ ! -z "$memsoftlimit" ]] && echo "$memsoftlimit" >/sys/fs/cgroup/memory/$cgname/memory.soft_limit_in_bytes
+  if [[ ! -z "$ioweight" ]]; then
+    echo "$ioweight" >/sys/fs/cgroup/blkio/$cgname/blkio.bfq.weight
+    echo "$ioweight" >/sys/fs/cgroup/blkio/$cgname/blkio.weight
+  fi
 fi
 
 #run command
