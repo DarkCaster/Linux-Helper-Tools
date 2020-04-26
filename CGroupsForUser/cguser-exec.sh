@@ -16,7 +16,7 @@ show_usage() {
   exit 1
 }
 
-cgctl="memory,cpu,blkio"
+cgctl="memory,cpu"
 createcg="false"
 cgbase="cgusers"
 cgtimeout="0"
