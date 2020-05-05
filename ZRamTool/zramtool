@@ -12,6 +12,40 @@ showusage() {
   echo "-h - show help"
 }
 
+lock_entered="false"
+lock_dirname="zramtool.lock"
+lock_path="/var/lock/$lock_dirname"
+
+lock_enter() {
+  local nowait="$1"
+  if mkdir "$lock_path" 2>/dev/null; then
+    lock_entered="true"
+    return 0
+  else
+    [[ ! -z $nowait ]] && return 1
+    echo "awaiting lock release"
+    while ! lock_enter "nowait"; do
+      sleep 1
+    done
+    lock_entered="true"
+    return 0
+  fi
+}
+
+lock_exit() {
+  if [[ $lock_entered = true ]]; then
+    rmdir "$lock_path" 2>/dev/null
+    lock_entered="false"
+  fi
+  true
+}
+
+teardown() {
+  local status="$1"
+  lock_exit
+  exit $status
+}
+
 check_errors() {
   local status="$?"
   local msg="$1"
@@ -21,7 +55,7 @@ check_errors() {
     else
       echo "$msg"
     fi
-    exit 1
+    teardown 1
   fi
 }
 
@@ -51,11 +85,11 @@ module_init() {
   if [[ ! -z $mdevs ]]; then
     if ! is_integer "$mdevs"; then
       echo "max devices parameter is not integer"
-      exit 1
+      teardown 1
     fi
   else
     echo "max devices parameter is missing"
-    exit 1
+    teardown 1
   fi
   local check=$(lsmod | grep zram)
   if [[ -z $check ]]; then
@@ -67,7 +101,7 @@ module_init() {
       check_errors "failed to check $i zram device"
       if [[ $check != ok ]]; then
         echo "zram device $i detection failed"
-        exit 1
+        teardown 1
       fi
     done
   fi
@@ -108,19 +142,19 @@ init_device() {
   local check=$(check_device $mdev)
   if [[ $check != ok ]]; then
     echo "error while performing init of zram$mdev device"
-    exit 1
+    teardown 1
   fi
   if ! is_integer "$size"; then
     echo "device size parameter is not a valid number"
-    exit 1
+    teardown 1
   fi
   if [[ $size -le 0 ]]; then
     echo "device size parameter must be > 0"
-    exit 1
+    teardown 1
   fi
   if [[ -z $compr ]]; then
     echo "comp_algorithm parameter is empty"
-    exit 1
+    teardown 1
   fi
   if [[ -f "/sys/block/zram$mdev/comp_algorithm" ]]; then
     echo "$compr" >/sys/block/zram$mdev/comp_algorithm
@@ -136,7 +170,7 @@ deinit_device() {
     mdev="zram$mdev"
   else
     echo "device number is invalid"
-    exit 1
+    teardown 1
   fi
   echo 1 2>/dev/null 1>/sys/block/$mdev/reset
   check_errors "failed to perform deinit on $mdev device"
@@ -176,7 +210,6 @@ parseopts() {
     "c")
       action="create"
       devsize="$OPTARG"
-      devnum=$(find_device)
       ;;
     "d")
       action="delete"
@@ -209,21 +242,28 @@ parseopts "$@"
 
 case "$action" in
 "init")
+  lock_enter
   module_init "$devcount"
   ;;
 "create")
-  [[ $devnum = "fail" ]] && echo "no more spare zram devices left or zram module is not loaded" && exit 1
+  lock_enter
+  devnum=$(find_device)
+  [[ $devnum = "fail" ]] && echo "no more spare zram devices left or zram module is not loaded" && teardown 1
   init_device "$devnum" "$devsize" "$algo"
   echo "$devnum"
   ;;
 "delete")
+  lock_enter
   deinit_device "$devnum"
   ;;
 "shutdown")
+  lock_enter
   module_deinit
   ;;
 *)
   showusage
-  exit 1
+  teardown 1
   ;;
 esac
+
+teardown 0
