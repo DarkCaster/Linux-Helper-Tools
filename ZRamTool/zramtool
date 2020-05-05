@@ -48,16 +48,15 @@ wait_for_zram() {
 
 module_init() {
   local mdevs="$1"
-
   if [[ ! -z $mdevs ]]; then
     if ! is_integer "$mdevs"; then
       echo "max devices parameter is not integer"
       exit 1
     fi
   else
-    mdevs="10"
+    echo "max devices parameter is missing"
+    exit 1
   fi
-
   local check=$(lsmod | grep zram)
   if [[ -z $check ]]; then
     modprobe zram num_devices=$mdevs 2>/dev/null
@@ -112,11 +111,11 @@ init_device() {
     exit 1
   fi
   if ! is_integer "$size"; then
-    echo "device size parameter is not integer"
+    echo "device size parameter is not a valid number"
     exit 1
   fi
-  if ! is_integer "$streams"; then
-    echo "streams parameter is not integer"
+  if [[ $size -le 0 ]]; then
+    echo "device size parameter must be > 0"
     exit 1
   fi
   if [[ -z $compr ]]; then
@@ -136,7 +135,8 @@ deinit_device() {
   if is_integer "$mdev"; then
     mdev="zram$mdev"
   else
-    mdev=$(basename $mdev)
+    echo "device number is invalid"
+    exit 1
   fi
   echo 1 2>/dev/null 1>/sys/block/$mdev/reset
   check_errors "failed to perform deinit on $mdev device"
@@ -150,61 +150,80 @@ module_deinit() {
   fi
 }
 
-c_alg="lzo"
+action="usage"
+devcount="10"
+algo="lzo"
+devnum="none"
+devsize="0"
 
 parseopts() {
   local optname
   while getopts ":iI:a:c:d:sh" optname; do
     case "$optname" in
     "i")
-      module_init
-      exit 0
+      action="init"
+      devcount="10"
+      return 0
       ;;
     "I")
-      module_init $OPTARG
-      exit 0
+      action="init"
+      devcount="$OPTARG"
+      return 0
       ;;
     "a")
-      c_alg="$OPTARG"
+      algo="$OPTARG"
       ;;
     "c")
-      module_init
-      local devnum=$(find_device)
-      if [[ $devnum = fail ]]; then
-        echo "no more spare devices left!"
-        exit 1
-      fi
-      init_device $devnum $OPTARG "$c_alg"
-      echo "/dev/zram$devnum"
-      exit 0
+      action="create"
+      devsize="$OPTARG"
+      devnum=$(find_device)
       ;;
     "d")
-      module_init
-      deinit_device $OPTARG
-      exit 0
+      action="delete"
+      devnum="$OPTARG"
+      return 0
       ;;
     "s")
-      module_deinit
-      exit 0
+      action="shutdown"
+      return 0
       ;;
     "h")
-      showusage
-      exit 1
+      action="usage"
+      return 0
       ;;
     "?")
       echo "Unknown option $OPTARG"
-      showusage
-      exit 1
+      action="usage"
+      return 0
       ;;
     *)
       echo "Error while processing options"
-      showusage
-      exit 1
+      action="usage"
+      return 0
       ;;
     esac
   done
 }
 
 parseopts "$@"
-showusage
-exit 1
+
+case "$action" in
+"init")
+  module_init "$devcount"
+  ;;
+"create")
+  [[ $devnum = "fail" ]] && echo "no more spare zram devices left or zram module is not loaded" && exit 1
+  init_device "$devnum" "$devsize" "$algo"
+  echo "$devnum"
+  ;;
+"delete")
+  deinit_device "$devnum"
+  ;;
+"shutdown")
+  module_deinit
+  ;;
+*)
+  showusage
+  exit 1
+  ;;
+esac
