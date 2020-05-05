@@ -1,0 +1,11 @@
+[Unit]
+Description=Compressed swap using zram
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=__zramswap
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+
+set -e
+
+# settings, TODO: move to some separate config file
+
+use_ram_percent="33"
+swap_prio="32766"
+algo="zstd"
+
+# end of settings
+
+tr_bin=$(which tr)
+cat_bin=$(which cat)
+cut_bin=$(which cut)
+free_bin=$(which free)
+grep_bin=$(which grep)
+mkswap_bin=$(which mkswap)
+swapon_bin=$(which swapon)
+zramctl_bin=$(which zramctl)
+
+echo "Using up to $use_ram_percent of ram, with $swap_prio priority"
+
+all_mem="$($free_bin -b | $grep_bin -m 1 -P '^[Mm][Ee][Mm]\b:\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+' | $tr_bin -s '[:blank:]' | $cut_bin -s -d ' ' -f 2 | $tr_bin -d '[:blank:]')"
+
+check=$(echo "$all_mem" | $grep_bin -m 1 -P '^[0-9]+$')
+if [[ -z $check ]]; then
+  echo "failed to detect system memory size!"
+  exit 1
+fi
+echo "Detected system memory size=$all_mem bytes"
+
+check="$($cat_bin /proc/swaps | ( $grep_bin /dev/zram || true ))"
+if [[ ! -z $check ]]; then
+  echo "Zram swap(s) already active, do not attempting to reconfigure it"
+  exit 0
+fi
+
+disk_size_single=$(($all_mem / 100 * $use_ram_percent))
+echo "Setting up compressed swap with size=$disk_size_single bytes"
+
+device=$($zramctl_bin -f -a $algo -s $disk_size_single)
+$mkswap_bin -L zswap "$device"
+$swapon_bin -p $swap_prio "$device"
