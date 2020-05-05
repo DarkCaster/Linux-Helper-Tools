@@ -23,7 +23,7 @@ lock_enter() {
     return 0
   else
     [[ ! -z $nowait ]] && return 1
-    echo "awaiting lock release"
+    echo "awaiting lock release (if this takes too long, please check for /var/lock permissions)"
     while ! lock_enter "nowait"; do
       sleep 1
     done
