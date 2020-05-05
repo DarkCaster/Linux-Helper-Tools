@@ -1,0 +1,210 @@
+#!/bin/bash
+
+showusage() {
+  echo "Usage: zramtool <option>"
+  echo "options:"
+  echo "-i - perform zram module init with 10 zram devices (default)"
+  echo "-I <max devices> - perform zram module init with selected number of devices"
+  echo "-a <algo> - set compression algorithm. defaults to lz4. pass this option prior to -c option"
+  echo "-c <size> - prepare first available device for use with selected size and return device name on success"
+  echo "-d <device name or number> - free and deinitialize selected device (by full device name or number)"
+  echo "-s - perform zram module shutdown"
+  echo "-h - show help"
+}
+
+check_errors() {
+  local status="$?"
+  local msg="$1"
+  if [[ $status != 0 ]]; then
+    if [[ -z $msg ]]; then
+      echo "error detected in last operation"
+    else
+      echo "$msg"
+    fi
+    exit 1
+  fi
+}
+
+is_integer() {
+  printf "%d" $1 >/dev/null 2>&1
+  return $?
+}
+
+waittime="3"
+
+wait_for_zram() {
+  local try="0"
+  local result="fail"
+  while [[ $try -lt $waittime ]]; do
+    if [[ -b "/dev/zram$1" ]]; then
+      result="ok"
+      break
+    fi
+    ((try += 1))
+    sleep 1
+  done
+  echo $result
+}
+
+module_init() {
+  local mdevs="$1"
+
+  if [[ ! -z $mdevs ]]; then
+    if ! is_integer "$mdevs"; then
+      echo "max devices parameter is not integer"
+      exit 1
+    fi
+  else
+    mdevs="10"
+  fi
+
+  local check=$(lsmod | grep zram)
+  if [[ -z $check ]]; then
+    modprobe zram num_devices=$mdevs 2>/dev/null
+    check_errors "modprobe zram num_devices=$mdevs failed"
+    ((mdevs -= 1))
+    for i in $(seq 0 $mdevs); do
+      check=$(wait_for_zram $i)
+      check_errors "failed to check $i zram device"
+      if [[ $check != ok ]]; then
+        echo "zram device $i detection failed"
+        exit 1
+      fi
+    done
+  fi
+}
+
+check_device() {
+  local result="fail"
+  local check=$(cat /sys/block/zram$1/disksize 2>/dev/null)
+  if [[ -z $check ]]; then
+    result="null"
+  elif [[ $check = 0 ]]; then
+    result="ok"
+  fi
+  echo $result
+}
+
+find_device() {
+  local mdev="0"
+  local ch_result="null"
+  local result="fail"
+  while true; do
+    ch_result=$(check_device $mdev)
+    if [[ $ch_result = ok ]]; then
+      result="$mdev"
+      break
+    elif [[ $ch_result = null ]]; then
+      break
+    fi
+    ((mdev += 1))
+  done
+  echo "$result"
+}
+
+init_device() {
+  local mdev="$1"
+  local size="$2"
+  local compr="$3"
+  local check=$(check_device $mdev)
+  if [[ $check != ok ]]; then
+    echo "error while performing init of zram$mdev device"
+    exit 1
+  fi
+  if ! is_integer "$size"; then
+    echo "device size parameter is not integer"
+    exit 1
+  fi
+  if ! is_integer "$streams"; then
+    echo "streams parameter is not integer"
+    exit 1
+  fi
+  if [[ -z $compr ]]; then
+    echo "comp_algorithm parameter is empty"
+    exit 1
+  fi
+  if [[ -f "/sys/block/zram$mdev/comp_algorithm" ]]; then
+    echo "$compr" >/sys/block/zram$mdev/comp_algorithm
+    check_errors "failed to set compression algorithm for zram$mdev device"
+  fi
+  echo "$size" >/sys/block/zram$mdev/disksize
+  check_errors "failed to init size for zram$mdev device"
+}
+
+deinit_device() {
+  local mdev="$1"
+  if is_integer "$mdev"; then
+    mdev="zram$mdev"
+  else
+    mdev=$(basename $mdev)
+  fi
+  echo 1 2>/dev/null 1>/sys/block/$mdev/reset
+  check_errors "failed to perform deinit on $mdev device"
+}
+
+module_deinit() {
+  local check=$(lsmod | grep zram)
+  if [[ ! -z $check ]]; then
+    modprobe -r zram 2>/dev/null
+    check_errors "modprobe -r zram failed"
+  fi
+}
+
+c_alg="lzo"
+
+parseopts() {
+  local optname
+  while getopts ":iI:a:c:d:sh" optname; do
+    case "$optname" in
+    "i")
+      module_init
+      exit 0
+      ;;
+    "I")
+      module_init $OPTARG
+      exit 0
+      ;;
+    "a")
+      c_alg="$OPTARG"
+      ;;
+    "c")
+      module_init
+      local devnum=$(find_device)
+      if [[ $devnum = fail ]]; then
+        echo "no more spare devices left!"
+        exit 1
+      fi
+      init_device $devnum $OPTARG "$c_alg"
+      echo "/dev/zram$devnum"
+      exit 0
+      ;;
+    "d")
+      module_init
+      deinit_device $OPTARG
+      exit 0
+      ;;
+    "s")
+      module_deinit
+      exit 0
+      ;;
+    "h")
+      showusage
+      exit 1
+      ;;
+    "?")
+      echo "Unknown option $OPTARG"
+      showusage
+      exit 1
+      ;;
+    *)
+      echo "Error while processing options"
+      showusage
+      exit 1
+      ;;
+    esac
+  done
+}
+
+parseopts "$@"
+showusage
+exit 1
