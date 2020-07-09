@@ -4,8 +4,8 @@
 #(it will run without modifying boot variables)
 
 #set shim and grub source directory
-source_dir_shim="/usr/lib64/efi"
-source_dir_grub="/usr/lib64/efi"
+source_dir_shim="/usr/share/efi/x86_64"
+source_dir_grub="/usr/share/efi/x86_64"
 extra_dir_grub="/usr/share/grub2"
 #arch suffix
 efi_arch="x64"
