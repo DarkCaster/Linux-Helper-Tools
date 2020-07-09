@@ -39,7 +39,7 @@ test ! -d "$dbdir" && echo "error creting temp directory" && exit 1
 
 #decrypt private key
 echo "decrypting private key, and converting it to PKCS#12"
-openssl aes-256-cbc -d -a -md sha512 -pbkdf2 -iter 100000 -in "$script_dir/keys/private.key.enc" | cat - "$script_dir/keys/public.crt" | openssl pkcs12 -export -passout pass: -name signcert -out "$dbdir/signcert.p12"
+openssl aes-256-cbc -d -a -md sha512 -in "$script_dir/keys/private.key.enc" | cat - "$script_dir/keys/public.crt" | openssl pkcs12 -export -passout pass: -name signcert -out "$dbdir/signcert.p12"
 
 echo "generating NSS database"
 certutil -N --empty-password -d "$dbdir" -f /dev/stdin
