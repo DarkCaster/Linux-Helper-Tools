@@ -1,0 +1,11 @@
+[Unit]
+Description=Set selected swapiness value for all systemd slices
+After=systemd-sysctl.service local-fs.target network.target remote-fs.target getty.target slices.target -.slice machine.slice system.slice user.slice
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=__cgswpfix
+
+[Install]
+WantedBy=graphical.target
