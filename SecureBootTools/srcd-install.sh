@@ -2,8 +2,8 @@
 
 #download sysrescuecd, extract and sign kernel, deploy prepared configuration to selected efi-partition directory
 
-url="https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/6.1.1/systemrescuecd-amd64-6.1.1.iso/download"
-sha256="836e5fb7853681e5e425b43f77962be1aee1f1aab3690846cb5123832c3f415d"
+url="https://sourceforge.net/projects/systemrescuecd/files/sysresccd-x86/6.1.6/systemrescuecd-amd64-6.1.6.iso/download"
+sha256="1763827ecc552ac9e5fe3e188c4ef26e46f9c2b51b4b8625909e91ed422c9147"
 
 script_dir="$( cd "$( dirname "$0" )" && pwd )"
 
