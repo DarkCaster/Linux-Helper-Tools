@@ -1,6 +1,6 @@
 
 menuentry "Kubuntu" {
 	set gfxpayload=keep
-	linuxefi /kubuntu/vmlinuz.signed live-media=/dev/disk/by-label/__EFI_LABEL__ live-media-path=/kubuntu/casper file=/cdrom/preseed/kubuntu.seed maybe-ubiquity verbose
-	initrdefi /kubuntu/initrd
+	linuxefi /kubuntu/casper/vmlinuz.signed live-media=/dev/disk/by-label/__EFI_LABEL__ live-media-path=/kubuntu/casper file=/cdrom/preseed/kubuntu.seed maybe-ubiquity verbose
+	initrdefi /kubuntu/casper/initrd
 }
