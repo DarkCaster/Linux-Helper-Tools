@@ -1,6 +1,6 @@
 
 menuentry "Kubuntu" {
 	set gfxpayload=keep
-	linuxefi /kubuntu/vmlinuz.signed boot=live findiso=/kubuntu/kubuntu.iso debug=1 noeject union=overlay swap=false file=/cdrom/preseed/kubuntu.seed maybe-ubiquity verbose
-	initrdefi /kubuntu/initrd.img
+	linuxefi /kubuntu/vmlinuz.signed live-media=/dev/disk/by-label/__EFI_LABEL__ live-media-path=/kubuntu file=/cdrom/kubuntu/kubuntu.seed maybe-ubiquity verbose
+	initrdefi /kubuntu/initrd
 }

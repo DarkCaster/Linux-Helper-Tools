@@ -10,12 +10,14 @@ script_dir="$( cd "$( dirname "$0" )" && pwd )"
 set -e
 
 show_usage () {
- echo "usage: kubuntu-install.sh <destination dir (mounted efi partition directory)>"
+ echo "usage: kubuntu-install.sh <EFI partition label> <destination dir (mounted efi partition directory)>"
  exit 100
 }
 
 #destination dir
-efibase="$@"
+efilabel="$1"
+[[ -z "${efilabel}" ]] && show_usage
+efibase="$2"
 [[ -z "${efibase}" ]] && show_usage
 [[ ! -d "${efibase}" ]] && echo "destination dir is not exist" && exit 1
 
@@ -34,28 +36,26 @@ checksum=`sha256sum -b kubuntu.iso | awk '{print $1}'`
 [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 
 echo "cleaning up"
-rm -f "vmlinuz.signed"
-rm -f "vmlinuz"
-rm -f "initrd.img"
-rm -f "initrd"
+rm -rf "casper"
 
-echo "extracting kernel"
-7z e kubuntu.iso casper/vmlinuz 1>/dev/null
-7z e kubuntu.iso casper/initrd 1>/dev/null
+echo "extracting live-image"
+7z x kubuntu.iso "casper/*" 1>/dev/null
 
 cd "${olddir}"
 
+echo "removing original signature"
+pesign -u 0 -r -i "${script_dir}/local/casper/vmlinuz" -o "${script_dir}/local/casper/vmlinuz.tmp"
+
 echo "signing kernel"
-"${script_dir}/sign-efi-binary.sh" "${script_dir}/local/vmlinuz" "${script_dir}/local/vmlinuz.signed"
+"${script_dir}/sign-efi-binary.sh" "${script_dir}/local/casper/vmlinuz.tmp" "${script_dir}/local/casper/vmlinuz.signed"
 
 #cleanup
+rm "${script_dir}/local/casper/vmlinuz.tmp"
 echo "cleaning up old kubuntu installation at ${efibase}"
 rm -rf "${efibase}/kubuntu"
 
 #deploy
 echo "deploying files to ${efibase}"
-mkdir -p "${efibase}/kubuntu"
-cp "${script_dir}/local/vmlinuz.signed" "${efibase}/kubuntu"
-cp "${script_dir}/local/initrd" "${efibase}/kubuntu"
-cp "${script_dir}/local/kubuntu.iso" "${efibase}/kubuntu"
+cp -r "${script_dir}/local/casper" "${efibase}/kubuntu"
 cp "${script_dir}/grub-kubuntu.cfg.in" "${efibase}/kubuntu/grub.cfg.in"
+sed -i -e "s|__EFI_LABEL__|${efilabel}|g" "${efibase}/kubuntu/grub.cfg.in"
