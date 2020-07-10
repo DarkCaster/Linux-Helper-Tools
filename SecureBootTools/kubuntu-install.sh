@@ -36,12 +36,20 @@ checksum=`sha256sum -b kubuntu.iso | awk '{print $1}'`
 [[ $checksum != $sha256 ]] && echo "integrity check failed!" && exit 1
 
 echo "cleaning up"
+rm -rf ".disk"
 rm -rf "casper"
-rm -f "kubuntu.seed"
+rm -rf "dists"
+rm -rf "pool"
+rm -rf "preseed"
+rm -rf "README.diskdefines"
 
 echo "extracting live-image"
+7z x kubuntu.iso ".disk/*" 1>/dev/null
 7z x kubuntu.iso "casper/*" 1>/dev/null
-7z e kubuntu.iso "preseed/kubuntu.seed" 1>/dev/null
+7z x kubuntu.iso "dists/*" 1>/dev/null
+7z x kubuntu.iso "pool/*" 1>/dev/null
+7z x kubuntu.iso "preseed/*" 1>/dev/null
+7z e kubuntu.iso "README.diskdefines" 1>/dev/null
 
 cd "${olddir}"
 
@@ -58,7 +66,13 @@ rm -rf "${efibase}/kubuntu"
 
 #deploy
 echo "deploying files to ${efibase}"
-cp -r "${script_dir}/local/casper" "${efibase}/kubuntu"
+mkdir -p "${efibase}/kubuntu"
+
+cp -r "${script_dir}/local/.disk" "${efibase}/kubuntu/"
+cp -r "${script_dir}/local/casper" "${efibase}/kubuntu/"
+cp -r "${script_dir}/local/dists" "${efibase}/kubuntu/"
+cp -r "${script_dir}/local/pool" "${efibase}/kubuntu/"
+cp -r "${script_dir}/local/preseed" "${efibase}/kubuntu/"
+cp -r "${script_dir}/local/README.diskdefines" "${efibase}/kubuntu/"
 cp "${script_dir}/grub-kubuntu.cfg.in" "${efibase}/kubuntu/grub.cfg.in"
-cp "${script_dir}/local/kubuntu.seed" "${efibase}/kubuntu/kubuntu.seed"
 sed -i -e "s|__EFI_LABEL__|${efilabel}|g" "${efibase}/kubuntu/grub.cfg.in"
