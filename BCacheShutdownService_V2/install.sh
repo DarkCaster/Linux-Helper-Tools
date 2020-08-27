@@ -13,12 +13,12 @@ script_name="bcache-stop.sh"
 generator_name="bcache-stop-generator.sh"
 
 cp "$script_dir/$generator_name" "$prefix/lib/systemd/system-generators"
-sed -i "s|__bcache_stop_script__|$script|g" "$prefix/lib/systemd/system-generators/$generator_name.sh"
-chown root:root "$prefix/lib/systemd/system-generators/$generator_name.sh"
-chmod 750 "$prefix/lib/systemd/system-generators/$generator_name.sh"
+sed -i "s|__bcache_stop_script__|$prefix/bin/$script_name|g" "$prefix/lib/systemd/system-generators/$generator_name"
+chown root:root "$prefix/lib/systemd/system-generators/$generator_name"
+chmod 750 "$prefix/lib/systemd/system-generators/$generator_name"
 
-cp "$script_dir/$script_name.sh" "$prefix/bin"
-chown root:root "$prefix/bin/$script_name.sh"
-chmod 750 "$prefix/bin/$script_name.sh"
+cp "$script_dir/$script_name" "$prefix/bin"
+chown root:root "$prefix/bin/$script_name"
+chmod 750 "$prefix/bin/$script_name"
 
 systemctl daemon-reload
