@@ -73,7 +73,7 @@ $pulse -k 2> /dev/null
 
 wait_for_proc stopped $pulse
 
-if [ `check_proc "$pulse"` == "r" ]; then
+if [ `check_proc "$pulse"` = "r" ]; then
  log "pulseaudio still working!"
  do_exit 1
 fi
