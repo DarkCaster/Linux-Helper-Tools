@@ -1,5 +1,5 @@
 [Unit]
-Description=Deactivate all bcache devices with active cache
+Description=Ensure clean shutdown of bcache devices
 Before=umount.target
 After=shutdown.target
 DefaultDependencies=no
