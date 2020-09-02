@@ -2,6 +2,7 @@
 #
 
 set -e
+export LANG="C"
 
 # settings, TODO: move to some separate config file
 
@@ -24,7 +25,7 @@ echo "Using up to $use_ram_percent of ram, with $swap_prio priority"
 
 all_mem="$($free_bin -b | $grep_bin -m 1 -P '^[Mm][Ee][Mm]\b:\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+' | $tr_bin -s '[:blank:]' | $cut_bin -s -d ' ' -f 2 | $tr_bin -d '[:blank:]')"
 
-check=$(echo "$all_mem" | $grep_bin -m 1 -P '^[0-9]+$')
+check=$(echo "$all_mem" | $grep_bin -m 1 -P '^[0-9]+$' || true)
 if [[ -z $check ]]; then
   echo "failed to detect system memory size!"
   exit 1
