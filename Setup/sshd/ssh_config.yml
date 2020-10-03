@@ -73,6 +73,9 @@
         line="PermitRootLogin yes"
         state=present
 
+- hosts: all,!localhost
+  remote_user: root
+  tasks:
     - name: reboot
       register: reboot
       shell: nohup bash -c "sleep 5s && systemctl reboot" &
