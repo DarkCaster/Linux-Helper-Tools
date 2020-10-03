@@ -1,3 +1,4 @@
+/00_ansible_key/ansible-inventory
 /00_ansible_key/ssh_key
 /00_ansible_key/ssh_key.pub
 /**/*.retry
