@@ -1,35 +1,85 @@
 ---
-- hosts: ubuntu
+- hosts: all
   remote_user: root
   tasks:
     - name: HostbasedAuthentication option
-      register: ubuntu_ssh_config1
+      register: config1
       lineinfile:
         dest="/etc/ssh/ssh_config"
         regexp="HostbasedAuthentication"
         line="HostbasedAuthentication no"
         state=present
     - name: GSSAPIAuthentication option
-      register: ubuntu_ssh_config2
+      register: config2
       lineinfile:
         dest="/etc/ssh/ssh_config"
         regexp="GSSAPIAuthentication"
         line="GSSAPIAuthentication no"
         state=present
-    - name: "install ssh-config file with ssh forwarding options"
-      register: ubuntu_config_installed
-      copy:
-        src: "forwarding.conf"
-        dest: "/etc/ssh/ssh_config.d/"
-        mode: 0644
+    - name: ForwardAgent option
+      register: config3
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="ForwardAgent"
+        line="ForwardAgent no"
+        state=present
+    - name: ForwardX11 option
+      register: config4
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="ForwardX11"
+        line="ForwardX11 no"
+        state=present
+    - name: PasswordAuthentication option
+      register: config5
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="PasswordAuthentication"
+        line="PasswordAuthentication yes"
+        state=present
+    - name: AllowTcpForwarding option
+      register: config6
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="AllowTcpForwarding"
+        line="AllowTcpForwarding local"
+        state=present
+    - name: AllowStreamLocalForwarding option
+      register: config7
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="AllowStreamLocalForwarding"
+        line="AllowStreamLocalForwarding no"
+        state=present
+    - name: GatewayPorts option
+      register: config8
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="GatewayPorts"
+        line="GatewayPorts no"
+        state=present
+    - name: Compression option
+      register: config9
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="Compression"
+        line="Compression no"
+        state=present
+    - name: PermitRootLogin option
+      register: config10
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="PermitRootLogin"
+        line="PermitRootLogin yes"
+        state=present
 
     - name: reboot
-      register: ubuntu_reboot
+      register: reboot
       shell: nohup bash -c "sleep 5s && systemctl reboot" &
-      when: ubuntu_config_installed.changed or ubuntu_ssh_config1.changed or ubuntu_ssh_config2.changed
+      when: config1.changed or config2.changed or config3.changed or config4.changed or config5.changed or config6.changed or config7.changed or config8.changed or config9.changed or config10.changed
       async: 0
       poll: 0
       ignore_errors: true
     - name: wait for reboot
-      when: ubuntu_reboot.changed
+      when: reboot.changed
       wait_for_connection: delay=30 timeout=100
