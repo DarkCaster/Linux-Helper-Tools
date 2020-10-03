@@ -1,0 +1,35 @@
+---
+- hosts: ubuntu
+  remote_user: root
+  tasks:
+    - name: HostbasedAuthentication option
+      register: ubuntu_ssh_config1
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="HostbasedAuthentication"
+        line="HostbasedAuthentication no"
+        state=present
+    - name: GSSAPIAuthentication option
+      register: ubuntu_ssh_config2
+      lineinfile:
+        dest="/etc/ssh/ssh_config"
+        regexp="GSSAPIAuthentication"
+        line="GSSAPIAuthentication no"
+        state=present
+    - name: "install ssh-config file with ssh forwarding options"
+      register: ubuntu_config_installed
+      copy:
+        src: "forwarding.conf"
+        dest: "/etc/ssh/ssh_config.d/"
+        mode: 0644
+
+    - name: reboot
+      register: ubuntu_reboot
+      shell: nohup bash -c "sleep 5s && systemctl reboot" &
+      when: ubuntu_config_installed.changed or ubuntu_ssh_config1.changed or ubuntu_ssh_config2.changed
+      async: 0
+      poll: 0
+      ignore_errors: true
+    - name: wait for reboot
+      when: ubuntu_reboot.changed
+      wait_for_connection: delay=30 timeout=100
