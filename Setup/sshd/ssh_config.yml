@@ -5,72 +5,93 @@
     - name: HostbasedAuthentication option
       register: config1
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="HostbasedAuthentication"
         line="HostbasedAuthentication no"
         state=present
     - name: GSSAPIAuthentication option
       register: config2
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="GSSAPIAuthentication"
         line="GSSAPIAuthentication no"
         state=present
-    - name: ForwardAgent option
+    - name: PermitTunnel option
       register: config3
       lineinfile:
-        dest="/etc/ssh/ssh_config"
-        regexp="ForwardAgent"
-        line="ForwardAgent no"
+        dest="/etc/ssh/sshd_config"
+        regexp="PermitTunnel"
+        line="PermitTunnel no"
         state=present
-    - name: ForwardX11 option
+    - name: X11Forwarding option
       register: config4
       lineinfile:
-        dest="/etc/ssh/ssh_config"
-        regexp="ForwardX11"
-        line="ForwardX11 no"
+        dest="/etc/ssh/sshd_config"
+        regexp="X11Forwarding"
+        line="X11Forwarding no"
         state=present
     - name: PasswordAuthentication option
       register: config5
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="PasswordAuthentication"
         line="PasswordAuthentication yes"
         state=present
     - name: AllowTcpForwarding option
       register: config6
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="AllowTcpForwarding"
         line="AllowTcpForwarding local"
         state=present
     - name: AllowStreamLocalForwarding option
       register: config7
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="AllowStreamLocalForwarding"
         line="AllowStreamLocalForwarding no"
         state=present
     - name: GatewayPorts option
       register: config8
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="GatewayPorts"
         line="GatewayPorts no"
         state=present
     - name: Compression option
       register: config9
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="Compression"
         line="Compression no"
         state=present
     - name: PermitRootLogin option
       register: config10
       lineinfile:
-        dest="/etc/ssh/ssh_config"
+        dest="/etc/ssh/sshd_config"
         regexp="PermitRootLogin"
         line="PermitRootLogin yes"
+        state=present
+    - name: PubkeyAuthentication option
+      register: config11
+      lineinfile:
+        dest="/etc/ssh/sshd_config"
+        regexp="PubkeyAuthentication"
+        line="PubkeyAuthentication yes"
+        state=present
+    - name: KerberosAuthentication option
+      register: config12
+      lineinfile:
+        dest="/etc/ssh/sshd_config"
+        regexp="KerberosAuthentication"
+        line="KerberosAuthentication no"
+        state=present
+    - name: UsePAM option
+      register: config12
+      lineinfile:
+        dest="/etc/ssh/sshd_config"
+        regexp="UsePAM"
+        line="UsePAM yes"
         state=present
 
 - hosts: all,!localhost
@@ -79,7 +100,7 @@
     - name: reboot
       register: reboot
       shell: nohup bash -c "sleep 5s && systemctl reboot" &
-      when: config1.changed or config2.changed or config3.changed or config4.changed or config5.changed or config6.changed or config7.changed or config8.changed or config9.changed or config10.changed
+      when: config1.changed or config2.changed or config3.changed or config4.changed or config5.changed or config6.changed or config7.changed or config8.changed or config9.changed or config10.changed or config11.changed or config12.changed
       async: 0
       poll: 0
       ignore_errors: true

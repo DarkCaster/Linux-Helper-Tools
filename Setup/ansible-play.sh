@@ -13,4 +13,4 @@ target_file=`realpath -e "$target"`
 target_dir=`dirname "$target_file"`
 cd "$target_dir"
 
-ansible-playbook --private-key="$script_dir/00_ansible_key/ssh_key" -i "$script_dir/ansible-inventory" "$target_file"
+ansible-playbook --private-key="$script_dir/00_ansible_key/ansible.key" -i "$script_dir/ansible-inventory" "$target_file"
