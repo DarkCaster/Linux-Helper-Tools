@@ -7,4 +7,6 @@
       authorized_key:
         user: root
         state: present
-        key: "{{ lookup('file', 'ssh_key.pub') }}"
+        key: "{{ lookup('file', item) }}"
+      with_fileglob:
+        - "*.key*.pub"
