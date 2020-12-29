@@ -1,6 +1,6 @@
 
 menuentry "Clonezilla" {
 	set gfxpayload=keep
-	linuxefi /clonezilla/vmlinuz.signed findiso=/clonezilla/clonezilla.iso boot=live noeject union=overlay username=user hostname=eoan config verbose components noswap edd=on nomodeset enforcing=0 locales= keyboard-layouts= ocs_live_run="ocs-live-general" ocs_live_extra_param="" ocs_live_batch="no" vga=788 ip= net.ifnames=0  splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+	linuxefi /clonezilla/vmlinuz.signed findiso=/clonezilla/clonezilla.iso boot=live noeject union=overlay username=user hostname=groovy config verbose components noswap edd=on nomodeset enforcing=0 locales= keyboard-layouts= ocs_live_run="ocs-live-general" ocs_live_extra_param="" ocs_live_batch="no" vga=788 ip= net.ifnames=0  splash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
 	initrdefi /clonezilla/initrd.img
 }
